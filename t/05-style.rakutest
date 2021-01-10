@@ -1,0 +1,15 @@
+#!raku
+
+use Test;
+use Terminal::UI::Style;
+
+plan 2;
+
+my $s = Terminal::UI::Style.new;
+
+$s.colors<focused><selected><fg> = 1;
+is $s.colors<focused><selected><fg>, 1, 'set a value';
+
+my $t = Terminal::UI::Style.new;
+is $t.colors<focused><selected><fg>, 1, 'singleton works';
+

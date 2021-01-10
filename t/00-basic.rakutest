@@ -1,0 +1,10 @@
+use Test;
+
+plan 6;
+
+use-ok 'Terminal::UI';
+use-ok 'Terminal::UI::Screen';
+use-ok 'Terminal::UI::Frame';
+use-ok 'Terminal::UI::Pane';
+use-ok 'Terminal::UI::Input';
+use-ok 'Terminal::UI::Style';

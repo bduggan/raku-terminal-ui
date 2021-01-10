@@ -1,0 +1,30 @@
+{
+  "auth": "cpan:bduggan",
+  "authors": [
+    "Brian Duggan"
+  ],
+  "description": "Terminal UI building blocks",
+  "name": "Terminal::UI",
+  "license": "MIT",
+  "perl": "6.d",
+  "provides": {
+    "Terminal::UI": "lib/Terminal/UI.rakumod",
+    "Terminal::UI::Frame": "lib/Terminal/UI/Frame.rakumod",
+    "Terminal::UI::Input": "lib/Terminal/UI/Input.rakumod",
+    "Terminal::UI::Pane": "lib/Terminal/UI/Pane.rakumod",
+    "Terminal::UI::Screen": "lib/Terminal/UI/Screen.rakumod",
+    "Terminal::UI::Style": "lib/Terminal/UI/Style.rakumod"
+  },
+  "repo-type": "git",
+  "source-url": "https://git.sr.ht/~bduggan/raku-terminal-ui",
+  "tags": [
+    "Terminal"
+  ],
+  "depends" : [
+    "Terminal::ANSI:ver<0.0.8>", "Log::Async"
+  ],
+  "test-depends": [
+    "Test"
+  ],
+  "version": "0.0.1"
+}

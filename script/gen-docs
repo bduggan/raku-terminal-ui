@@ -1,0 +1,135 @@
+#!/usr/bin/env raku
+
+use lib 'lib';
+
+sub attr-docs($class) {
+  my @attrs;
+  for $class.^attributes -> $a {
+    push @attrs: {
+      name => $a.name,
+      doc => $a.WHY // 'no docs',
+      handles => $a.?handles,
+      type => $a.type.raku
+    }
+  }
+  @attrs;
+}
+
+sub attr-lines(@attrs) {
+  my @lines;
+  for @attrs.sort(*.<name>) -> $a {
+    @lines.push: '* **' ~ $a.<name> ~ '** (' ~ $a.<type> ~ ')';
+    @lines.push: "";
+    @lines.push: '  ' ~ $a.<doc>;
+    with $a.<handles> -> $h {
+      @lines.push: "";
+      @lines.push: "  Handles: " ~ $h.map({"**$_**"}).join(', ');
+    }
+    @lines.push: "";
+  }
+  @lines;
+}
+
+sub method-docs($class, $attr-docs) {
+  my @methods;
+  my %handled;
+  my %attr;
+  for @$attr-docs -> $attr {
+    %attr{ $attr<name>.subst(/^\W+/,'') } = 1;
+    next unless $attr<handles>;
+    for $attr<handles><> {
+      %handled{ $_ } = $attr;
+    }
+  }
+  for $class.^methods(:local) -> $m {
+   next if %attr{ $m.name };
+   next if $m.name eq 'pod';
+   if %handled{ $m.name } -> $attr {
+      @methods.push: {
+         name => $m.name,
+         label => $m.name,
+         desc => "Handled by { $attr<name> }",
+      }
+      next;
+   }
+   if $m.candidates.elems > 1 {
+     for $m.candidates -> $c {
+       @methods.push: {
+         name => $m.name,
+         label => ($m.name ~ $c.signature.gist ),
+         multi => 1,
+         desc => ($c.WHY // 'no docs').Str,
+         line => $c.WHY.WHEREFORE.line,
+         file => $c.WHY.WHEREFORE.file,
+       }
+     }
+     next;
+   }
+   @methods.push: {
+     name => $m.name,
+     label => ($m.name ~ $m.signature.gist ),
+     desc => ($m.WHY // 'no docs').Str,
+     line => $m.WHY.WHEREFORE.line,
+     file => $m.WHY.WHEREFORE.file,
+   }
+  }
+  @methods;
+}
+
+sub method-lines(@methods) {
+  my @lines;
+  for @methods.sort(*.<name>) -> $m {
+    next if $m<name> ~~ /^^ <[A..Z]>+ $$/;
+    @lines.push: '* **' ~ $m<label> ~ '**';
+    @lines.push: "  $m<desc>";
+    @lines.push: '';
+  }
+  @lines;
+}
+
+sub to-md($pod) {
+  $pod.contents.map(*.contents).join("\n\n");
+}
+
+sub write-file($class) { my $file = 'lib'.IO.child($class.^name.subst('::','/',:g) ~ '.md');
+  my %blocks = $class.pod.map: { (.?name // '') => $_ };
+  my $class-name = to-md(%blocks<NAME>);
+  my $desc = to-md(%blocks<DESCRIPTION>);
+
+  my @lines;
+  @lines.push: "## NAME";
+  @lines.push: "";
+  @lines.push: $class-name;
+  @lines.push: "";
+  @lines.push: "## DESCRIPTION";
+  @lines.push: "";
+  @lines.push: $desc;
+  @lines.push: "";
+  @lines.push: "### ATTRIBUTES";
+  @lines.push: '';
+  my $attr-docs = attr-docs($class);
+  @lines.append: attr-lines($attr-docs);
+  @lines.push: '';
+  @lines.push: "### METHODS";
+  @lines.push: '';
+  @lines.append: method-lines(method-docs($class, $attr-docs));
+  $file.IO.spurt: @lines.join("\n");
+}
+
+sub document-all($base-class) {
+	my $base-class-name = $base-class.^name;
+	my $symbol-table = ::{$base-class-name ~ "::"};
+	write-file($base-class);
+	for $symbol-table.keys -> $k {
+		my $class = ::{"$base-class-name" ~ "::" ~ $k};
+		write-file($class);
+	}
+}
+
+use Terminal::UI;
+sub MAIN {
+	my $tag = "master";
+	my $repo = "https://git.sr.ht/~bduggan/raku-terminal-ui/tree/$tag";
+  document-all(Terminal::UI);
+}
+

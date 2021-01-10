@@ -1,0 +1,42 @@
+#!raku
+
+use Test;
+use Terminal::UI::Frame;
+use Terminal::ANSI;
+
+sub screen {
+  virtual-screen.render(h => 8, w => 7).trans(' ' => '.')
+}
+
+disable-output;
+
+my $q = Terminal::UI::Frame.new: :top<1>, :left<1>, :height<8>, :width<7>;
+$q.draw;
+is screen, q:to/S/, 'full';
+ ╔═════╗
+ ║.....║
+ ║.....║
+ ║.....║
+ ║.....║
+ ║.....║
+ ║.....║
+ ╚═════╝
+ S
+
+clear-screen;
+
+my $p = Terminal::UI::Frame.new: :top<2>, :height<6>, :width<4>, :left<2>;
+$p.draw;
+is screen, q:to/S/, 'render';
+ .......
+ .╔══╗..
+ .║..║..
+ .║..║..
+ .║..║..
+ .║..║..
+ .╚══╝..
+ .......
+ S
+
+done-testing;
+

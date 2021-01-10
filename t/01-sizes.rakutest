@@ -1,0 +1,30 @@
+use Test;
+
+use Terminal::UI;
+use Terminal::ANSI;
+
+my $*terminal-ansi-buffer = True;
+my $*terminal-ansi-out = "";
+
+my $scr = Terminal::UI::Screen.new(:80cols, :40rows);
+my $ctr = $scr.add-frame(:top(7), :height(20), :left(5), :width(50));
+my $pane = $ctr.add-pane;
+
+is $scr.cols,   80, 'screen height';
+is $scr.rows,   40, 'screen rows';
+
+is $ctr.top,     7, 'top';
+is $ctr.height, 20, 'height';
+is $ctr.left,    5, 'height';
+is $ctr.width,  50, 'frame width';
+
+is $pane.top,     8, 'pane top';
+is $pane.height, 18, 'pane height';
+is $pane.left,    6, 'pane left';
+is $pane.width,  48, 'pane width';
+
+my $full-frame = $scr.add-frame;
+is $full-frame.top, 1, 'full top is 1';
+is $full-frame.height, 40, 'full has screen rows';
+
+done-testing;

@@ -1,0 +1,10 @@
+use Test;
+use Terminal::UI::Screen;
+
+my $s = Terminal::UI::Screen.new(:40rows, :80cols);
+
+is $s.rows, 40, 'rows';
+is $s.cols, 80, 'cols';
+
+done-testing;
+
