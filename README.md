@@ -17,7 +17,7 @@ A set of building blocks for terminal interfaces.
 
 ## More examples
 
-See the [eg](eg/) directory.
+See the [eg](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) directory.
 
 ## Description
 
