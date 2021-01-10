@@ -15,8 +15,10 @@ This is a singleton class which keeps track of a global style for UI elements.
 
 ### METHODS
 
-* **new** (Terminal::UI::Style: *%named)
+* **new**(Terminal::UI::Style: *%named)
+
   Same as singleton
 
-* **singleton** (Terminal::UI::Style: *%_)
+* **singleton**(Terminal::UI::Style: *%_)
+
   Get the singleton object.

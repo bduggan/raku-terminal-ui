@@ -60,7 +60,7 @@ sub method-docs($class, $attr-docs) {
      for $m.candidates -> $c {
        @methods.push: {
          name => $m.name,
-         label => (bold($m.name) ~ ' ' ~ $c.signature.gist ),
+         label => (bold($m.name) ~ $c.signature.gist ),
          multi => 1,
          desc => ($c.WHY // 'no docs').Str,
          line => $c.WHY.WHEREFORE.line,
@@ -71,7 +71,7 @@ sub method-docs($class, $attr-docs) {
    }
    @methods.push: {
      name => $m.name,
-     label => (bold($m.name) ~ ' ' ~ $m.signature.gist ),
+     label => (bold($m.name) ~ $m.signature.gist ),
      desc => ($m.WHY // 'no docs').Str,
      line => $m.WHY.WHEREFORE.line,
      file => $m.WHY.WHEREFORE.file,
@@ -85,6 +85,7 @@ sub method-lines(@methods) {
   for @methods.sort(*.<name>) -> $m {
     next if $m<name> ~~ /^^ <[A..Z]>+ $$/;
     @lines.push: '* ' ~ $m<label>;
+    @lines.push: '';
     @lines.push: "  $m<desc>";
     @lines.push: '';
   }

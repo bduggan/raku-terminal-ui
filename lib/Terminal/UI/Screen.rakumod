@@ -8,9 +8,16 @@ use Log::Async;
 logger.untapped-ok = True;
 method pod { $=pod }
 
+#| The number of columns (default the entire screen).
 has $.cols;
+
+#| The number of rows (default the entire screen).
 has $.rows;
+
+#| Resize events.
 has Supplier $.resized .= new;
+
+#| The frames in the screen.
 has SetHash $!frames;
 
 method !auto-set {
