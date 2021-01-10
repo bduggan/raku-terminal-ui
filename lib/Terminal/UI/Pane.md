@@ -67,80 +67,80 @@ A pane is a text area that can scroll. It also has as registry of actions, which
 
 ### METHODS
 
-* **bottom(Terminal::UI::Pane: *%_)**
+* **bottom** (Terminal::UI::Pane: *%_)
   Absolute bottom (top + height)
 
-* **clear(Terminal::UI::Pane: *%_)**
+* **clear** (Terminal::UI::Pane: *%_)
   Clear the content and redraw
 
-* **colors**
+* colors
   Handled by $!style
 
-* **current-meta(Terminal::UI::Pane: *%_)**
+* **current-meta** (Terminal::UI::Pane: *%_)
   Metadata associated with the current line
 
-* **draw(Terminal::UI::Pane: *%_)**
+* **draw** (Terminal::UI::Pane: *%_)
   Same as redraw
 
-* **draw-selected-line(Terminal::UI::Pane: *%_)**
+* **draw-selected-line** (Terminal::UI::Pane: *%_)
   Draw the currently selected line
 
-* **focus(Terminal::UI::Pane: *%_)**
+* **focus** (Terminal::UI::Pane: *%_)
   Focus on this pane
 
-* **last-visible(Terminal::UI::Pane: *%_)**
+* **last-visible** (Terminal::UI::Pane: *%_)
   Index of the bottom line which is visible (first-visible + height - 1)
 
-* **page-down(Terminal::UI::Pane: *%_)**
+* **page-down** (Terminal::UI::Pane: *%_)
   Select down by the number of lines in the pane
 
-* **page-up(Terminal::UI::Pane: *%_)**
+* **page-up** (Terminal::UI::Pane: *%_)
   Select up by the number of lines in the pane
 
-* **put(Terminal::UI::Pane: $str where { ... }, Bool :$scroll-ok = Bool::True, :%meta, *%_)**
+* **put** (Terminal::UI::Pane: $str where { ... }, Bool :$scroll-ok = Bool::True, :%meta, *%_)
   Add a line to the content. Scroll down if the last line is visible and this line would be off screen.
 
-* **redraw(Terminal::UI::Pane: *%_)**
+* **redraw** (Terminal::UI::Pane: *%_)
   Refresh the screen
 
-* **register-action(Terminal::UI::Pane: Str :$name, Callable :$action, *%_)**
+* **register-action** (Terminal::UI::Pane: Str :$name, Callable :$action, *%_)
   Associate a callback, with the name of an action
 
-* **right(Terminal::UI::Pane: *%_)**
+* **right** (Terminal::UI::Pane: *%_)
   Absolute right column (left + width)
 
-* **run-action(Terminal::UI::Pane: $name, *%_)**
+* **run-action** (Terminal::UI::Pane: $name, *%_)
   Run the action with the given name
 
-* **screen**
+* screen
   Handled by $!frame
 
-* **scroll-down(Terminal::UI::Pane: Bool :$limit = Bool::True, *%_)**
+* **scroll-down** (Terminal::UI::Pane: Bool :$limit = Bool::True, *%_)
   Scroll the visible contents down. Optionally limit scrolling based on the contents.
 
-* **scroll-up(Terminal::UI::Pane: Bool :$limit = Bool::True, *%_)**
+* **scroll-up** (Terminal::UI::Pane: Bool :$limit = Bool::True, *%_)
   Scroll the visible contents up. Optionally limit scrolling based on the contents.
 
-* **select(Terminal::UI::Pane: $line is copy = Code.new, *%_)**
+* **select** (Terminal::UI::Pane: $line is copy = Code.new, *%_)
   Select an index in the content.
 
-* **select-down(Terminal::UI::Pane: *%_)**
+* **select-down** (Terminal::UI::Pane: *%_)
   Select the line below the current one, possibly scrolling the screen up
 
-* **select-up(Terminal::UI::Pane: *%_)**
+* **select-up** (Terminal::UI::Pane: *%_)
   Select the line above the current one, possibly scrolling the screen down
 
-* **select-visible(Terminal::UI::Pane: Int $r, *%_)**
+* **select-visible** (Terminal::UI::Pane: Int $r, *%_)
   Select a visible row. (0 is the top row)
 
-* **selected-row(Terminal::UI::Pane: *%_)**
+* **selected-row** (Terminal::UI::Pane: *%_)
   Selected row, in the range 1..$!height
 
-* **set-size(Terminal::UI::Pane: $!width, $!height, *%_)**
+* **set-size** (Terminal::UI::Pane: $!width, $!height, *%_)
   Change the size
 
-* **set-top(Terminal::UI::Pane: $!top, *%_)**
+* **set-top** (Terminal::UI::Pane: $!top, *%_)
   Change the offset from the top
 
-* **unfocus(Terminal::UI::Pane: *%_)**
+* **unfocus** (Terminal::UI::Pane: *%_)
   Remove focus from this pane
