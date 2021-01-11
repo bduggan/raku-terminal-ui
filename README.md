@@ -1,6 +1,6 @@
 ## Terminal::UI
 
-A set of building blocks for terminal interfaces.
+Building blocks for terminal interfaces.
 
 ## Example
 
@@ -15,6 +15,14 @@ A set of building blocks for terminal interfaces.
     ║              ║
     ╚══════════════╝
 
+## Features and design goals
+
+* Scrolling with some optimization, such as using ANSI scroll region escape sequences.
+
+* Thread safe.  Concurrency friendly.
+
+* Dynamic geometry calculation, for smart handling of window resizing.
+
 ## More examples
 
 See the [eg](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) directory.
@@ -22,7 +30,7 @@ See the [eg](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) d
 ## Description
 
 The starting point for the reference documentation is
-in [Terminal::UI][Terminal/UI.md].  Other classes
+in [Terminal::UI](lib/Terminal/UI.md).  Other classes
 with documentation are:
 
 * [Terminal::UI::Screen](lib/Terminal/UI/Screen.md)
