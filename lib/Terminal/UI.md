@@ -33,11 +33,11 @@ The UI class exports these classes, and also provide convenient routines for man
 
 ### METHODS
 
-* [**add-screen**(Terminal::UI: |args --> Terminal::UI::Screen)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L127)
+* [**add-screen**(Terminal::UI: |args --> Terminal::UI::Screen)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L126)
 
   Add a screen to the ui. Arguments are sent to the Screen contructor
 
-* [**draw**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L45)
+* [**draw**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L44)
 
   Synonym for refresh
 
@@ -45,23 +45,23 @@ The UI class exports these classes, and also provide convenient routines for man
 
   Handled by $!screen
 
-* [**focus**(Terminal::UI: Str :$frame!, Int :$pane!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L61)
+* [**focus**(Terminal::UI: Str :$frame!, Int :$pane!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L60)
 
   Set a pane and frame to be focused, using the name of the frame.
 
-* [**focus**(Terminal::UI: Str :$pane where { ... }, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L67)
+* [**focus**(Terminal::UI: Str :$pane where { ... }, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L66)
 
   Set the next pane to be focused.
 
-* [**focus**(Terminal::UI: Int :$pane!, Int :$frame = 0, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L75)
+* [**focus**(Terminal::UI: Int :$pane!, Int :$frame = 0, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L74)
 
   Set a pane and frame to be focused, using the index of the frame.
 
-* [**focus**(Terminal::UI: Terminal::UI::Frame $frame, Int :$pane = 0, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L82)
+* [**focus**(Terminal::UI: Terminal::UI::Frame $frame, Int :$pane = 0, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L81)
 
   Set a pane and frame to be focused, using the frame.
 
-* [**focused**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L36)
+* [**focused**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L35)
 
   The currently focused pane within the currently focused frame.
 
@@ -73,11 +73,11 @@ The UI class exports these classes, and also provide convenient routines for man
 
   Handled by $!input
 
-* [**keys**(Terminal::UI: Str :$done, *%_ --> Supply)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L140)
+* [**keys**(Terminal::UI: Str :$done, *%_ --> Supply)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L139)
 
   a Supply of keyboard input; ends when $done is seen.
 
-* [**log**(Terminal::UI: Str $file, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L134)
+* [**log**(Terminal::UI: Str $file, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L133)
 
   Starting logging to a file.
 
@@ -89,34 +89,34 @@ The UI class exports these classes, and also provide convenient routines for man
 
   Handled by $!screen
 
-* [**refresh**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L50)
+* [**refresh**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L49)
 
   Refresh the screen, the frames, and their panes.
 
-* [**selected-meta**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L152)
+* [**selected-meta**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L151)
 
   The current metadata for the selected pane, within the selected frame
 
-* [**setup**(Terminal::UI: :$pane!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L89)
+* [**setup**(Terminal::UI: :$pane!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L88)
 
   Set up with a single pane
 
-* [**setup**(Terminal::UI: :&heights!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L96)
+* [**setup**(Terminal::UI: :&heights!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L95)
 
   Set up with a callback that computes heights based on the total available height
 
-* [**setup**(Terminal::UI: Int :$panes!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L106)
+* [**setup**(Terminal::UI: Int :$panes!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L105)
 
   Set up with a number of panes; evenly sized.
 
-* [**setup**(Terminal::UI: :$ratios!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L113)
+* [**setup**(Terminal::UI: :$ratios!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L112)
 
   Set up with panes that have the given ratios.
 
-* [**shutdown**(Terminal::UI: $msg = Nil, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L121)
+* [**shutdown**(Terminal::UI: $msg = Nil, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L120)
 
   Shut down the UI, and optionally emit a message.
 
-* [**style**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L157)
+* [**style**(Terminal::UI: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI.rakumod#L156)
 
   The global style object

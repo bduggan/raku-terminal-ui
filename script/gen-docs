@@ -91,7 +91,7 @@ sub method-lines(@methods) {
     next if $m<name> ~~ /^^ <[A..Z]>+ $$/;
     if $m<file> && $m<line> {
       my $rel = make-rel($m<file>);
-      @lines.push: '* [' ~ $m<label> ~ "]($rel#L$m<line>)";
+      @lines.push: '* [' ~ $m<label> ~ "]($rel#L{ $m<line> - 1})";
     } else {
       @lines.push: '* ' ~ $m<label>;
     }
