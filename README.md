@@ -30,14 +30,14 @@ See the [eg](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) d
 ## Description
 
 The starting point for the reference documentation is
-in [Terminal::UI](lib/Terminal/UI.md).  Other classes
+in [Terminal::UI](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI.md).  Other classes
 with documentation are:
 
-* [Terminal::UI::Screen](lib/Terminal/UI/Screen.md)
-* [Terminal::UI::Frame](lib/Terminal/UI/Frame.md)
-* [Terminal::UI::Pane](lib/Terminal/UI/Pane.md)
-* [Terminal::UI::Style](lib/Terminal/UI/Style.md)
-* [Terminal::UI::Input](lib/Terminal/UI/Input.md)
+* [Terminal::UI::Screen](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Screen.md)
+* [Terminal::UI::Frame](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Frame.md)
+* [Terminal::UI::Pane](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Pane.md)
+* [Terminal::UI::Style](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Style.md)
+* [Terminal::UI::Input](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Input.md)
 
 ## Author
 
