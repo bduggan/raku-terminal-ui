@@ -55,54 +55,54 @@ A frame is like a window frame -- it represents the border, and may have several
 
 ### METHODS
 
-* **add-divider**(Terminal::UI::Frame: Int $line where { ... }, *%_)
+* [**add-divider**(Terminal::UI::Frame: Int $line where { ... }, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L62)
 
   Add a divider to the frame at the given row (between 1 and height)
 
-* **add-pane**(Terminal::UI::Frame: *%_)
+* [**add-pane**(Terminal::UI::Frame: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L113)
 
   Create a single pane for this frame
 
-* **add-panes**(Terminal::UI::Frame: :$ratios!, *%_)
+* [**add-panes**(Terminal::UI::Frame: :$ratios!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L119)
 
   Add multiple panes with the given height ratios
 
-* **add-panes**(Terminal::UI::Frame: :$heights!, :$!height-computer, *%_)
+* [**add-panes**(Terminal::UI::Frame: :$heights!, :$!height-computer, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L140)
 
   Add multiple panes with the given heights, and optionally a callback for computing heights
 
-* **bottom**(Terminal::UI::Frame: *%_)
+* [**bottom**(Terminal::UI::Frame: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L52)
 
   The row of the bottom (top + height - 1)
 
-* **check**(Terminal::UI::Frame: @panes, *%_)
+* [**check**(Terminal::UI::Frame: @panes, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L68)
 
   Validate that the heights of the panes + the dividers add up
 
-* **compose-line**(Terminal::UI::Frame: $str, *%_)
+* [**compose-line**(Terminal::UI::Frame: $str, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L108)
 
   Given a string, combine it with borders of the frame, to make a printable row
 
-* **draw**(Terminal::UI::Frame: *%_)
+* [**draw**(Terminal::UI::Frame: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L86)
 
   Draw or refresh this frame
 
-* **draw-side**(Terminal::UI::Frame: $h, *%_)
+* [**draw-side**(Terminal::UI::Frame: $h, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L102)
 
   Draw only the sides, of a particular row
 
-* **focus**(Terminal::UI::Frame: Terminal::UI::Pane $pane, *%_)
+* [**focus**(Terminal::UI::Frame: Terminal::UI::Pane $pane, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L155)
 
   Change focus to a particular pane in this frame
 
-* **handle-resize**(Terminal::UI::Frame: :$from-width, :$from-height, :$to-width, :$to-height, *%_)
+* [**handle-resize**(Terminal::UI::Frame: :$from-width, :$from-height, :$to-width, :$to-height, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L168)
 
   Handle a resize of the screen
 
-* **pane**(Terminal::UI::Frame: *%_)
+* [**pane**(Terminal::UI::Frame: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L192)
 
   If there is only one pane, return it.
 
-* **right**(Terminal::UI::Frame: *%_)
+* [**right**(Terminal::UI::Frame: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/lib/Terminal/UI/Frame.rakumod#L57)
 
   The rightmost column (left + width - 1)

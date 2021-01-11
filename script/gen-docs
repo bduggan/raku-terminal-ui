@@ -6,6 +6,11 @@ sub bold($str) {
   "**" ~ $str ~ "**";
 }
 
+sub make-rel($str) {
+  my $file = $str.subst(/ ^^ $*CWD /,'').subst(/' ' \S+ $/,'');
+  "$*repo" ~ $file;
+}
+
 sub attr-docs($class) {
   my @attrs;
   for $class.^attributes -> $a {
@@ -13,7 +18,7 @@ sub attr-docs($class) {
       name => $a.name,
       doc => $a.WHY // 'no docs',
       handles => $a.?handles,
-      type => $a.type.raku
+      type => $a.type.raku,
     }
   }
   @attrs;
@@ -52,7 +57,7 @@ sub method-docs($class, $attr-docs) {
       @methods.push: {
          name => $m.name,
          label => $m.name,
-         desc => "Handled by { $attr<name> }",
+         desc => "Handled by { $attr<name> }"
       }
       next;
    }
@@ -84,7 +89,12 @@ sub method-lines(@methods) {
   my @lines;
   for @methods.sort(*.<name>) -> $m {
     next if $m<name> ~~ /^^ <[A..Z]>+ $$/;
-    @lines.push: '* ' ~ $m<label>;
+    if $m<file> && $m<line> {
+      my $rel = make-rel($m<file>);
+      @lines.push: '* [' ~ $m<label> ~ "]($rel#L$m<line>)";
+    } else {
+      @lines.push: '* ' ~ $m<label>;
+    }
     @lines.push: '';
     @lines.push: "  $m<desc>";
     @lines.push: '';
@@ -136,7 +146,7 @@ sub document-all($base-class) {
 
 sub MAIN {
 	my $tag = "master";
-	my $repo = "https://git.sr.ht/~bduggan/raku-terminal-ui/tree/$tag";
+	my $*repo = "https://git.sr.ht/~bduggan/raku-terminal-ui/tree/$tag";
   document-all(Terminal::UI);
 }
 

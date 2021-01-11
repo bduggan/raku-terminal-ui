@@ -5,18 +5,6 @@ use Terminal::UI::Style;
 logger.untapped-ok = True;
 method pod { $=pod }
 
-# example:
-# height = 4
-#
-# line 0
-# line 1
-# line 2   ---------
-# line 3   row 1        first-visible=3
-# line 4   row 2
-# line 5   [row 3]      current-line=5, selected-row=3
-# line 6   row 4        last-visible=6
-# line 7   --------
-
 subset UInt of Int where * >= 0;
 
 #| Absolute top of the pane (default: top of the frame + 1)
