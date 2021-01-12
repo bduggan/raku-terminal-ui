@@ -1,6 +1,7 @@
 unit class Terminal::UI::Frame;
 use Terminal::UI::Pane;
 use Terminal::ANSI;
+use Terminal::ANSI::OO :t;
 use Log::Async;
 
 logger.untapped-ok = True;
@@ -40,7 +41,7 @@ has %.border = {
  };
 
 #| A function to compute an array of heights of panes, given the screen height.
-has $!height-computer;
+has $.height-computer;
 
 #| The focused pane
 has Terminal::UI::Pane $.focused;
@@ -82,31 +83,42 @@ method check(@panes) {
   return Nil
 }
 
+has $.border-color = t.bright-white;
+
+method !color($str = '') {
+  $.border-color ~ $str;
+}
+
 #| Draw or refresh this frame
 method draw {
-  print-at($.top,    $.left + 1, %.border<top>    x ($.width - 2) );
-  print-at($.bottom, $.left + 1, %.border<bottom> x ($.width - 2) );
-  self.draw-side($_) for 1 .. $.height - 2;
-  print-at($.top,    $.left,  %.border<corners>[0]);
-  print-at($.top,    $.right, %.border<corners>[1]);
-  print-at($.bottom, $.right, %.border<corners>[2]);
-  print-at($.bottom, $.left,  %.border<corners>[3]);
-  for @.dividers -> $d {
-    print-at($.top + $d,$.left,  %.border<divider> x $.width);
-    print-at($.top + $d,$.left,  %.border<edges>[0]);
-    print-at($.top + $d,$.right, %.border<edges>[1]);
+  atomically {
+    print-at($.top, $.left, self!color);
+    print-at($.top,    $.left + 1, (%.border<top>    x ($.width - 2) ));
+    print-at($.bottom, $.left + 1, (%.border<bottom> x ($.width - 2) ));
+    self.draw-side($_) for 1 .. $.height - 2;
+    print-at($.top,    $.left,  (%.border<corners>[0]));
+    print-at($.top,    $.right, (%.border<corners>[1]));
+    print-at($.bottom, $.right, (%.border<corners>[2]));
+    print-at($.bottom, $.left,  (%.border<corners>[3]));
+    for @.dividers -> $d {
+      print-at($.top + $d,$.left,  (%.border<divider> x $.width));
+      print-at($.top + $d,$.left,  (%.border<edges>[0]));
+      print-at($.top + $d,$.right, (%.border<edges>[1]));
+    }
   }
 }
 
 #| Draw only the sides, of a particular row
 method draw-side($h) {
-  print-at($.top + $h, $.left, %.border<side>);
-  print-at($.top + $h, $.right,%.border<side>);
+  print-at($.top + $h, $.left, self!color(%.border<side>));
+  print-at($.top + $h, $.right,self!color(%.border<side>));
 }
 
 #| Given a string, combine it with borders of the frame, to make a printable row
 method compose-line($str) {
-  %.border<side> ~ $str.fmt("%-" ~ ($.width - 2) ~ 's') ~ %.border<side>;
+  my $fwd = t.cursor-right($.width - 2);
+  my $bck = t.cursor-left($.width - 1);
+  self!color(%.border<side> ~ $fwd ~ %.border<side>) ~ $bck ~ $str.fmt("%-" ~ ($.width - 2) ~ 's')
 }
 
 #| Create a single pane for this frame
@@ -116,20 +128,20 @@ method add-pane {
 }
 
 #| Add multiple panes with the given height ratios
-multi method add-panes(:$ratios!) {
+multi method add-panes(:$ratios!, :$height-computer) {
+  $!height-computer = $_ with $height-computer;
   # ratios => [1 1]   -- two panes, the same height
   my $pane-count = $ratios.elems;
   my $dividers = $pane-count - 1;
   $!height-computer = -> $h {
     my $available = $h - 2 - $dividers;
     my @h;
-
     my $i = 0;
     for @$ratios -> $v { @h[$i++] = $available * ($v/$ratios.sum); }
     @h = @h.map: *.Int;
-
     $i = 0;
     while @h.sum < $available { @h[$i++]++; }
+    info "heights {@h}";
     @h;
   }
   my @heights = $!height-computer(self.height);
@@ -137,7 +149,7 @@ multi method add-panes(:$ratios!) {
 }
 
 #| Add multiple panes with the given heights, and optionally a callback for computing heights
-multi method add-panes(:$heights!, :$!height-computer) {
+multi method add-panes(:$heights!) {
   my @panes;
   my $at = 1;
   for @$heights -> $height {
@@ -166,9 +178,11 @@ method focus(Terminal::UI::Pane $pane) {
 
 #| Handle a resize of the screen
 method handle-resize(:$from-width, :$from-height, :$to-width, :$to-height) {
+  info "resize from $from-width x $from-height to $to-width x $to-height";
   $!height += $to-height - $from-height;
   $!width += $to-width - $from-width;
   without $!height-computer {
+    info "no height-computer";
     for @.panes -> $p {
       $p.set-size( $p.width + ($to-width - $from-width) , $p.height );
     }
@@ -186,6 +200,11 @@ method handle-resize(:$from-width, :$from-height, :$to-width, :$to-height) {
     $at += 1;
   }
   self.check(@!panes) andthen warning "$_";
+  for @!panes {
+    .reformat;
+    .redraw;
+  }
+  self.draw;
 }
 
 #| If there is only one pane, return it.

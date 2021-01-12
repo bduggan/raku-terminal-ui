@@ -34,6 +34,7 @@ has Terminal::UI::Frame $.focused-frame;
 
 #| The currently focused pane within the currently focused frame.
 method focused {
+  fail "no focused frame" without $!focused-frame;
   $!focused-frame.focused;
 }
 
@@ -66,13 +67,15 @@ multi method focus(Str :$frame!, Int :$pane! ) {
 #| Set the next pane to be focused.
 multi method focus(Str :$pane where * eq 'next') {
   my Int $current = $!focused-frame.panes.first: :k, * === $.focused;
+  fail "no current pane" without $current;
   my $count = $!focused-frame.panes.elems;
   my $next = ($current + 1) % $count;
+  fail "no next frame" without $next;
   self.focus(pane => $next);
 }
 
-#| Set a pane and frame to be focused, using the index of the frame.
-multi method focus(Int :$pane!, Int :$frame = 0) {
+#| Set a pane and frame to be focused, using the indexes (default 0,0).
+multi method focus(Int :$pane, Int :$frame = 0) {
   $!focused-frame = self.frames[$frame] // die "frame $frame out of range";
   my $p = $!focused-frame.panes[$pane] // die "No pane $pane";
   $!focused-frame.focus($p);

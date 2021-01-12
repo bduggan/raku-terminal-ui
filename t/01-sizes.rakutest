@@ -3,8 +3,7 @@ use Test;
 use Terminal::UI;
 use Terminal::ANSI;
 
-my $*terminal-ansi-buffer = True;
-my $*terminal-ansi-out = "";
+disable-output;
 
 my $scr = Terminal::UI::Screen.new(:80cols, :40rows);
 my $ctr = $scr.add-frame(:top(7), :height(20), :left(5), :width(50));

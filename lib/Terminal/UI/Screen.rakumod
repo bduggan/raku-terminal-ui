@@ -27,6 +27,10 @@ method !auto-set {
 
 method TWEAK {
   self!auto-set;
+  self!setup-resizer;
+}
+
+method !setup-resizer {
   start react whenever signal(SIGWINCH) {
     my $w = $!cols;
     my $h = $!rows;

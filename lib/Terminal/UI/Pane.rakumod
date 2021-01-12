@@ -34,8 +34,11 @@ has $.name is rw = 'unnamed';
 #| The frame associated with this pane
 has $.frame handles <screen>;
 
-#| Lines of content
+#| Lines of content: exactly what is sent to the screen (including formatting characters)
 has @.lines;
+
+#| Lines of raw content: unformatted, contains arrays sent to the put method
+has @.raw;
 
 #| Metadata for each line
 has @.meta;
@@ -60,8 +63,23 @@ method bottom { $.top + $.height; }
 #| Absolute right column (left + width)
 method right { $.left + $.width; }
 
+method reformat {
+  for 0..^@!lines {
+    self!format-line($_);
+  }
+}
+
 #| Change the size
 method set-size($!width,$!height) { }
+
+method !format-line(Int $i) {
+  with @!raw[$i] {
+    my @args = @!raw[$i];
+    @!lines[$i] = self!raw2line(@args);
+  } else {
+    error "no raw line $i";
+  }
+}
 
 #| Change the offset from the top
 method set-top($!top) { }
@@ -185,23 +203,17 @@ method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe =
     return;
   }
   return without $!first-visible;
-  my $str-in = @!lines[$!first-visible + $row - 1] // ''; 
-  my $str;
-  if $str-in.chars < self.width {
-    $str = $str-in.fmt("%-{ self.width}s");
-  } elsif $str-in.chars > self.width {
-    $str = $str-in.substr(0,self.width);
-  } else {
-    $str = $str-in;
-  }
+  my $str = @!lines[$!first-visible + $row - 1] // ''; 
   my $h = self.top + $row - 1;
   if $border && $inner && self.frame {
-    $str = $str.fmt("%-{ self.width}s");
     print-at $h, self.frame.left, self.frame.compose-line("$str");
   } elsif $border && self.frame {
     self.frame.draw-side($row);
   } elsif $inner {
+    $str = $str.fmt("%-{ self.width - 2}s");
     print-at $h, self.left, "$str";
+  } else {
+    error "bad arguments";
   }
 }
 
@@ -272,17 +284,59 @@ method selected-row {
 
 #| Add a line to the content.
 #| Scroll down if the last line is visible and this line would be off screen.
-method put($str where *.lines <= 1, Bool :$scroll-ok = True, :%meta) {
+multi method put(Str $str, Bool :$scroll-ok = True, :%meta) {
+  warning "multi line strings not supported" if $str.lines > 1;
   $!first-visible //= 0;
   my $should-scroll = self.last-visible == (@!lines - 1);
   @!meta[ @!lines.elems ] = %meta with %meta;
-  @!lines.push: $str;
+  with @!raw[ @!lines.elems ] { 
+    @!lines.push: $str;
+    # raw done, don't calculate
+  } else {
+    @!lines.push: $str.substr(0,self.width).fmt("%-{self.width}s");
+    @!raw.push: $str;
+  }
   if $scroll-ok && $should-scroll {
     self.scroll-up; # draws the row at self.height
   } else {
     self!draw-row(@!lines.elems - $!first-visible, :maybe);
   }
   self;
+}
+
+method !raw2line(@args) {
+  my $line = '';
+  my $left = $.width;
+  for @args {
+    when Str {
+     with .substr(0,$left) {
+       $line ~= $_;
+       $left -= .chars;
+     }
+    }
+    when Pair {
+      $line ~= .key;
+      with .value.substr(0,$left) {
+        $line ~= $_;
+        $left -= .chars;
+      }
+    }
+    default {
+      error "unknown arg: " ~ .^name ~ ' -- ' ~ (.raku);
+    }
+    last unless $left > 0;
+  }
+  $line ~= " " x $left;
+  $line;
+}
+
+#| Put formatted text.  Each element is either a string or a pair.  Strings
+#| are printed.  Keys of pairs are printed, and then their values.  Keys are
+#| assumed to be formatting, and do not count towards the length of the line.
+multi method put(@args, Bool :$scroll-ok = True, :%meta) {
+  my $i = @!lines.elems;
+  @!raw[ $i ] := @args.clone;
+  self.put(self!raw2line(@args), :$scroll-ok, :%meta);
 }
 
 #| Focus on this pane

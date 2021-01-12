@@ -18,7 +18,7 @@ sub screen {
 disable-output;
 $r.put('one');
 $r.put('two');
-is $r.lines, <one two>, 'lines';
+is $r.lines.map(*.trim), <one two>, 'lines';
 
 is screen, q:to/S/, 'two lines';
   ..........
@@ -39,26 +39,3 @@ is screen, q:to/S/, 'scroll up';
   S
 
 done-testing;
-
-# abs-col { $.left + $.on-col; }
-# current-meta {
-# draw-selected-line {
-# select-visible(Int $r) {
-# select($line is copy = ($!current-line // $!first-visible)) {
-# last-visible {
-# select-up {
-# select-down {
-# page-down {
-# page-up {
-# set-scroll-region {
-# draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe = False) {
-# has-vertical-overlap {
-# redraw {
-# scroll-up {
-# scroll-down {
-# selected-row {
-# cursor-line {
-# put($str where *.lines <= 1, Bool :$scroll-ok = True, :%meta) {
-# focus {
-# unfocus {
-# clear {
