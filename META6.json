@@ -3,7 +3,7 @@
   "authors": [
     "Brian Duggan"
   ],
-  "description": "Building blocks for terminal interfaces",
+  "description": "A framework for building terminal interfaces",
   "name": "Terminal::UI",
   "license": "MIT",
   "perl": "6.d",

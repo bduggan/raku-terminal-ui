@@ -1,6 +1,6 @@
 ## Terminal::UI
 
-Building blocks for terminal interfaces.
+A framework for building terminal interfaces.
 
 ## Example
 

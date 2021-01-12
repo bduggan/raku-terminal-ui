@@ -1,16 +1,24 @@
 ## NAME
 
-Terminal::UI -- A framework for making terminal based user interfaces
+Terminal::UI -- A framework for building terminal interfaces
 
 ## DESCRIPTION
 
-Terminal::UI is a framework for generating user interfaces in the terminal.
+Terminal::UI is a framework for building user interfaces in the terminal.
 
-It provides building blocks for layouts of scrolling text in the screen, and borders to divide up the screen. It also provides keyboard input routines.
+This class provides routines for manipulating:
 
-At a high level: a screen has frames, which have panes. These are represented by Terminal::UI::Screen, ::Frame, and ::Pane classes. Input comes from via Terminal::UI::Input.
+* a screen: the top level object representing the screen
 
-The UI class exports these classes, and also provide convenient routines for manipulating them.
+* frames: borders around content
+
+* panes: scrolling regions with content
+
+* style: a global style
+
+* input: input routines
+
+These are documented in Terminal::UI::Screen, Frame, Pane, Style, and Input respectively.
 
 ### ATTRIBUTES
 
