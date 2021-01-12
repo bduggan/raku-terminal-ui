@@ -5,7 +5,7 @@ if %*ENV<VERBOSE> {
   &QX.wrap: -> |c { say c.raku; callsame; }
 }
 
-my $module = 'Terminal-ANSI';
+my $module = 'Terminal-UI';
 my $version = q:x[jq -r .version META6.json].trim or exit note 'no version';
 
 multi MAIN('test') {
@@ -34,7 +34,7 @@ multi MAIN('bump') {
   exit note "no next version" unless $next;
   shell qq:to/SH/;
     perl -p -i -e "s/{$version}/{$next}/" META6.json
-    perl -p -i -e "s/{$version}/{$next}/" lib/Terminal/ANSI.rakumod
+    perl -p -i -e "s/{$version}/{$next}/" lib/Terminal/UI.rakumod
     SH
   shell "git commit -am$next";
   shell "git tag $next";
