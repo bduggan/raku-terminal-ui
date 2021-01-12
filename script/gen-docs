@@ -145,7 +145,7 @@ sub document-all($base-class) {
 }
 
 sub MAIN {
-	my $tag = "master";
+	my $tag = Terminal::UI.^ver.Str;
 	my $*repo = "https://git.sr.ht/~bduggan/raku-terminal-ui/tree/$tag";
   document-all(Terminal::UI);
 }
