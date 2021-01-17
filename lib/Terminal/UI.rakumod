@@ -161,6 +161,16 @@ method style {
   Terminal::UI::Style.singleton;
 }
 
+#| Move up one line in the selected pane of the selected frame
+method select-up {
+  self.focused.select-up;
+}
+
+#| Move down one line in the selected pane of the selected frame
+method select-down {
+  self.focused.select-down;
+}
+
 =NAME Terminal::UI -- A framework for building terminal interfaces
 
 =begin DESCRIPTION
