@@ -36,8 +36,6 @@ multi MAIN('bump') {
     perl -p -i -e "s/{$version}/{$next}/" META6.json
     perl -p -i -e "s/{$version}/{$next}/" lib/Terminal/UI.rakumod
     SH
-  shell "git commit -am$next";
-  shell "git tag $next";
 }
 
 multi MAIN('clean') {
