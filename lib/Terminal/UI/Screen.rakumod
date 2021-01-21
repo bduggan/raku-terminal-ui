@@ -30,6 +30,11 @@ method TWEAK {
   self!setup-resizer;
 }
 
+#| Number of rows available (height - 2 for the border)
+method available-rows {
+  self.rows - 2;
+}
+
 method !setup-resizer {
   start react whenever signal(SIGWINCH) {
     my $w = $!cols;

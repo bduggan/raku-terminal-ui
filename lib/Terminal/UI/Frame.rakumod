@@ -76,8 +76,8 @@ method check(@panes) {
   }
   if @panes > 1 {
     my $total = sum @panes.map: *.height;
-    if $total + @.dividers + 2 != $.height {
-      return "height ($.height) does not match pane heights ($total) + top/bottom (2) + dividers ({+@.dividers})";
+    if $total + @.dividers != $.height {
+      return "height ($.height) does not match pane heights ($total) + dividers ({+@.dividers})";
     }
   }
   return Nil
@@ -134,7 +134,7 @@ multi method add-panes(:$ratios!, :$height-computer) {
   my $pane-count = $ratios.elems;
   my $dividers = $pane-count - 1;
   $!height-computer = -> $h {
-    my $available = $h - 2 - $dividers;
+    my $available = $h - $dividers;
     my @h;
     my $i = 0;
     for @$ratios -> $v { @h[$i++] = $available * ($v/$ratios.sum); }
@@ -144,12 +144,13 @@ multi method add-panes(:$ratios!, :$height-computer) {
     info "heights {@h}";
     @h;
   }
-  my @heights = $!height-computer(self.height);
+  my @heights = $!height-computer(self.screen.available-rows);
   self.add-panes(heights => @heights)
 }
 
 #| Add multiple panes with the given heights, and optionally a callback for computing heights
-multi method add-panes(:$heights!) {
+multi method add-panes(:$heights!, :$height-computer) {
+  $!height-computer = $_ with $height-computer;
   my @panes;
   my $at = 1;
   for @$heights -> $height {
@@ -190,7 +191,7 @@ method handle-resize(:$from-width, :$from-height, :$to-width, :$to-height) {
   }
   my $at = 1;
   @.dividers = ();
-  my @pane-heights = $!height-computer($!height);
+  my @pane-heights = $!height-computer(self.screen.available-rows);
   for @pane-heights -> $h {
     my $b = @.panes[$++];
     $b.set-size( $b.width + ($to-width - $from-width) , $h );

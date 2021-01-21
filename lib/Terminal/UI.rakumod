@@ -97,10 +97,14 @@ multi method setup(:$pane!) {
 
 #| Set up with a callback that computes heights based on the total available height
 multi method setup(:&heights!) {
+  info "setting up using callback for heights";
   my $f = self.add-screen.add-frame;
-  my $panes = heights(100).elems;
-  my $heights = heights($f.height - 2 - ( $panes - 1));
-  my $height-computer = -> $h { heights($h - 1 - $panes) };
+  my $height-computer = &heights;
+  my $heights = heights(self.screen.available-rows);
+  if $heights.sum != self.screen.available-rows {
+    exit note "height computed { $heights.join(' + ')} == { $heights.sum }, not { self.screen.available-rows }";
+  }
+  info "initial heights: " ~ $heights.join(',');
   $f.add-panes(:$heights, :$height-computer);
   self.refresh;
 }
