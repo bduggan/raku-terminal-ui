@@ -15,7 +15,7 @@ has UInt $.top = 1;
 #| Offset from the left of the screen.  A maximized frame has left == 1.
 has UInt $.left = 1;
 
-#| Number of rows
+#| Number of rows, including the top and bottom borders
 has UInt $.height is required;
 
 #| Number of columns
@@ -127,6 +127,9 @@ method add-pane {
   @.panes.tail;
 }
 
+#| Number of dividers.  Will be number of panes - 1, when panes are added.
+has $.number-of-dividers is rw;
+
 #| Add multiple panes with the given height ratios
 multi method add-panes(:$ratios!, :$height-computer) {
   $!height-computer = $_ with $height-computer;
@@ -144,7 +147,7 @@ multi method add-panes(:$ratios!, :$height-computer) {
     info "heights {@h}";
     @h;
   }
-  my @heights = $!height-computer(self.screen.available-rows);
+  my @heights = $!height-computer(self.available-rows);
   self.add-panes(heights => @heights)
 }
 
@@ -161,7 +164,14 @@ multi method add-panes(:$heights!, :$height-computer) {
   }
   self.check(@panes) andthen warning "$_";
   @!panes = @panes;
+  $!number-of-dividers = @panes - 1;
   @panes;
+}
+
+#| Number of available rows: height - 2 - (number of dividers - 1)
+method available-rows {
+  info "available rows in frame $.height - 2 - ({self.number-of-dividers} - 1)";
+  $.height - 2 - (self.number-of-dividers - 1)
 }
 
 #| Change focus to a particular pane in this frame
@@ -191,7 +201,8 @@ method handle-resize(:$from-width, :$from-height, :$to-width, :$to-height) {
   }
   my $at = 1;
   @.dividers = ();
-  my @pane-heights = $!height-computer(self.screen.available-rows);
+  my @pane-heights = $!height-computer(self.available-rows);
+  info "recomputed heights: {@pane-heights.join(' ')}";
   for @pane-heights -> $h {
     my $b = @.panes[$++];
     $b.set-size( $b.width + ($to-width - $from-width) , $h );

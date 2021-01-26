@@ -35,6 +35,11 @@ method available-rows {
   self.rows - 2;
 }
 
+#| The first frame (handy if it's the only one)
+method frame {
+  self.frames.head;
+}
+
 method !setup-resizer {
   start react whenever signal(SIGWINCH) {
     my $w = $!cols;

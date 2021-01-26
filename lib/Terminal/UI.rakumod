@@ -24,7 +24,7 @@ logger.untapped-ok = True;
 method pod { $=pod }
 
 #| The screen object, which tracks frames and panes.
-has Terminal::UI::Screen $.screen handles <pane panes frames find-frame>;
+has Terminal::UI::Screen $.screen handles <pane panes frames frame find-frame>;
 
 #| The object for getting input.
 has Terminal::UI::Input $.input handles <get-key>;
@@ -95,14 +95,16 @@ multi method setup(:$pane!) {
   self.refresh;
 }
 
-#| Set up with a callback that computes heights based on the total available height
+#| Set up with a callback with one frame that computes heights based on the total available height
 multi method setup(:&heights!) {
   info "setting up using callback for heights";
   my $f = self.add-screen.add-frame;
+  my $pane-count = &heights(80).elems; # call once to count panes
+  $f.number-of-dividers = $pane-count;
   my $height-computer = &heights;
-  my $heights = heights(self.screen.available-rows);
-  if $heights.sum != self.screen.available-rows {
-    exit note "height computed { $heights.join(' + ')} == { $heights.sum }, not { self.screen.available-rows }";
+  my $heights = heights(self.screen.frame.available-rows);
+  if $heights.sum != self.screen.frame.available-rows {
+    exit note "height computed { $heights.join(' + ')} == { $heights.sum }, not { self.screen.frame.available-rows }";
   }
   info "initial heights: " ~ $heights.join(',');
   $f.add-panes(:$heights, :$height-computer);
