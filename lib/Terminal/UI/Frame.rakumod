@@ -132,23 +132,13 @@ has $.number-of-dividers is rw;
 
 #| Add multiple panes with the given height ratios
 multi method add-panes(:$ratios!, :$height-computer) {
+  $!number-of-dividers = $ratios.elems;
   $!height-computer = $_ with $height-computer;
-  # ratios => [1 1]   -- two panes, the same height
-  my $pane-count = $ratios.elems;
-  my $dividers = $pane-count - 1;
-  $!height-computer = -> $h {
-    my $available = $h - $dividers;
-    my @h;
-    my $i = 0;
-    for @$ratios -> $v { @h[$i++] = $available * ($v/$ratios.sum); }
-    @h = @h.map: *.Int;
-    $i = 0;
-    while @h.sum < $available { @h[$i++]++; }
-    info "heights {@h}";
-    @h;
+  $!height-computer //= -> $h {
+    ($h div 2, $h - ($h div 2))
   }
   my @heights = $!height-computer(self.available-rows);
-  self.add-panes(heights => @heights)
+  self.add-panes(heights => @heights, :$height-computer)
 }
 
 #| Add multiple panes with the given heights, and optionally a callback for computing heights
@@ -171,6 +161,7 @@ multi method add-panes(:$heights!, :$height-computer) {
 #| Number of available rows: height - 2 - (number of dividers - 1)
 method available-rows {
   info "available rows in frame $.height - 2 - ({self.number-of-dividers} - 1)";
+  exit note "Please set number-of-dividers" without self.number-of-dividers;
   $.height - 2 - (self.number-of-dividers - 1)
 }
 
