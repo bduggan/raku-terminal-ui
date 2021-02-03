@@ -46,8 +46,8 @@ has %.pane-bindings =
 
 #| UI bindings (not specific to a pane)
 has %.ui-bindings =
-  'quit' => 'q',
-  'select-next' => "\t";
+  'q' => 'quit',
+  "\t" => 'select-next';
 
 #| The currently focused pane within the currently focused frame.
 method focused {
@@ -204,12 +204,30 @@ method bind(*%kv) {
 #| Respond to keyboard input, until we are done
 method interact {
   self.focus(pane => 0);
-  react whenever self.keys(done => %.ui-bindings<quit>) {
+  react whenever self.keys(done => %( %.ui-bindings.invert )<quit>) {
     when %!pane-bindings.keys.any {
       self.focused.call(%!pane-bindings{$_})
     }
-    self.focus(pane => 'next') when %.ui-bindings<select-next>;
+    when %.ui-bindings.keys.any {
+      self.call(%!ui-bindings{$_})
+    }
   }
+}
+
+#| Register actions bindings
+method on(*%actions) {
+  for %actions.kv {
+    %!ui-bindings{.key} = .value
+  }
+}
+
+#| Call a binding
+method call($action) {
+  if $action eq 'select-next' {
+    return self.focus(pane => 'next');
+  }
+  my &code = %!ui-bindings{$action};
+  code()
 }
 
 =NAME Terminal::UI -- A framework for building terminal interfaces
