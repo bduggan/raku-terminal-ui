@@ -2,13 +2,10 @@
 
 use Terminal::UI 'ui';
 
-# ui.log('debug');
+# ui.log('/tmp/debug');
 ui.setup(ratios => [1,1]);
 
-my $mojo = run
- <<mojo get https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml 'item > title,link' text
-  >>,
-  :out;
+my $mojo = run <<mojo get https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml 'item > title,link' text >>, :out;
 
 for $mojo.out.lines -> $text, $value {
    ui.panes[1].put("$text", meta => url => ~$value, :!scroll-ok );
@@ -25,34 +22,18 @@ sub show-article($url) {
 
 ui.panes[0].put("select an article");
 
-ui.focus(pane => 1);
-
-ui.panes[1].register-action(
-  :name<launch>,
-  action => {
-    my $meta = ui.panes[1].current-meta;
+ui.panes[1].on(
+  launch => -> :$raw, :$meta {
     show-article($meta<url>)
   }
 );
 
-my $open = trim( qx[which xdg-open] // qx[which open] );
-ui.panes[0].register-action(
-  :name<launch>,
-  action => {
-    my $line = ui.panes[0].current-line;
-    shell "$open $line 2>/dev/null" if $line ~~ /^^ http/;
+ui.panes[0].on(
+  launch => -> :$raw, :$meta {
+    shell "open $raw" if $raw ~~ /^^ http/;
   }
 );
 
-react whenever ui.keys(done => 'q') {
-  ui.focused.select-up when 'k' | 'Up';
-  ui.focused.select-down when 'j' | 'Down';
-  ui.focused.page-down when ' ' | 'J' | 'PageDown';
-  ui.focused.page-up when 'K' | 'PageUp';
-  when "Enter" {
-    ui.focused.run-action('launch');
-  }
-  ui.focus(pane => 'next') when "\t";
-}
+ui.interact;
 
 ui.shutdown;
