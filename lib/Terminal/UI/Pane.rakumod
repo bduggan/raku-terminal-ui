@@ -282,6 +282,20 @@ method selected-row {
   $r;
 }
 
+#| Update a line of content
+multi method update(Str $str, Int :$line!, :%meta) {
+  if $line > @!lines.elems - 1 {
+    for @!lines.elems .. $line {
+      # autovivify
+      self.put("",:!scroll-ok);
+    }
+  }
+  @!meta[$line] = %meta with %meta;
+  @!lines[$line] = $str;
+  @!raw[$line] = $str;
+  self!draw-row($line + 1);
+}
+
 #| Add a line to the content.
 #| Scroll down if the last line is visible and this line would be off screen.
 multi method put(Str $str, Bool :$scroll-ok = True, :%meta) {
@@ -364,15 +378,24 @@ method clear {
   $!first-visible = Nil;
 }
 
+#| Associate a callback, with the name of an action (with a pair)
+multi method register(*%kv) {
+   for %kv.pairs {
+     self.register(name => .key, action => .value);
+   }
+}
+
 #| Associate a callback, with the name of an action
-method register-action(Str :$name, Callable :$action) {
+multi method register(Str :$name!, Callable :$action!) {
   %!actions{ $name } = $action
 }
 
 #| Run the action with the given name
-method run-action($name) {
+method call($name) {
   my &code := %!actions{ $name };
-  code();
+  my $meta = self.current-meta;
+  my $raw  = @!lines[$!current-line];
+  code(:$meta,:$raw);
 }
 
 =NAME Terminal::UI::Pane -- An area that contains scrollable text

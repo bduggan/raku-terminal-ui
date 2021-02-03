@@ -177,6 +177,21 @@ method select-down {
   self.focused.select-down;
 }
 
+#| Start a loop for selecting and moving between panes
+method start-select-loop {
+  self.focus(pane => 0);
+  react whenever self.keys(done => 'q') {
+    self.focused.select-up when 'k' | 'Up';
+    self.focused.select-down when 'j' | 'Down';
+    self.focused.page-down when ' ' | 'J' | 'PageDown';
+    self.focused.page-up when 'K' | 'PageUp';
+    when "Enter" {
+      self.focused.call('launch');
+    }
+    self.focus(pane => 'next') when "\t";
+  }
+}
+
 =NAME Terminal::UI -- A framework for building terminal interfaces
 
 =begin DESCRIPTION
