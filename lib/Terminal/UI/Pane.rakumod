@@ -378,24 +378,41 @@ method clear {
   $!first-visible = Nil;
 }
 
-#| Associate a callback, with the name of an action (with a pair)
-multi method register(*%kv) {
+#| Associate callbacks with events
+multi method on(*%kv) {
    for %kv.pairs {
-     self.register(name => .key, action => .value);
+     self.on(name => .key, action => .value);
    }
 }
 
 #| Associate a callback, with the name of an action
-multi method register(Str :$name!, Callable :$action!) {
+multi method on(Str :$name!, Callable :$action!) {
   %!actions{ $name } = $action
 }
 
 #| Run the action with the given name
 method call($name) {
+  if $name eq <select-up select-down page-up page-down>.any {
+    return self."$name"();
+  }
   my &code := %!actions{ $name };
   my $meta = self.current-meta;
   my $raw  = @!lines[$!current-line];
   code(:$meta,:$raw);
+}
+
+#| Run a shell command, and send the lines of the output to this pane
+method exec(@cmd) {
+  debug "running @cmd";
+  my $proc = run |@cmd, :out, :err;
+  for $proc.out.lines -> $text {
+    debug("got $text");
+    self.put("$text");
+  }
+  for $proc.err.lines -> $text {
+    self.put("$text");
+  }
+  debug "done " ~ $proc.exitcode;
 }
 
 =NAME Terminal::UI::Pane -- An area that contains scrollable text

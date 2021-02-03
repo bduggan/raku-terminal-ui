@@ -32,6 +32,23 @@ has Terminal::UI::Input $.input handles <get-key>;
 #| The currently focused frame.
 has Terminal::UI::Frame $.focused-frame;
 
+#| Key bindings for the focused pane
+has %.pane-bindings =
+  'k' => 'select-up',
+  'Up' => 'select-up',
+  'j' => 'select-down',
+  'Down' => 'select-down',
+  ' ' => 'page-down',
+  'PageDown' => 'page-down',
+  'PageUp' => 'page-up',
+  'Enter' => 'launch',
+;
+
+#| UI bindings (not specific to a pane)
+has %.ui-bindings =
+  'quit' => 'q',
+  'select-next' => "\t";
+
 #| The currently focused pane within the currently focused frame.
 method focused {
   fail "no focused frame" without $!focused-frame;
@@ -177,18 +194,21 @@ method select-down {
   self.focused.select-down;
 }
 
-#| Start a loop for selecting and moving between panes
-method start-select-loop {
+#| Bind keys to event
+method bind(*%kv) {
+  for %kv.pairs {
+    %!pane-bindings{.key} = .value;
+  }
+}
+
+#| Respond to keyboard input, until we are done
+method interact {
   self.focus(pane => 0);
-  react whenever self.keys(done => 'q') {
-    self.focused.select-up when 'k' | 'Up';
-    self.focused.select-down when 'j' | 'Down';
-    self.focused.page-down when ' ' | 'J' | 'PageDown';
-    self.focused.page-up when 'K' | 'PageUp';
-    when "Enter" {
-      self.focused.call('launch');
+  react whenever self.keys(done => %.ui-bindings<quit>) {
+    when %!pane-bindings.keys.any {
+      self.focused.call(%!pane-bindings{$_})
     }
-    self.focus(pane => 'next') when "\t";
+    self.focus(pane => 'next') when %.ui-bindings<select-next>;
   }
 }
 
