@@ -45,7 +45,7 @@ has %.pane-bindings =
 ;
 
 #| UI bindings (not specific to a pane)
-has %.ui-bindings =
+has %.ui-bindings of Str =
   'q' => 'quit',
   "\t" => 'select-next';
 
@@ -194,10 +194,16 @@ method select-down {
   self.focused.select-down;
 }
 
-#| Bind keys to event
-method bind(*%kv) {
+#| Bind keys to events on the focused pane.
+multi method bind('pane', *%kv) {
   for %kv.pairs {
     %!pane-bindings{.key} = .value;
+  }
+}
+
+multi method bind(*%kv) {
+  for %kv.pairs {
+    %!ui-bindings{.key} = .value;
   }
 }
 
@@ -214,14 +220,14 @@ method interact {
   }
 }
 
-#| Register actions bindings
+#| Associate names of actions with callables.
 method on(*%actions) {
-  for %actions.kv {
+  for %actions.pairs {
     %!ui-bindings{.key} = .value
   }
 }
 
-#| Call a binding
+#| Call the action with the given name.
 method call($action) {
   if $action eq 'select-next' {
     return self.focus(pane => 'next');
