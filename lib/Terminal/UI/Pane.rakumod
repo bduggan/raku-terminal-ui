@@ -308,7 +308,7 @@ multi method update(Str $str, Int :$line!, :%meta) {
 
 #| Add a line to the content.
 #| Scroll down if the last line is visible and this line would be off screen.
-multi method put(Str $str, Bool :$scroll-ok = True, :%meta) {
+multi method put(Str $str, Bool :$scroll-ok = True, Bool :$center, :%meta) {
   warning "multi line strings not supported" if $str.lines > 1;
   $!first-visible //= 0;
   my $should-scroll = self.last-visible == (@!lines - 1);
@@ -317,7 +317,12 @@ multi method put(Str $str, Bool :$scroll-ok = True, :%meta) {
     @!lines.push: $str;
     # raw done, don't calculate
   } else {
-    @!lines.push: $str.substr(0,self.width).fmt("%-{self.width}s");
+    if $center {
+      my $cnt = $str.fmt("%{self.width div 2 + $str.chars div 2}s");
+      @!lines.push: $cnt.fmt("%-{self.width}s");
+    } else {
+      @!lines.push: $str.substr(0,self.width).fmt("%-{self.width}s");
+    }
     @!raw.push: $str;
   }
   if $scroll-ok && $should-scroll {

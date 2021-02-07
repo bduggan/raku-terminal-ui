@@ -29,7 +29,7 @@ ui.panes[1].on(
 );
 
 ui.panes[0].on(
-  launch => -> :$raw, :$meta {
+  select => -> :$raw, :$meta {
     shell "open $raw" if $raw ~~ /^^ http/;
   }
 );

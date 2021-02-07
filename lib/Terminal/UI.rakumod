@@ -107,6 +107,12 @@ multi method focus(Terminal::UI::Frame $frame!, Int :$pane = 0) {
   $!focused-frame.focus($p);
 }
 
+#| Set a pane and frame to be focused, using the frame.
+multi method focus(Terminal::UI::Frame $frame!, Terminal::UI::Pane :$pane!) {
+  $!focused-frame = $frame;
+  $!focused-frame.focus($pane);
+}
+
 #| Set up with a single pane
 multi method setup(:$pane!) {
   exit note "$pane != 1" unless $pane == 1;
@@ -240,6 +246,26 @@ method call($action) {
   }
   my &code = %!ui-bindings{$action};
   code()
+}
+
+method alert(Str $msg, Int :$pad = 1) {
+  my Int $width = (($msg.lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
+  my Int $height = 2 + $msg.lines + ($pad * 2) + 1;
+  my $frame = self.focused-frame;
+  my $pane = self.focused;
+  my $f = self.screen.add-frame(:$height, :$width, :center);
+  my $p = $f.add-pane;
+  $p.put("") for 1..$pad;
+  $p.put("$_",:center) for $msg.lines;
+  $p.put("") for 1..$pad;
+  $p.put("ok", :center);
+  $pane.unfocus;
+  self.focus($f);
+  $p.select($p.last-visible);
+  self.get-key;
+  self.screen.remove-frame($f);
+  self.focus($frame, :$pane);
+  self.refresh;
 }
 
 =NAME Terminal::UI -- A framework for building terminal interfaces
