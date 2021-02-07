@@ -35,13 +35,15 @@ has Terminal::UI::Frame $.focused-frame;
 #| Key bindings for the focused pane
 has %.pane-bindings =
   'k' => 'select-up',
+  'K' => 'up_10',
   'Up' => 'select-up',
   'j' => 'select-down',
+  'J' => 'down_10',
   'Down' => 'select-down',
   ' ' => 'page-down',
   'PageDown' => 'page-down',
   'PageUp' => 'page-up',
-  'Enter' => 'launch',
+  'Enter' => 'select',
 ;
 
 #| UI bindings (not specific to a pane)
@@ -212,7 +214,10 @@ method interact {
   self.focus(pane => 0);
   react whenever self.keys(done => %( %.ui-bindings.invert )<quit>) {
     when %!pane-bindings.keys.any {
-      self.focused.call(%!pane-bindings{$_})
+      with %!pane-bindings{$_} {
+        info "Calling $_";
+        self.focused.call($_)
+      }
     }
     when %.ui-bindings.keys.any {
       self.call(%!ui-bindings{$_})

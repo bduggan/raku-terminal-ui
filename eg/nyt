@@ -23,7 +23,7 @@ sub show-article($url) {
 ui.panes[0].put("select an article");
 
 ui.panes[1].on(
-  launch => -> :$raw, :$meta {
+  select => -> :$raw, :$meta {
     show-article($meta<url>)
   }
 );

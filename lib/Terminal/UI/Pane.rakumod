@@ -183,6 +183,14 @@ method select-down {
   self.select($!current-line + 1);
 }
 
+method down_10 {
+  self.select-down for 1..10
+}
+
+method up_10 {
+  self.select-up for 1..10;
+}
+
 #| Select down by the number of lines in the pane
 method page-down {
   self.select-down for 1..^$.height;
@@ -394,8 +402,12 @@ multi method on(Str :$name!, Callable :$action!) {
 
 #| Run the action with the given name
 method call($name) {
-  if $name eq <select-up select-down page-up page-down>.any {
-    return self."$name"();
+  if $name eq <select-up select-down page-up page-down down_10 up_10>.any {
+    return self."$name"() unless %!actions{ $name };
+  }
+  unless %!actions{ $name } {
+    info "no action for $name";
+    return;
   }
   my &code := %!actions{ $name };
   my $meta = self.current-meta;
