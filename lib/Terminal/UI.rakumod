@@ -17,7 +17,7 @@ sub EXPORT($ui = Nil) {
   %h;
 }
 
-unit class Terminal::UI:ver<0.0.3>;
+unit class Terminal::UI:ver<0.0.4>;
 
 logger.untapped-ok = True;
 
@@ -203,6 +203,7 @@ multi method bind('pane', *%kv) {
   }
 }
 
+#| Bind keys to UI events, independent of the focused pane.
 multi method bind(*%kv) {
   for %kv.pairs {
     %!ui-bindings{.key} = .value;

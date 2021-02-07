@@ -27,42 +27,50 @@ This class represents the screen, which may have frames on it, and the frames ma
 
 ### METHODS
 
-* [**add-frame**(Terminal::UI::Screen: :$top = 1, :$left = 1, :$width = Code.new, :$height = Code.new, :$name = Code.new, Bool :$center, *%_ --> Terminal::UI::Frame)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L89)
+* [**add-frame**(Terminal::UI::Screen: :$top = 1, :$left = 1, :$width = Code.new, :$height = Code.new, :$name = Code.new, Bool :$center, *%_ --> Terminal::UI::Frame)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L99)
 
   Add a frame to the screen.
 
-* [**draw**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L65)
+* [**available-rows**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L33)
+
+  Number of rows available (height - 2 for the border)
+
+* [**draw**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L75)
 
   Draw the entire screen
 
-* [**find-frame**(Terminal::UI::Screen: $name, *%_ --> Terminal::UI::Frame)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L112)
+* [**find-frame**(Terminal::UI::Screen: $name, *%_ --> Terminal::UI::Frame)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L122)
 
   Find a frame that has a given name
 
-* [**handle-resize**(Terminal::UI::Screen: |args)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L58)
+* [**frame**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L38)
+
+  The first frame (handy if it's the only one)
+
+* [**handle-resize**(Terminal::UI::Screen: |args)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L68)
 
   Handle a resize of the screen (e.g. a SIGWINCH)
 
-* [**init**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L50)
+* [**init**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L60)
 
   Clear and set things up.
 
-* [**pane**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L133)
+* [**pane**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L143)
 
   When there is only one pane and only one frame, return it
 
-* [**pane-count**(Terminal::UI::Screen: :$min, :$max, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L117)
+* [**pane-count**(Terminal::UI::Screen: :$min, :$max, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L127)
 
   Find the number of panes which have lines between two rows
 
-* [**panes**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L142)
+* [**panes**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L152)
 
   All the panes in all the frames.
 
-* [**remove-frame**(Terminal::UI::Screen: Terminal::UI::Frame $f, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L149)
+* [**remove-frame**(Terminal::UI::Screen: Terminal::UI::Frame $f, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L159)
 
   Remove a frame
 
-* [**shutdown**(Terminal::UI::Screen: $msg = Nil, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.3/lib/Terminal/UI/Screen.rakumod#L75)
+* [**shutdown**(Terminal::UI::Screen: $msg = Nil, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.4/lib/Terminal/UI/Screen.rakumod#L85)
 
   Shut down and reset the state, with an optional message

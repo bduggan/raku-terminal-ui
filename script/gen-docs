@@ -89,6 +89,7 @@ sub method-lines(@methods) {
   my @lines;
   for @methods.sort(*.<name>) -> $m {
     next if $m<name> ~~ /^^ <[A..Z]>+ $$/;
+    next if $m<desc> eq 'no docs';
     if $m<file> && $m<line> {
       my $rel = make-rel($m<file>);
       @lines.push: '* [' ~ $m<label> ~ "]($rel#L{ $m<line> - 1})";

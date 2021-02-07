@@ -45,15 +45,25 @@ Like example 2, but also -- pressing Enter in the top box
 will some text about add the currently selected row to the 
 bottom box:
 
-  ui.setup(:2panes);
-  ui.panes[0].put("$_") for 1..10;
+    ui.setup(:2panes);
+    ui.panes[0].put("$_") for 1..10;
 
-  ui.panes[0].on: select => -> :$raw, :$meta {
-    ui.panes[1].put("you chose $raw!")
-  }
+    ui.panes[0].on: select => -> :$raw, :$meta {
+      ui.panes[1].put("you chose $raw!")
+    }
 
-  ui.interact;
-  ui.shutdown;
+    ui.interact;
+    ui.shutdown;
+
+    ╔══════════════╗
+    ║8             ║  <- press Enter, and…
+    ║9             ║
+    ║10            ║
+    ╟──────────────╢
+    ║you chose 8!  ║  <- …this appears!
+    ║              ║
+    ╚══════════════╝
+
 
 ## Features and design goals
 
