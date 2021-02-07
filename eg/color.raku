@@ -27,10 +27,6 @@ ui.panes[0].put(@row) if @row;
 
 ui.focus(pane => 1);
 
-react whenever ui.keys(:done<q>) {
-  ui.focused.select-up when 'Up' | 'k';
-  ui.focused.select-down when 'Down' | 'j';
-  ui.focus(:pane<next>) when "\t";
-}
+ui.interact;
 
 ui.shutdown;

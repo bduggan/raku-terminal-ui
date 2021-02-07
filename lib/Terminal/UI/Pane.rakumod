@@ -348,6 +348,7 @@ method !raw2line(@args) {
 #| are printed.  Keys of pairs are printed, and then their values.  Keys are
 #| assumed to be formatting, and do not count towards the length of the line.
 multi method put(@args, Bool :$scroll-ok = True, :%meta) {
+  die "escape character in args: please use a pair" if @args.grep: { $_ ~~ Str && /\e/ }
   my $i = @!lines.elems;
   @!raw[ $i ] := @args.clone;
   self.put(self!raw2line(@args), :$scroll-ok, :%meta);
@@ -374,6 +375,7 @@ method clear {
   self.redraw;
   @!lines = ();
   @!meta = ();
+  @!raw = ();
   $!current-line = Nil;
   $!first-visible = Nil;
 }
