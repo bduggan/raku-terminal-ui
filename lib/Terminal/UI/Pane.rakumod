@@ -183,10 +183,12 @@ method select-down {
   self.select($!current-line + 1);
 }
 
+#| Move the selector down 10 rows
 method down_10 {
   self.select-down for 1..10
 }
 
+#| Move the selector up 10 rows
 method up_10 {
   self.select-up for 1..10;
 }
