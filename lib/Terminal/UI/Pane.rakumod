@@ -86,11 +86,13 @@ method set-top($!top) { }
 
 #| Metadata associated with the current line
 method current-meta {
+  return without $!current-line;
   @.meta[ $!current-line ]
 }
 
 #| The text of the current line
 method current-line {
+  return without $!current-line;
   @.lines[ $!current-line ]
 }
 
@@ -309,7 +311,12 @@ multi method update(Str $str, Int :$line!, :%meta) {
 #| Add a line to the content.
 #| Scroll down if the last line is visible and this line would be off screen.
 multi method put(Str $str, Bool :$scroll-ok = True, Bool :$center, :%meta) {
-  warning "multi line strings not supported" if $str.lines > 1;
+  if $str.lines > 1 {
+    for $str.lines -> $l {
+      self.put($l, :$scroll-ok, :$center, :%meta);
+    }
+    return;
+  }
   $!first-visible //= 0;
   my $should-scroll = self.last-visible == (@!lines - 1);
   @!meta[ @!lines.elems ] = %meta with %meta;
@@ -345,7 +352,7 @@ method !raw2line(@args) {
     }
     when Pair {
       $line ~= .key;
-      with .value.substr(0,$left) {
+      with (.value // '').substr(0,$left) {
         $line ~= $_;
         $left -= .chars;
       }

@@ -65,6 +65,13 @@ method init {
   self.draw;
 }
 
+#| Refresh
+method refresh {
+  clear-screen;
+  cursor-off;
+  self.draw;
+}
+
 #| Handle a resize of the screen (e.g. a SIGWINCH)
 method handle-resize(|args) {
   for $!frames.keys -> $c {

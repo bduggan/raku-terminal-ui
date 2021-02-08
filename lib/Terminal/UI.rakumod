@@ -67,7 +67,8 @@ method draw {
 }
 
 #| Refresh the screen, the frames, and their panes.
-method refresh {
+method refresh(Bool :$hard) {
+  $!screen.refresh if $hard;
   for $!screen.frames -> $f {
     $f.draw;
     for $f.panes -> $p {
@@ -248,17 +249,17 @@ method call($action) {
   code()
 }
 
-method alert(Str $msg, Int :$pad = 1) {
+method alert(Str $msg, Int :$pad = 1, Bool :$center = True) {
   my Int $width = (($msg.lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
-  my Int $height = 2 + $msg.lines + ($pad * 2) + 1;
+  my Int $height = (2 + $msg.lines + ($pad * 2) + 1) min self.screen.rows - 4;
   my $frame = self.focused-frame;
   my $pane = self.focused;
   my $f = self.screen.add-frame(:$height, :$width, :center);
   my $p = $f.add-pane;
   $p.put("") for 1..$pad;
-  $p.put("$_",:center) for $msg.lines;
+  $p.put(" $_ ",:$center) for $msg.lines;
   $p.put("") for 1..$pad;
-  $p.put("ok", :center);
+  $p.put(" ok ", :$center);
   $pane.unfocus;
   self.focus($f);
   $p.select($p.last-visible);

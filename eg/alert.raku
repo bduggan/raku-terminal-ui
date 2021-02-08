@@ -7,7 +7,8 @@ ui.setup(:1pane);
 ui.pane.put: "press a to show an alert";
 
 ui.pane.on: alert => -> :$raw, :$meta {
-  ui.alert("1234567890");
+  # ui.alert("1234567890");
+  ui.alert(( ('x') xx 100 ).join("\n"));
 }
 
 ui.bind('pane', a => 'alert');
