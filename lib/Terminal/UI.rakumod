@@ -51,6 +51,9 @@ has %.ui-bindings of Str =
   'q' => 'quit',
   "\t" => 'select-next';
 
+#| Actions associated with bindings.
+has %.ui-actions;
+
 #| The currently focused pane within the currently focused frame.
 method focused {
   fail "no focused frame" without $!focused-frame;
@@ -236,17 +239,21 @@ method interact {
 #| Associate names of actions with callables.
 method on(*%actions) {
   for %actions.pairs {
-    %!ui-bindings{.key} = .value
+    unless %!ui-bindings.invert.Hash{.key} {
+      warning "no action for " ~ .key;
+      warning "actions: " ~ %!ui-bindings.values.join(',');
+    }
+    %!ui-actions{.key} = .value
   }
 }
 
 #| Call the action with the given name.
-method call($action) {
+method call(Str $action) {
   if $action eq 'select-next' {
     return self.focus(pane => 'next');
   }
-  my &code = %!ui-bindings{$action};
-  code()
+  my &codee := %!ui-actions{$action};
+  codee()
 }
 
 method alert(Str $msg, Int :$pad = 1, Bool :$center = True) {

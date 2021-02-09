@@ -47,7 +47,7 @@ has @.meta;
 has $.style handles <colors> = Terminal::UI::Style.singleton;
 
 #| A set of callable actions
-has %.actions;
+has Callable:D %.actions;
 
 method TWEAK {
   return without $.frame;
@@ -424,9 +424,11 @@ method call($name) {
     return;
   }
   my &code := %!actions{ $name };
-  my $meta = self.current-meta;
-  my $raw  = @!lines[$!current-line];
-  code(:$meta,:$raw);
+  my %sig = &code.signature.params.grep(*.named).map(*.name => 1);
+  my %args;
+  %args<meta> = self.current-meta if %sig{'$meta'};
+  %args<raw> = @!lines[$!current-line] if %sig{'$raw'};
+  code(|%args);
 }
 
 #| Run a shell command, and send the lines of the output to this pane
