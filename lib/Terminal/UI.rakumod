@@ -271,20 +271,27 @@ method call(Str $action) {
   codee()
 }
 
-method alert(Str $msg, Int :$pad = 1, Bool :$center = True) {
+method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
   my Int $width = (($msg.lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
-  my Int $height = (2 + $msg.lines + ($pad * 2) + 1) min self.screen.rows - 4;
+  my Int $height = (3 + $msg.lines + ($pad * 2) + 1) min self.screen.rows - 3;
   my $frame = self.focused-frame;
   my $pane = self.focused;
   my $f = self.screen.add-frame(:$height, :$width, :center);
-  my $p = $f.add-pane;
+  my ($t,$p);
+  if $title {
+    ($t,$p) = $f.add-panes(heights => [ 1, $height - 4 ] );
+    $t.put: $title, :center;
+  } else {
+    $p = $f.add-pane;
+  }
+  $f.draw;
   $p.put("") for 1..$pad;
   $p.put(" $_ ",:$center) for $msg.lines;
   $p.put("") for 1..$pad;
   $p.put(" ok ", :$center);
   $pane.unfocus;
-  self.focus($f);
-  $p.select($p.last-visible);
+  self.focus($f, pane => $p);
+  $p.select-visible($p.height - 1);
   self.get-key;
   self.screen.remove-frame($f);
   self.focus($frame, :$pane);

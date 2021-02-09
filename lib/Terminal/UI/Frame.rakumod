@@ -2,6 +2,7 @@ unit class Terminal::UI::Frame;
 use Terminal::UI::Pane;
 use Terminal::ANSI;
 use Terminal::ANSI::OO :t;
+use Terminal::UI::Utils;
 use Log::Async;
 
 logger.untapped-ok = True;
@@ -76,8 +77,8 @@ method check(@panes) {
   }
   if @panes > 1 {
     my $total = sum @panes.map: *.height;
-    if $total + @.dividers != $.height {
-      return "height ($.height) does not match pane heights ($total) + dividers ({+@.dividers})";
+    if $total + @.dividers + 2 != $.height {
+      abort("height ($.height) does not match sum of pane heights ($total) + dividers ({+@.dividers}) + borders (2)");
     }
   }
   return Nil
@@ -143,12 +144,18 @@ multi method add-panes(:$ratios!, :$height-computer) {
 
 #| Add multiple panes with the given heights, and optionally a callback for computing heights
 multi method add-panes(:$heights!, :$height-computer) {
+  unless $heights.sum + $heights.elems + 1 == self.height {
+    my $sum = $heights.sum + $heights.elems + 1;
+    abort("heights don't add up: {$heights.join(' + ')} + {$heights.elems} + 1 ≠ {self.height} (it is $sum)");
+  }
   $!height-computer = $_ with $height-computer;
   my @panes;
   my $at = 1;
   for @$heights -> $height {
+    debug "Adding pane of height $height";
     @panes.push: Terminal::UI::Pane.new(:frame(self), :$height, :top(self.top + $at));
     $at += $height;
+    debug "Adding divider at $at";
     self.add-divider($at) if $at < self.height - 1;
     $at += 1;
   }

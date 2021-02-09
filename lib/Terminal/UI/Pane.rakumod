@@ -2,6 +2,7 @@ unit class Terminal::UI::Pane;
 use Terminal::ANSI;
 use Log::Async;
 use Terminal::UI::Style;
+use Terminal::UI::Utils;
 logger.untapped-ok = True;
 method pod { $=pod }
 
@@ -99,7 +100,7 @@ method current-line {
 #| Draw the currently selected line
 method draw-selected-line {
   return without self.selected-row;
-  my $l = self.selected-row;
+  my Int $l = self.selected-row;
   if $.focused {
     atomically {
       set-bg-color(self.colors<focused><selected><bg>);
@@ -124,6 +125,11 @@ method select-visible(Int $r) {
   self.select(self.first-visible + $r);
 }
 
+#| Select the last visible row.
+method select-last-visible {
+  self.select(self.first-visible + self.height - 3);
+}
+
 #| Select an index in the content.
 method select($line is copy = ($!current-line // $!first-visible)) {
   without $line {
@@ -136,8 +142,7 @@ method select($line is copy = ($!current-line // $!first-visible)) {
     $line = $!current-line;
   }
   unless $!first-visible <= $line <= self.last-visible {
-    warning "selecting a line that is not visible: $!first-visible <= $line <= { self.last-visible }";
-    return
+    abort "selecting a line that is not visible: $!first-visible <= $line <= { self.last-visible }";
   }
   my $prev-row = self.selected-row;
   $!current-line = $line;
@@ -222,7 +227,7 @@ method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe =
   } elsif $border && self.frame {
     self.frame.draw-side($row);
   } elsif $inner {
-    $str = $str.fmt("%-{ self.width - 2}s");
+    $str = $str.fmt("%-{ self.width }s");
     print-at $h, self.left, "$str";
   } else {
     error "bad arguments";

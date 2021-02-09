@@ -2,28 +2,51 @@ use Test;
 
 use Terminal::UI;
 use Terminal::ANSI;
+use Log::Async;
+
+# logger.send-to: $*ERR;
 
 disable-output;
 
-my $scr = Terminal::UI::Screen.new(:80cols, :40rows);
-my $ctr = $scr.add-frame(:top(7), :height(20), :left(5), :width(50));
-my $pane = $ctr.add-pane;
+{
+  my $scr = Terminal::UI::Screen.new(:80cols, :40rows);
+  my $ctr = $scr.add-frame(:top(7), :height(20), :left(5), :width(50));
+  my $pane = $ctr.add-pane;
 
-is $scr.cols,   80, 'screen height';
-is $scr.rows,   40, 'screen rows';
+  is $scr.cols,   80, 'screen height';
+  is $scr.rows,   40, 'screen rows';
 
-is $ctr.top,     7, 'top';
-is $ctr.height, 20, 'height';
-is $ctr.left,    5, 'height';
-is $ctr.width,  50, 'frame width';
+  is $ctr.top,     7, 'top';
+  is $ctr.height, 20, 'height';
+  is $ctr.left,    5, 'height';
+  is $ctr.width,  50, 'frame width';
 
-is $pane.top,     8, 'pane top';
-is $pane.height, 18, 'pane height';
-is $pane.left,    6, 'pane left';
-is $pane.width,  48, 'pane width';
+  is $pane.top,     8, 'pane top';
+  is $pane.height, 18, 'pane height';
+  is $pane.left,    6, 'pane left';
+  is $pane.width,  48, 'pane width';
 
-my $full-frame = $scr.add-frame;
-is $full-frame.top, 1, 'full top is 1';
-is $full-frame.height, 40, 'full has screen rows';
+  my $full-frame = $scr.add-frame;
+  is $full-frame.top, 1, 'full top is 1';
+  is $full-frame.height, 40, 'full has screen rows';
+}
+
+{
+  my $s = Terminal::UI::Screen.new(:80cols,:40rows);
+  my $f = $s.add-frame;
+  my ($p,$q) = $f.add-panes(heights => [30,7]);
+  is $p.height, 30, 'height 1';
+  is $q.height, 7, 'height 2';
+  is $f.check($f.panes), Nil, 'check is ok';
+  is $f.dividers, [31], 'divider';
+}
+
+{
+  my $s = Terminal::UI::Screen.new(:80cols,:40rows);
+  my $f = $s.add-frame;
+  my @p = $f.add-panes(heights => [20,9,7]);
+  is @p[0].height, 20, 'height 1';
+  is $f.check($f.panes), Nil, 'check is ok';
+}
 
 done-testing;
