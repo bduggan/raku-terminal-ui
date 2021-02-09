@@ -209,14 +209,29 @@ method select-down {
 #| Bind keys to events on the focused pane.
 multi method bind('pane', *%kv) {
   for %kv.pairs {
-    %!pane-bindings{.key} = .value;
+    if .value ~~ Callable {
+      my $key = 'anonymous_' ~ 1.rand.Str;
+      %!pane-bindings{.key} = $key;
+      for self.panes -> $p {
+        my %args = $key => .value;
+        $p.on(|%args);
+      }
+    } else {
+      %!pane-bindings{.key} = .value;
+    }
   }
 }
 
 #| Bind keys to UI events, independent of the focused pane.
 multi method bind(*%kv) {
   for %kv.pairs {
-    %!ui-bindings{.key} = .value;
+    if .value ~~ Callable {
+      my $key = 'anonymous_' ~ 1.rand.Str;
+      %!ui-bindings{.key} = $key;
+      %!ui-actions{$key} = .value;
+    } else {
+      %!ui-bindings{.key} = .value;
+    }
   }
 }
 
