@@ -133,10 +133,17 @@ has $.number-of-dividers is rw;
 
 #| Add multiple panes with the given height ratios
 multi method add-panes(:$ratios!, :$height-computer) {
-  $!number-of-dividers = $ratios.elems;
+  my $n = $ratios.elems;
+  my $s = $ratios.sum;
+  $!number-of-dividers = $n;
   $!height-computer = $_ with $height-computer;
   $!height-computer //= -> $h {
-    ($h div 2, $h - ($h div 2))
+    my $base = $h div $s;
+    my @h = ( $base xx $n ) »*» @$ratios;
+    while @h.sum < $h {
+      @h[$++]++;
+    }
+    @h;
   }
   my @heights = $!height-computer(self.available-rows);
   self.add-panes(heights => @heights, :$height-computer)
