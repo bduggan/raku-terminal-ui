@@ -134,7 +134,7 @@ has $.number-of-dividers is rw;
 #| Add multiple panes with the given height ratios
 multi method add-panes(:$ratios!, :$height-computer) {
   my $n = $ratios.elems;
-  my $s = $ratios.sum;
+  my $s = $ratios.cache.sum;
   $!number-of-dividers = $n;
   $!height-computer = $_ with $height-computer;
   $!height-computer //= -> $h {
@@ -151,6 +151,23 @@ multi method add-panes(:$ratios!, :$height-computer) {
 
 #| Add multiple panes with the given heights, and optionally a callback for computing heights
 multi method add-panes(:$heights!, :$height-computer) {
+  if $heights.grep(Pair) {
+    my $have = $heights.grep(Int).sum;
+    my $want = self.height - $heights.elems - 1;
+    my $left = $want - $have;
+    my $frs = $heights.grep(Pair).map(*.value).sum;
+    my $fr-base = $left div $frs;
+    my @changed;
+    for @$heights.kv -> $i, $h is rw {
+      if $h ~~ Pair {
+        @changed.push: $i;
+        $h = $fr-base * $h.value;
+      }
+    }
+    while @$heights.sum < $want {
+      @$heights[@changed[ $++ ]]++;
+    }
+  }
   unless $heights.sum + $heights.elems + 1 == self.height {
     my $sum = $heights.sum + $heights.elems + 1;
     abort("heights don't add up: {$heights.join(' + ')} + {$heights.elems} + 1 ≠ {self.height} (it is $sum)");

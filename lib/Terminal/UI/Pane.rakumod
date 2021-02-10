@@ -127,7 +127,7 @@ method select-visible(Int $r) {
 
 #| Select the last visible row.
 method select-last-visible {
-  self.select(self.first-visible + self.height - 3);
+  self.select-visible(self.height - 1);
 }
 
 #| Select an index in the content.

@@ -4,7 +4,9 @@ use Terminal::UI;
 use Terminal::ANSI;
 use Log::Async;
 
-# logger.send-to: $*ERR;
+plan 41;
+
+#logger.send-to: $*ERR;
 
 disable-output;
 
@@ -79,5 +81,32 @@ disable-output;
   is $f.check($f.panes), Nil, 'check is ok';
 }
 
-done-testing;
+{
+  my $s = Terminal::UI::Screen.new(:80cols,:30rows);
+  my $f = $s.add-frame;
+  my @p = $f.add-panes(heights => [1,fr => 1]);
+  is @p[0].height, 1, 'height 1';
+  is @p[1].height, 26, 'height 2';
+  is $f.check($f.panes), Nil, 'check is ok';
+}
+
+{
+  my $s = Terminal::UI::Screen.new(:80cols,:30rows);
+  my $f = $s.add-frame;
+  my @p = $f.add-panes(heights => [1,fr => 1, fr => 1]);
+  is @p[0].height, 1, 'height 1';
+  is @p[1].height, 13, 'height 2';
+  is @p[2].height, 12, 'height 3';
+  is $f.check($f.panes), Nil, 'check is ok';
+}
+
+{
+  my $s = Terminal::UI::Screen.new(:80cols,:30rows);
+  my $f = $s.add-frame;
+  my @p = $f.add-panes(heights => [1,fr => 1, fr => 2]);
+  is @p[0].height, 1, 'height 1';
+  is @p[1].height, 9, 'height 2';
+  is @p[2].height, 16, 'height 3';
+  is $f.check($f.panes), Nil, 'check is ok';
+}
 

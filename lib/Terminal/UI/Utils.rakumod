@@ -7,7 +7,7 @@ sub abort($msg) is export {
   reset-scroll-region;
   restore-screen;
   clear-screen;
-  exit unless $*OUT.t;
+  exit note "abort: $msg" unless $*OUT.t;
   shell "stty sane";
   shell "reset";
   put "aborted!";

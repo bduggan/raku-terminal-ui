@@ -273,13 +273,13 @@ method call(Str $action) {
 
 method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
   my Int $width = (($msg.lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
-  my Int $height = (3 + $msg.lines + ($pad * 2) + 1) min self.screen.rows - 3;
+  my Int $height = (3 + $msg.lines + $pad + 1) min self.screen.rows - 3;
   my $frame = self.focused-frame;
   my $pane = self.focused;
   my $f = self.screen.add-frame(:$height, :$width, :center);
   my ($t,$p);
   if $title {
-    ($t,$p) = $f.add-panes(heights => [ 1, $height - 4 ] );
+    ($t,$p) = $f.add-panes(heights => [ 1, fr => 1 ]);
     $t.put: $title, :center;
   } else {
     $p = $f.add-pane;
