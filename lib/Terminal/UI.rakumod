@@ -124,8 +124,14 @@ multi method setup(:$pane!) {
   self.refresh;
 }
 
+multi method setup(Array :$heights!) {
+  my $f = self.add-screen.add-frame;
+  $f.add-panes(:$heights);
+  self.refresh;
+}
+
 #| Set up with a callback with one frame that computes heights based on the total available height
-multi method setup(:&heights!) {
+multi method setup(Callable :&heights!) {
   info "setting up using callback for heights";
   my $f = self.add-screen.add-frame;
   my $pane-count = &heights(80).elems; # call once to count panes

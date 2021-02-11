@@ -315,7 +315,7 @@ multi method update(Str $str, Int :$line!, :%meta) {
 
 #| Add a line to the content.
 #| Scroll down if the last line is visible and this line would be off screen.
-multi method put(Str $str, Bool :$scroll-ok = True, Bool :$center, :%meta) {
+multi method put(Any(Str) $str, Bool :$scroll-ok = True, Bool :$center, :%meta) {
   if $str.lines > 1 {
     for $str.lines -> $l {
       self.put($l, :$scroll-ok, :$center, :%meta);
