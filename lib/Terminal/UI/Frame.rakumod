@@ -135,17 +135,19 @@ has $.number-of-dividers is rw;
 multi method add-panes(:$ratios!, :$height-computer) {
   my $n = $ratios.elems;
   my $s = $ratios.cache.sum;
-  $!number-of-dividers = $n;
+  my $base = $s div $n;
+  $!number-of-dividers = $n - 1;
+  debug "dividers: $!number-of-dividers, base $base";
   $!height-computer = $_ with $height-computer;
   $!height-computer //= -> $h {
-    my $base = $h div $s;
-    my @h = ( $base xx $n ) »*» @$ratios;
-    while @h.sum < $h {
-      @h[$++]++;
+    my @h = ($base xx $n) >>*>> @$ratios;
+    while @h.sum < $h - 1 {
+      @h[$++ % @h.elems]++;
     }
     @h;
   }
   my @heights = $!height-computer(self.available-rows);
+  debug "heights are now {@heights}";
   self.add-panes(heights => @heights, :$height-computer)
 }
 
