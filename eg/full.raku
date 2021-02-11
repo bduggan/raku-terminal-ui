@@ -19,7 +19,7 @@ $pane.put("hello again " ~ ++$) for 1..23;
 
 $pane.put("press j and k to scroll up and down");
 
-$pane.select(5);
+$pane.select-visible(5);
 
 loop {
   $_ = ui.get-key(:decode);
