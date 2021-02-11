@@ -17,7 +17,7 @@ sub EXPORT($ui = Nil) {
   %h;
 }
 
-unit class Terminal::UI:ver<0.0.4>;
+unit class Terminal::UI:ver<0.0.5>;
 
 logger.untapped-ok = True;
 
@@ -277,6 +277,7 @@ method call(Str $action) {
   codee()
 }
 
+#| Show an alert box, and wait for a key press to dismiss it.
 method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
   my Int $width = (($msg.lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
   my Int $height = (3 + $msg.lines + $pad + 1) min self.screen.rows - 3;
