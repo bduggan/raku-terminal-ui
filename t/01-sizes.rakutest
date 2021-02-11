@@ -2,6 +2,7 @@ use Test;
 
 use Terminal::UI;
 use Terminal::ANSI;
+use Terminal::UI::Utils;
 use Log::Async;
 
 plan 41;
@@ -9,6 +10,8 @@ plan 41;
 #logger.send-to: $*ERR;
 
 disable-output;
+
+&abort.wrap: -> |c { diag c; exit 1; }
 
 {
   my $scr = Terminal::UI::Screen.new(:80cols, :40rows);

@@ -135,14 +135,16 @@ has $.number-of-dividers is rw;
 multi method add-panes(:$ratios!, :$height-computer) {
   my $n = $ratios.elems;
   my $s = $ratios.cache.sum;
-  my $base = $s div $n;
+  debug "adding panes, rations: {$ratios.raku}, sum $s";
   $!number-of-dividers = $n - 1;
-  debug "dividers: $!number-of-dividers, base $base";
-  $!height-computer = $_ with $height-computer;
-  $!height-computer //= -> $h {
+  $!height-computer = $height-computer // -> $available-rows {
+    debug "computing heights, to add up to $available-rows";
+    my $base = $available-rows div $s;
     my @h = ($base xx $n) >>*>> @$ratios;
-    while @h.sum < $h - 1 {
+    debug "base $base heights are {@h.join(' ')}";
+    while @h.sum < $available-rows {
       @h[$++ % @h.elems]++;
+      debug "adjusting.  base $base heights are now {@h.join(' ')}";
     }
     @h;
   }
@@ -170,9 +172,10 @@ multi method add-panes(:$heights!, :$height-computer) {
       @$heights[@changed[ $++ ]]++;
     }
   }
-  unless $heights.sum + $heights.elems + 1 == self.height {
-    my $sum = $heights.sum + $heights.elems + 1;
-    abort("heights don't add up: {$heights.join(' + ')} + {$heights.elems} + 1 ≠ {self.height} (it is $sum)");
+  $!number-of-dividers //= $heights.elems - 1;
+  my $have = $heights.sum + $!number-of-dividers + 2;
+  unless $have == self.height {
+    abort("heights don't add up.  heights: {$heights.join(' + ')} dividers: $!number-of-dividers + 2 borders = $have, != {self.height}");
   }
   $!height-computer = $_ with $height-computer;
   my @panes;
@@ -193,9 +196,10 @@ multi method add-panes(:$heights!, :$height-computer) {
 
 #| Number of available rows: height - 2 - (number of dividers - 1)
 method available-rows {
-  info "available rows in frame $.height - 2 - ({self.number-of-dividers} - 1)";
   exit note "Please set number-of-dividers" without self.number-of-dividers;
-  $.height - 2 - (self.number-of-dividers - 1)
+  my $a = $.height - 2 - (self.number-of-dividers);
+  info "available rows in frame $.height - 2 - {self.number-of-dividers} = $a";
+  $a;
 }
 
 #| Change focus to a particular pane in this frame

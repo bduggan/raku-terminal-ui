@@ -2,6 +2,8 @@
 
 use Terminal::UI 'ui';
 
+ui.log('debug');
+
 ui.setup(ratios => [6,1]);
 
 ui.panes[0].put("Hello world.");
