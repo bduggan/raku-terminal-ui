@@ -52,6 +52,10 @@ A pane is a text area that can scroll. It also has as registry of actions, which
 
   Number of columns
 
+* **$!write-lock** (Lock)
+
+  no docs
+
 * **%!actions** (Associative[Callable:D])
 
   A set of callable actions
@@ -71,15 +75,15 @@ A pane is a text area that can scroll. It also has as registry of actions, which
 
 ### METHODS
 
-* [**bottom**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L61)
+* [**bottom**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L63)
 
   Absolute bottom (top + height)
 
-* [**call**(Terminal::UI::Pane: $name, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L422)
+* [**call**(Terminal::UI::Pane: $name, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L471)
 
   Run the action with the given name
 
-* [**clear**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L398)
+* [**clear**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L447)
 
   Clear the content and redraw
 
@@ -87,63 +91,63 @@ A pane is a text area that can scroll. It also has as registry of actions, which
 
   Handled by $!style
 
-* [**current-meta**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L88)
+* [**current-meta**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L90)
 
   Metadata associated with the current line
 
-* [**down_10**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L193)
+* [**down_10**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L212)
 
   Move the selector down 10 rows
 
-* [**draw**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L242)
+* [**draw**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L261)
 
   Same as redraw
 
-* [**draw-selected-line**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L100)
+* [**draw-selected-line**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L102)
 
   Draw the currently selected line
 
-* [**exec**(Terminal::UI::Pane: @cmd, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L439)
+* [**exec**(Terminal::UI::Pane: @cmd, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L488)
 
   Run a shell command, and send the lines of the output to this pane
 
-* [**focus**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L384)
+* [**focus**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L431)
 
   Focus on this pane
 
-* [**last-visible**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L155)
+* [**last-visible**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L169)
 
   Index of the bottom line which is visible (first-visible + height - 1)
 
-* [**on**(Terminal::UI::Pane: *%kv)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L410)
+* [**on**(Terminal::UI::Pane: *%kv)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L459)
 
   Associate callbacks with events
 
-* [**on**(Terminal::UI::Pane: Str :$name!, Callable :$action!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L417)
+* [**on**(Terminal::UI::Pane: Str :$name!, Callable :$action!, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L466)
 
   Associate a callback, with the name of an action
 
-* [**page-down**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L203)
+* [**page-down**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L222)
 
   Select down by the number of lines in the pane
 
-* [**page-up**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L208)
+* [**page-up**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L227)
 
   Select up by the number of lines in the pane
 
-* [**put**(Terminal::UI::Pane: Any(Str) $str, Bool :$scroll-ok = Bool::True, Bool :$center, :%meta, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L317)
+* [**put**(Terminal::UI::Pane: Any(Str) $str, Bool :$scroll-ok = Bool::True, Bool :$center, :%meta, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L359)
 
   Add a line to the content. Scroll down if the last line is visible and this line would be off screen.
 
-* [**put**(Terminal::UI::Pane: @args, Bool :$scroll-ok = Bool::True, :%meta, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L376)
+* [**put**(Terminal::UI::Pane: @args, Bool :$scroll-ok = Bool::True, :%meta, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L423)
 
   Put formatted text. Each element is either a string or a pair. Strings are printed. Keys of pairs are printed, and then their values. Keys are assumed to be formatting, and do not count towards the length of the line.
 
-* [**redraw**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L247)
+* [**redraw**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L266)
 
   Refresh the screen
 
-* [**right**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L64)
+* [**right**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L66)
 
   Absolute right column (left + width)
 
@@ -151,50 +155,54 @@ A pane is a text area that can scroll. It also has as registry of actions, which
 
   Handled by $!frame
 
-* [**scroll-down**(Terminal::UI::Pane: Bool :$limit = Bool::True, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L274)
+* [**scroll-down**(Terminal::UI::Pane: Bool :$limit = Bool::True, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L308)
 
   Scroll the visible contents down. Optionally limit scrolling based on the contents.
 
-* [**scroll-up**(Terminal::UI::Pane: Bool :$limit = Bool::True, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L258)
+* [**scroll-up**(Terminal::UI::Pane: Bool :$limit = Bool::True, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L280)
 
   Scroll the visible contents up. Optionally limit scrolling based on the contents.
 
-* [**select**(Terminal::UI::Pane: $line is copy = Code.new, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L133)
+* [**select**(Terminal::UI::Pane: $line, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L151)
 
   Select an index in the content.
 
-* [**select-down**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L179)
+* [**select-down**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L193)
 
   Select the line below the current one, possibly scrolling the screen up
 
-* [**select-last-visible**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L128)
+* [**select-first-visible**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L136)
 
   Select the last visible row.
 
-* [**select-up**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L160)
+* [**select-last-visible**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L131)
+
+  Select the last visible row.
+
+* [**select-up**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L174)
 
   Select the line above the current one, possibly scrolling the screen down
 
-* [**select-visible**(Terminal::UI::Pane: Int $r, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L122)
+* [**select-visible**(Terminal::UI::Pane: Int $r, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L124)
 
   Select a visible row. (0 is the top row)
 
-* [**selected-row**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L290)
+* [**selected-row**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L332)
 
   Selected row, in the range 1..$!height
 
-* [**set-size**(Terminal::UI::Pane: $!width, $!height, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L73)
+* [**set-size**(Terminal::UI::Pane: $!width, $!height, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L75)
 
   Change the size
 
-* [**set-top**(Terminal::UI::Pane: $!top, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L85)
+* [**set-top**(Terminal::UI::Pane: $!top, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L87)
 
   Change the offset from the top
 
-* [**unfocus**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L391)
+* [**unfocus**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L439)
 
   Remove focus from this pane
 
-* [**up_10**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.5/lib/Terminal/UI/Pane.rakumod#L198)
+* [**up_10**(Terminal::UI::Pane: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.6/lib/Terminal/UI/Pane.rakumod#L217)
 
   Move the selector up 10 rows
