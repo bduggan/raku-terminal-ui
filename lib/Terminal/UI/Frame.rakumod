@@ -135,7 +135,7 @@ has $.number-of-dividers is rw;
 multi method add-panes(:$ratios!, :$height-computer) {
   my $n = $ratios.elems;
   my $s = $ratios.cache.sum;
-  debug "adding panes, rations: {$ratios.raku}, sum $s";
+  debug "adding panes, ratios: {$ratios.raku}, sum $s";
   $!number-of-dividers = $n - 1;
   $!height-computer = $height-computer // -> $available-rows {
     debug "computing heights, to add up to $available-rows";

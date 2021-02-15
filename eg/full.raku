@@ -3,6 +3,8 @@
 use Terminal::UI 'ui';
 use Terminal::ANSI;
 
+# ui.log('/tmp/debug');
+
 my $screen = ui.add-screen;
 my $frame = $screen.add-frame;
 my $pane = $frame.add-pane;

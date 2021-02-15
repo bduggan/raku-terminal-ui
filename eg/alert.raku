@@ -1,9 +1,9 @@
 #!/usr/bin/env raku
 
 use Terminal::UI 'ui';
+use Terminal::ANSI;
 
 ui.setup(:1pane);
-# ui.log('debug');
 
 ui.pane.put: "press a, b, c or d to show an alert";
 ui.pane.put: 'or e, which gets the text';

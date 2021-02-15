@@ -50,6 +50,8 @@ has $.style handles <colors> = Terminal::UI::Style.singleton;
 #| A set of callable actions
 has Callable:D %.actions;
 
+has Lock $!write-lock .= new;
+
 method TWEAK {
   return without $.frame;
   $!height ||= $.frame.height - 2;
@@ -121,8 +123,9 @@ method draw-selected-line {
 
 #| Select a visible row.  (0 is the top row)
 method select-visible(Int $r) {
-  error "first visible not yet set" without $!first-visible;
-  self.select(self.first-visible + $r);
+  return if @.lines == 0;
+  $!first-visible //= @.lines.elems max $!height;
+  self.select($!first-visible + $r);
 }
 
 #| Select the last visible row.
@@ -130,16 +133,27 @@ method select-last-visible {
   self.select-visible(self.height - 1);
 }
 
+#| Select the last visible row.
+method select-first-visible {
+  self.select-visible(0);
+}
+
+method validate {
+  without $!current-line {
+    info "no current line";
+    return;
+  }
+  my $str = "checking first-visible ($!first-visible) <= current ($!current-line) <= last ({self.last-visible})";
+  info $str;
+  abort("failed $str") unless $!first-visible <= $!current-line <= self.last-visible;
+}
+
 #| Select an index in the content.
-method select($line is copy = ($!current-line // $!first-visible)) {
-  without $line {
-    unless @!lines {
-      warning "cannot select line {$line.raku}, no content";
-      return;
-    }
-    $!first-visible //= @.lines.elems max $!height;
-    $!current-line //= $.first-visible // 0;
-    $line = $!current-line;
+method select($line!) {
+  info "selecting line $line";
+  unless @!lines {
+    warning "cannot select line {$line.raku}, no content";
+    return;
   }
   unless $!first-visible <= $line <= self.last-visible {
     abort "selecting a line that is not visible: $!first-visible <= $line <= { self.last-visible }";
@@ -178,12 +192,17 @@ method !trace($msg) {
 
 #| Select the line below the current one, possibly scrolling the screen up
 method select-down {
+  info "selecting down, current line is $!current-line, will add 1";
   without $!current-line {
-    warning "cannot select down, no current line";
+    abort "cannot select down, no current line";
     return;
   }
   unless $!current-line < @!lines.elems - 1 {
-    warning "cannot select down, check failed: $!current-line <= { @!lines.elems - 1 }";
+    warning "cannot select down, at the bottom ($!current-line <= { @!lines.elems - 1 })";
+    return;
+  }
+  unless $!current-line < self.last-visible {
+    warning "cannot select down, $!current-line >= { self.last-visible }";
     return;
   }
   self.scroll-up if $!current-line == self.last-visible;
@@ -246,6 +265,8 @@ method draw {
 
 #| Refresh the screen
 method redraw {
+  info "redrawing.  selected row is {self.selected-row // 'undefined'}";
+  $!write-lock.lock;
   for 1..$.height {
     if self.selected-row and $_ == self.selected-row {
       self.draw-selected-line;
@@ -253,13 +274,22 @@ method redraw {
       self!draw-row($_);
     }
   }
+  $!write-lock.unlock;
 }
 
 #| Scroll the visible contents up.  Optionally limit scrolling based on the contents.
 method scroll-up(Bool :$limit = True) {
-  return if $limit && $!first-visible + self.height >= self.lines.elems;
+  info "scroll up";
+  info "scrolling up, current line is { $!current-line // 'nil' }, first visible is { $!first-visible // 'nil' }";
+  if $limit && $!first-visible + self.height >= self.lines.elems {
+    warning "cannot scroll up because first visible + height >= elems";
+    return 
+  }
   if (self!has-vertical-overlap) {
     $!first-visible++;
+    if $!current-line < self.first-visible {
+      $!current-line = self.first-visible;
+    }
     self.redraw;
     return;
   }
@@ -268,14 +298,22 @@ method scroll-up(Bool :$limit = True) {
     scroll-up;
   }
   $!first-visible++;
+  if $!current-line < self.first-visible {
+    $!current-line = self.first-visible;
+  }
+  self.draw-selected-line;
   self!draw-row(self.height);
 }
 
 #| Scroll the visible contents down.  Optionally limit scrolling based on the contents.
 method scroll-down(Bool :$limit = True) {
+  info "scroll down";
   return if $limit && $!first-visible == 0;
   if (self!has-vertical-overlap) {
     $!first-visible--;
+    if $!current-line > self.last-visible {
+      $!current-line = self.last-visible;
+    }
     self.redraw;
     return;
   }
@@ -284,6 +322,10 @@ method scroll-down(Bool :$limit = True) {
     scroll-down;
   }
   $!first-visible--;
+  if $!current-line > self.last-visible {
+    $!current-line = self.last-visible;
+  }
+  self.draw-selected-line;
   self!draw-row(1);
 }
 
@@ -316,6 +358,10 @@ multi method update(Str $str, Int :$line!, :%meta) {
 #| Add a line to the content.
 #| Scroll down if the last line is visible and this line would be off screen.
 multi method put(Any(Str) $str, Bool :$scroll-ok = True, Bool :$center, :%meta) {
+  $!write-lock.lock;
+  LEAVE $!write-lock.unlock;
+  info "putting $str";
+  # self.validate;
   if $str.lines > 1 {
     for $str.lines -> $l {
       self.put($l, :$scroll-ok, :$center, :%meta);
@@ -323,6 +369,7 @@ multi method put(Any(Str) $str, Bool :$scroll-ok = True, Bool :$center, :%meta) 
     return;
   }
   $!first-visible //= 0;
+  $!current-line //= 0;
   my $should-scroll = self.last-visible == (@!lines - 1);
   @!meta[ @!lines.elems ] = %meta with %meta;
   with @!raw[ @!lines.elems ] { 
@@ -383,15 +430,17 @@ multi method put(@args, Bool :$scroll-ok = True, :%meta) {
 
 #| Focus on this pane
 method focus {
+  info "focusing";
   $!focused = True;
-  self.select($!current-line // $!first-visible);
+  self.draw-selected-line;
   self;
 }
 
 #| Remove focus from this pane
 method unfocus {
+  info "unfocusing";
   $!focused = False;
-  self.select($!current-line // $!first-visible);
+  self.draw-selected-line;
   self;
 }
 

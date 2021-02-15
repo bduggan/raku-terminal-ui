@@ -21,11 +21,11 @@ has Supplier $.resized .= new;
 has SetHash $!frames;
 
 method !auto-set {
-  $!cols ||= qx{ tput cols }.chomp.Int;
-  $!rows ||= qx{ tput lines }.chomp.Int;
+  $!cols //= qx{ tput cols }.chomp.Int;
+  $!rows //= qx{ tput lines }.chomp.Int;
 }
 
-method TWEAK {
+method TWEAK(:$cols,:$rows) {
   self!auto-set;
   self!setup-resizer;
 }

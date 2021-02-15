@@ -12,5 +12,5 @@ sub abort($msg) is export {
   shell "reset";
   put "aborted!";
   put $msg // '\rsomething went wrong';
-  exit;
+  die $msg;
 }
