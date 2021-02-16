@@ -17,7 +17,7 @@ sub EXPORT($ui = Nil) {
   %h;
 }
 
-unit class Terminal::UI:ver<0.0.6>;
+unit class Terminal::UI:ver<0.0.7>;
 
 logger.untapped-ok = True;
 
