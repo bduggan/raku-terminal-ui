@@ -174,13 +174,11 @@ method last-visible {
 #| Select the line above the current one, possibly scrolling the screen down
 method select-up {
   without $!current-line {
-    warning "cannot select up, no current line";
-    return;
+    abort "cannot select up, no current line";
   }
   return unless $!current-line >= 1;
   self.scroll-down if $!current-line == $!first-visible;
   self.select($!current-line - 1);
-  self.draw-selected-line;
 }
 
 method !trace($msg) {
@@ -192,19 +190,10 @@ method !trace($msg) {
 
 #| Select the line below the current one, possibly scrolling the screen up
 method select-down {
-  info "selecting down, current line is $!current-line, will add 1";
   without $!current-line {
     abort "cannot select down, no current line";
-    return;
   }
-  unless $!current-line < @!lines.elems - 1 {
-    warning "cannot select down, at the bottom ($!current-line <= { @!lines.elems - 1 })";
-    return;
-  }
-  unless $!current-line < self.last-visible {
-    warning "cannot select down, $!current-line >= { self.last-visible }";
-    return;
-  }
+  return unless $!current-line < @!lines.elems - 1;
   self.scroll-up if $!current-line == self.last-visible;
   self.select($!current-line + 1);
 }
