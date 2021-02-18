@@ -344,6 +344,10 @@ multi method update(Str $str, Int :$line!, :%meta) {
   self!draw-row($line + 1);
 }
 
+sub sanitize(Str $s) {
+  $s.trans("\t" => '  ', :g);
+}
+
 #| Add a line to the content.
 #| Scroll down if the last line is visible and this line would be off screen.
 multi method put(Any(Str) $str, Bool :$scroll-ok = True, Bool :$center, :%meta) {
@@ -362,14 +366,14 @@ multi method put(Any(Str) $str, Bool :$scroll-ok = True, Bool :$center, :%meta) 
   my $should-scroll = self.last-visible == (@!lines - 1);
   @!meta[ @!lines.elems ] = %meta with %meta;
   with @!raw[ @!lines.elems ] { 
-    @!lines.push: $str;
+    @!lines.push: sanitize($str);
     # raw done, don't calculate
   } else {
     if $center {
-      my $cnt = $str.fmt("%{self.width div 2 + $str.chars div 2}s");
+      my $cnt = sanitize($str).fmt("%{self.width div 2 + $str.chars div 2}s");
       @!lines.push: $cnt.fmt("%-{self.width}s");
     } else {
-      @!lines.push: $str.substr(0,self.width).fmt("%-{self.width}s");
+      @!lines.push: sanitize($str).substr(0,self.width).fmt("%-{self.width}s");
     }
     @!raw.push: $str;
   }
@@ -463,7 +467,7 @@ method call($name) {
     return self."$name"() unless %!actions{ $name };
   }
   unless %!actions{ $name } {
-    info "no action for $name";
+    info "no action for $name in pane {self.name}";
     return;
   }
   my &code := %!actions{ $name };
@@ -471,6 +475,7 @@ method call($name) {
   my %args;
   %args<meta> = self.current-meta if %sig{'$meta'};
   %args<raw> = @!lines[$!current-line] if %sig{'$raw'};
+  debug "sending args for $name: " ~ %args.keys.join(',');
   code(|%args);
 }
 
