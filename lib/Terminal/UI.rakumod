@@ -273,6 +273,10 @@ method call(Str $action) {
   if $action eq 'select-next' {
     return self.focus(pane => 'next');
   }
+  without %!ui-actions{$action} {
+    info "no ui action for $action";
+    return;
+  }
   my &codee := %!ui-actions{$action};
   codee()
 }
@@ -284,26 +288,29 @@ method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
   my Int $height = (3 + $msg.lines + $pad + 1) min self.screen.rows - 3;
   my $frame = self.focused-frame;
   my $pane = self.focused;
+  $pane.unfocus;
   my $f = self.screen.add-frame(:$height, :$width, :center);
   my ($t,$p);
   if $title {
     ($t,$p) = $f.add-panes(heights => [ 1, fr => 1 ]);
+    $t.name = 'alert-title';
+    $p.name = 'alert-body';
     $t.put: $title, :center;
   } else {
     $p = $f.add-pane;
+    $p.name = 'alert';
   }
   $f.draw;
   $p.put("") for 1..$pad;
   $p.put(" $_ ",:$center) for $msg.lines;
   $p.put("") for 1..$pad;
   $p.put(" ok ", :$center);
-  $pane.unfocus;
   self.focus($f, pane => $p);
   $p.select-visible($p.height - 1);
   self.get-key;
   self.screen.remove-frame($f);
   self.focus($frame, :$pane);
-  self.refresh;
+  self.refresh(:hard);
 }
 
 =NAME Terminal::UI -- A framework for building terminal interfaces
