@@ -26,6 +26,7 @@ $pane.select-visible(5);
 loop {
   $_ = ui.get-key(:decode);
   $pane.scroll-up when 'k';
+  $pane.scroll-up(:5lines) when 'K';
   $pane.scroll-down when "j";
   last when 'q';
 }
