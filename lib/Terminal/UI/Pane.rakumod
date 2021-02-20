@@ -268,8 +268,6 @@ method redraw {
 
 #| Scroll the visible contents up.  Optionally limit scrolling based on the contents.
 method scroll-up(Bool :$limit = True, Int :$lines = 1) {
-  info "scroll up";
-  info "scrolling up, current line is { $!current-line // 'nil' }, first visible is { $!first-visible // 'nil' }";
   my $actual;
   if $limit && $!first-visible + self.height + $lines > self.lines.elems {
     $actual = - ( $!first-visible + self.height - self.lines.elems );
@@ -297,11 +295,15 @@ method scroll-up(Bool :$limit = True, Int :$lines = 1) {
 }
 
 #| Scroll the visible contents down.  Optionally limit scrolling based on the contents.
-method scroll-down(Bool :$limit = True) {
+method scroll-down(Bool :$limit = True, Int :$lines = 1) {
   info "scroll down";
-  return if $limit && $!first-visible == 0;
+  my $actual;
+  if $limit && $!first-visible < $lines {
+    $actual = $!first-visible;
+    return if $actual == 0;
+  }
   if (self!has-vertical-overlap) {
-    $!first-visible--;
+    $!first-visible -= ($actual // $lines);
     if $!current-line > self.last-visible {
       $!current-line = self.last-visible;
     }
@@ -310,14 +312,14 @@ method scroll-down(Bool :$limit = True) {
   }
   atomically {
     self!set-scroll-region;
-    scroll-down;
+    scroll-down($actual // $lines);
   }
-  $!first-visible--;
+  $!first-visible -= ($actual // $lines);
   if $!current-line > self.last-visible {
     $!current-line = self.last-visible;
   }
   self.draw-selected-line;
-  self!draw-row(1);
+  self!draw-row($_) for 1..($actual // $lines);
 }
 
 #| Selected row, in the range 1..$!height

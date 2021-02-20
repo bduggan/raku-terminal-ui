@@ -28,6 +28,7 @@ loop {
   $pane.scroll-up when 'k';
   $pane.scroll-up(:5lines) when 'K';
   $pane.scroll-down when "j";
+  $pane.scroll-down(:5lines) when 'J';
   last when 'q';
 }
 
