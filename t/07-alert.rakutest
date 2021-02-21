@@ -27,16 +27,17 @@ Terminal::UI::Input.^find_method('get-key').wrap: -> |c { $p.keep; $c.receive; }
 
 ui.setup(:1pane);
 ui.pane.put("Hello!");
+ui.pane.put("world");
 
-my $q = start ui.alert("ALERT");
+my $q = start ui.alert("¡ALERT!");
 await $p;
 
 is virtual-screen.render, q:to/TXT/, 'alert';
 ╔══════════════════╗
 ║Hello!            ║
-║ ╔══════════════╗ ║
+║w╔══════════════╗ ║
 ║ ║              ║ ║
-║ ║    ALERT     ║ ║
+║ ║   ¡ALERT!    ║ ║
 ║ ║              ║ ║
 ║ ║      ok      ║ ║
 ║ ╚══════════════╝ ║
@@ -50,7 +51,7 @@ await $q;
 is virtual-screen.render, q:to/TXT/, 'dismissed';
 ╔══════════════════╗
 ║Hello!            ║
-║                  ║
+║world             ║
 ║                  ║
 ║                  ║
 ║                  ║
