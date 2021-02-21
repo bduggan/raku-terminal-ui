@@ -9,7 +9,9 @@ method pod { $=pod }
 has $.tty;
 
 method !maybe-init {
+  return False unless $*IN.t;
   self.init without $!tty;
+  return True;
 }
 
 #| Initialize input (called implicity if necessary)
@@ -26,7 +28,7 @@ method shutdown {
 
 #| Get a single key, and optionally debug the bytes into a character.  Escape sequences are parsed by Terminal::ANSI::parse-input.
 method get-key(Bool :$decode = True) {
-  self!maybe-init;
+  self!maybe-init or return;
   my $got = $!tty.read(10);
   return $got unless $decode;
   my $c = $got.decode;

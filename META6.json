@@ -22,7 +22,7 @@
     "Terminal"
   ],
   "depends" : [
-    "Terminal::ANSI:ver<0.0.13>", "Log::Async"
+    "Terminal::ANSI:ver<0.0.15>", "Log::Async"
   ],
   "test-depends": [
     "Test"

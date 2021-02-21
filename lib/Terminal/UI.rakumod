@@ -171,6 +171,7 @@ method shutdown($msg = Nil) {
 method add-screen(|args --> Terminal::UI::Screen) {
   $!screen = Terminal::UI::Screen.new(|args);
   $!screen.init;
+  debug "added {$!screen.rows} x {$!screen.cols} screen";
   $!screen
 }
 
@@ -287,8 +288,8 @@ method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
   my Int $width = (($msg.lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
   my Int $height = (3 + $msg.lines + $pad + 1) min self.screen.rows - 3;
   my $frame = self.focused-frame;
-  my $pane = self.focused;
-  $pane.unfocus;
+  my $pane = self.focused if $frame;
+  $pane.unfocus if $frame;
   my $f = self.screen.add-frame(:$height, :$width, :center);
   my ($t,$p);
   if $title {
@@ -309,7 +310,7 @@ method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
   $p.select-visible($p.height - 1);
   self.get-key;
   self.screen.remove-frame($f);
-  self.focus($frame, :$pane);
+  self.focus($frame, :$pane) if $frame && $pane;
   self.refresh(:hard);
 }
 

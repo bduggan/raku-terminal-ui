@@ -357,7 +357,6 @@ sub sanitize(Str $s) {
 multi method put(Any(Str) $str, Bool :$scroll-ok = True, Bool :$center, :%meta) {
   $!write-lock.lock;
   LEAVE $!write-lock.unlock;
-  info "putting $str";
   # self.validate;
   if $str.lines > 1 {
     for $str.lines -> $l {

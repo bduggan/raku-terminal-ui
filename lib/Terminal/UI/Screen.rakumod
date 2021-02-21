@@ -21,8 +21,8 @@ has Supplier $.resized .= new;
 has SetHash $!frames;
 
 method !auto-set {
-  $!cols //= qx{ tput cols }.chomp.Int;
-  $!rows //= qx{ tput lines }.chomp.Int;
+  $!cols //= (%*ENV<TERMINAL_UI_COLS> // qx{ tput cols }.chomp).Int;
+  $!rows //= (%*ENV<TERMINAL_UI_ROWS> // qx{ tput lines }.chomp).Int;
 }
 
 method TWEAK(:$cols,:$rows) {
@@ -107,7 +107,7 @@ method !generate-name {
 method add-frame(
    :$top = 1,
    :$left = 1,
-   :$width = self.cols - $left,
+   :$width = self.cols - $left + 1,
    :$height = self.rows - $top + 1,
    :$name = self!generate-name,
    Bool :$center,
@@ -115,8 +115,8 @@ method add-frame(
 ) {
   my $f;
   if $center {
-    my $l = (self.cols - $width) div 2;
-    my $t = (self.rows - $height) div 2;
+    my $l = (self.cols - $width + 2) div 2;
+    my $t = (self.rows - $height + 2) div 2;
     $f = Terminal::UI::Frame.new( :screen(self), :top($t), :$height, :left($l), :$width, :$name);
   } else {
     $f = Terminal::UI::Frame.new( :screen(self), :$top, :$height, :$left, :$width, :$name);

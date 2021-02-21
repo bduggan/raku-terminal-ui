@@ -18,6 +18,8 @@ $p.put: 'or f, which has a title';
 $p.put: "$_" for 1..5;
 $q.put: "pane 2 here";
 $p.put: 'a,b only work when pane 1 is focused';
+$p.put: '│....|....' x 20;
+$p.put: '│         ' x 20;
 
 ui.bind('pane', a => 'alert');
 $p.on: alert => { ui.alert('a. pane alert!') }
