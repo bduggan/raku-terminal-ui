@@ -1,0 +1,64 @@
+#!raku
+
+use Test;
+
+use lib $*HOME.child('raku-terminal-ansi/lib');
+
+use Terminal::UI 'ui';
+use Terminal::ANSI;
+use Terminal::UI::Utils;
+use Terminal::UI::Input;
+use Log::Async;
+
+logger.add-tap: -> %m { diag %m<msg> } if %*ENV<VERBOSE>;
+
+disable-output;
+
+%*ENV<HARNESS_ACTIVE> = 1;
+%*ENV<TERMINAL_UI_COLS> = 20;
+%*ENV<TERMINAL_UI_ROWS> = 10;
+
+&abort.wrap: -> |c { diag c; exit 1; }
+
+my $p = Promise.new;
+my $c = Channel.new;
+
+Terminal::UI::Input.^find_method('get-key').wrap: -> |c { $p.keep; $c.receive; }
+
+ui.setup(:1pane);
+ui.pane.put("Hello!");
+
+my $q = start ui.alert("ALERT");
+await $p;
+
+is virtual-screen.render, q:to/TXT/, 'alert';
+╔══════════════════╗
+║Hello!            ║
+║ ╔══════════════╗ ║
+║ ║              ║ ║
+║ ║    ALERT     ║ ║
+║ ║              ║ ║
+║ ║      ok      ║ ║
+║ ╚══════════════╝ ║
+║                  ║
+╚══════════════════╝
+TXT
+
+$c.send('ok');
+await $q;
+
+is virtual-screen.render, q:to/TXT/, 'dismissed';
+╔══════════════════╗
+║Hello!            ║
+║                  ║
+║                  ║
+║                  ║
+║                  ║
+║                  ║
+║                  ║
+║                  ║
+╚══════════════════╝
+TXT
+
+done-testing;
+
