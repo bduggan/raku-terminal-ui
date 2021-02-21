@@ -282,11 +282,16 @@ method call(Str $action) {
   codee()
 }
 
+multi method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
+  self.alert($msg.lines.List, :$pad, :$center, :$title);
+}
+
 #| Show an alert box, and wait for a key press to dismiss it.
-method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
-  info "alert";
-  my Int $width = (($msg.lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
-  my Int $height = (3 + $msg.lines + $pad + 1) min self.screen.rows - 3;
+multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
+  my Int $width = ((@lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
+  my Int $height = (3 + @lines + $pad + 1) min self.screen.rows - 3;
+  $height += 2 if $title;
+  info "alert ($width x $height)";
   my $frame = self.focused-frame;
   my $pane = self.focused if $frame;
   $pane.unfocus if $frame;
@@ -303,7 +308,7 @@ method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
   }
   $f.draw;
   $p.put("") for 1..$pad;
-  $p.put(" $_ ",:$center) for $msg.lines;
+  $p.put(" $_ ",:$center) for @lines;
   $p.put("") for 1..$pad;
   $p.put(" ok ", :$center);
   self.focus($f, pane => $p);

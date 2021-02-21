@@ -15,6 +15,7 @@ $q.name = 'bottom';
 $p.put: "press a, b, c or d to show an alert";
 $p.put: 'or e, which gets the text';
 $p.put: 'or f, which has a title';
+$p.put: 'or h, which sends an array';
 $p.put: "$_" for 1..5;
 $q.put: "pane 2 here";
 $p.put: 'a,b only work when pane 1 is focused';
@@ -31,6 +32,7 @@ ui.bind: c => { ui.alert('c. anonymous ui alert!') }
 ui.bind: 'pane', d => { ui.alert('d. anonymous pane alert!') }
 ui.bind: 'pane', e => -> :$raw { ui.alert("e. got..\n" ~ ($raw.words.join("\n"))) }
 ui.bind: f => { ui.alert(:title<hello>, "world") }
+ui.bind: g => { ui.alert(:title<hello>, <this is four lines>) }
 
 ui.interact;
 ui.shutdown;
