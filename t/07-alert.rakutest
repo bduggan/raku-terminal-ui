@@ -29,6 +29,19 @@ ui.setup(:1pane);
 ui.pane.put("Hello!");
 ui.pane.put("world");
 
+is virtual-screen.render, q:to/TXT/, 'initial screen';
+╔══════════════════╗
+║Hello!            ║
+║world             ║
+║                  ║
+║                  ║
+║                  ║
+║                  ║
+║                  ║
+║                  ║
+╚══════════════════╝
+TXT
+
 my $q = start ui.alert("¡ALERT!");
 await $p;
 
@@ -45,7 +58,7 @@ is virtual-screen.render, q:to/TXT/, 'alert';
 ╚══════════════════╝
 TXT
 
-$c.send('ok');
+$c.send('Enter');
 await $q;
 
 is virtual-screen.render, q:to/TXT/, 'dismissed';
