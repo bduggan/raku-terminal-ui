@@ -428,6 +428,9 @@ multi method put(@args, Bool :$scroll-ok = True, :%meta) {
 method focus {
   info "focusing";
   $!focused = True;
+  if @!lines == 0 {
+    self.put: "";
+  }
   self.draw-selected-line;
   self;
 }
