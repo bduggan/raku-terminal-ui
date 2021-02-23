@@ -158,9 +158,10 @@ multi method add-panes(:$ratios!, :$height-computer) {
   self.add-panes(heights => @heights, :$height-computer)
 }
 
-#| Add multiple panes with the given heights, and optionally a callback for computing heights
-multi method add-panes(:$heights!, :$height-computer) {
-  if $heights.grep(Pair) {
+method make-height-computer($in) {
+  my $hc = -> |c {
+    debug "computing!";
+    my $heights = $in.clone;
     my $have = $heights.grep(Int).sum;
     my $want = self.height - $heights.elems - 1;
     my $left = $want - $have;
@@ -176,13 +177,22 @@ multi method add-panes(:$heights!, :$height-computer) {
     while @$heights.sum < $want {
       @$heights[@changed[ $++ ]]++;
     }
+    @$heights;
+  }
+}
+
+#| Add multiple panes with the given heights, and optionally a callback for computing heights
+multi method add-panes(:$heights! is copy) {
+  if $heights.grep(Pair) {
+    my $hc = self.make-height-computer($heights);
+    $heights = $hc();
+    $!height-computer = $hc;
   }
   $!number-of-dividers //= $heights.elems - 1;
   my $have = $heights.sum + $!number-of-dividers + 2;
   unless $have == self.height {
     abort("heights don't add up.  heights: {$heights.join(' + ')} dividers: $!number-of-dividers + 2 borders = $have, != {self.height}");
   }
-  $!height-computer = $_ with $height-computer;
   my @panes;
   my $at = 1;
   for @$heights -> $height {
