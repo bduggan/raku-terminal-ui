@@ -1,0 +1,60 @@
+#!raku
+
+use Test;
+
+use lib $*HOME.child('raku-terminal-ansi/lib');
+
+use Terminal::UI 'ui';
+use Terminal::ANSI;
+use Terminal::UI::Utils;
+use Terminal::UI::Input;
+use Log::Async;
+
+plan 2;
+
+logger.add-tap: -> %m { diag %m<msg> } if %*ENV<VERBOSE>;
+
+disable-output;
+
+%*ENV<HARNESS_ACTIVE> = 1;
+
+%*ENV<TERMINAL_UI_COLS> = 10;
+%*ENV<TERMINAL_UI_ROWS> = 10;
+
+&abort.wrap: -> |c { diag c; exit 1; }
+
+ui.setup: heights => [ 2, :1fr];
+ui.panes[0].put("one");
+ui.panes[1].put("two");
+
+is virtual-screen.render, q:to/TXT/, 'initial heights';
+╔════════╗
+║one     ║
+║        ║
+╟────────╢
+║two     ║
+║        ║
+║        ║
+║        ║
+║        ║
+╚════════╝
+TXT
+
+
+ui.screen.handle-resize(from-width => 10, from-height => 10, to-width => 10, to-height => 6);
+
+%*ENV<TERMINAL_UI_ROWS> = 6;
+
+ui.screen.refresh;
+
+is virtual-screen.render, q:to/TXT/, 'resize';
+╔════════╗
+║one     ║
+║        ║
+╟────────╢
+║two     ║
+╚════════╝
+TXT
+
+done-testing;
+
