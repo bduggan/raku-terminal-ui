@@ -348,7 +348,7 @@ multi method update(Str $str, Int :$line!, :%meta) {
   self!draw-row($line + 1);
 }
 
-sub sanitize(Str $s) {
+sub sanitize(Str(Mu) $s) {
   $s.trans("\t" => '  ', :g);
 }
 
