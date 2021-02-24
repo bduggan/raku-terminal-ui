@@ -10,9 +10,8 @@ my $frame = $screen.add-frame;
 my $pane = $frame.add-pane;
 
 $frame.draw;
-$pane.focus;
-
 $pane.put("top");
+$pane.focus;
 for 1..72 {
  $pane.put("hello " ~ ++$);
 }
