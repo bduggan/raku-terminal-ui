@@ -128,6 +128,18 @@ method select-visible(Int $r) {
   self.select($!first-visible + $r);
 }
 
+#| Select the first row of content
+method select-first {
+  return unless @!lines;
+  self.select(0);
+}
+
+#| Select the last row of content
+method select-last {
+  return unless @!lines;
+  self.select(@!lines.elems - 1);
+}
+
 #| Select the last visible row.
 method select-last-visible {
   self.select-visible(self.height - 1);
@@ -156,7 +168,17 @@ method select($line!) {
     return;
   }
   unless $!first-visible <= $line <= self.last-visible {
-    abort "selecting a line that is not visible: $!first-visible <= $line <= { self.last-visible }";
+    my $prev-row = $!current-line // 0;
+    $!current-line = $line;
+    my $lines = $line - $prev-row;
+    info "selecting line $line, need to scroll up (or down) by $lines";
+    if $lines > 0 {
+      self.scroll-up: :$lines;
+    } else {
+      self.scroll-down: lines => -$lines;
+    }
+    self.redraw;
+    return;
   }
   my $prev-row = self.selected-row;
   $!current-line = $line;
@@ -254,7 +276,7 @@ method draw {
 
 #| Refresh the screen
 method redraw {
-  info "redrawing.  selected row is {self.selected-row // 'undefined'}";
+  debug "redrawing.  selected row is {self.selected-row // 'undefined'}";
   $!write-lock.lock;
   for 1..$.height {
     if self.selected-row and $_ == self.selected-row {
@@ -268,6 +290,7 @@ method redraw {
 
 #| Scroll the visible contents up.  Optionally limit scrolling based on the contents.
 method scroll-up(Bool :$limit = True, Int :$lines = 1) {
+  debug "scroll up by $lines";
   my $actual;
   if $limit && $!first-visible + self.height + $lines > self.lines.elems {
     $actual = - ( $!first-visible + self.height - self.lines.elems );
@@ -295,11 +318,12 @@ method scroll-up(Bool :$limit = True, Int :$lines = 1) {
 }
 
 #| Scroll the visible contents down.  Optionally limit scrolling based on the contents.
-method scroll-down(Bool :$limit = True, Int :$lines = 1) {
-  info "scroll down";
+method scroll-down(Int :$lines = 1) {
+  debug "scroll down by $lines";
   my $actual;
-  if $limit && $!first-visible < $lines {
+  if $!first-visible < $lines {
     $actual = $!first-visible;
+    debug "limiting to $actual, not $lines";
     return if $actual == 0;
   }
   if (self!has-vertical-overlap) {
@@ -315,10 +339,13 @@ method scroll-down(Bool :$limit = True, Int :$lines = 1) {
     scroll-down($actual // $lines);
   }
   $!first-visible -= ($actual // $lines);
-  if $!current-line > self.last-visible {
-    $!current-line = self.last-visible;
+  with $!current-line {
+    if $!current-line > self.last-visible {
+      $!current-line = self.last-visible;
+    }
+    abort("scrolling calculation wrong") without self.selected-row;
+    self.draw-selected-line;
   }
-  self.draw-selected-line;
   self!draw-row($_) for 1..($actual // $lines);
 }
 
@@ -328,7 +355,7 @@ method selected-row {
   return without $!first-visible;
   my $r = $!current-line - $!first-visible + 1;
   unless 1 <= $r <= $.height {
-    warning "selected row $r is out of range";
+    warning "selected row $r is out of range (height: {$.height})";
     return;
   }
   $r;
@@ -474,7 +501,7 @@ multi method on(Str :$name!, Callable :$action!) {
 
 #| Run the action with the given name
 method call($name) {
-  if $name eq <select-up select-down page-up page-down down_10 up_10>.any {
+  if $name eq <select-up select-down select-last select-first page-up page-down down_10 up_10>.any {
     return self."$name"() unless %!actions{ $name };
   }
   unless %!actions{ $name } {

@@ -44,6 +44,8 @@ has %.pane-bindings =
   'PageDown' => 'page-down',
   'PageUp' => 'page-up',
   'Enter' => 'select',
+  '9' => 'select-last',
+  '0' => 'select-first',
 ;
 
 #| UI bindings (not specific to a pane)
