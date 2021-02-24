@@ -2,8 +2,6 @@
 
 use Test;
 
-use lib $*HOME.child('raku-terminal-ansi/lib');
-
 use Terminal::UI 'ui';
 use Terminal::ANSI;
 use Terminal::UI::Utils;
