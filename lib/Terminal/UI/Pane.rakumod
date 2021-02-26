@@ -193,14 +193,16 @@ method last-visible {
   $!first-visible + $!height - 1;
 }
 
-#| Select the line above the current one, possibly scrolling the screen down
-method select-up {
+#| Select the line $n above the current one, possibly scrolling the screen down
+method select-up($n = 1) {
   without $!current-line {
     abort "cannot select up, no current line";
   }
-  return unless $!current-line >= 1;
-  self.scroll-down if $!current-line == $!first-visible;
-  self.select($!current-line - 1);
+  my $actual = $n min $!current-line;
+  info "select up by $n, current line $!current-line, actual is $actual";
+  return unless $actual >= 1;
+  # self.scroll-down if $!current-line == $!first-visible;
+  self.select($!current-line - $actual);
 }
 
 method !trace($msg) {
@@ -210,34 +212,35 @@ method !trace($msg) {
   );
 }
 
-#| Select the line below the current one, possibly scrolling the screen up
-method select-down {
+#| Select the line $n lines below the current one, possibly scrolling the screen up
+method select-down($n = 1) {
   without $!current-line {
     abort "cannot select down, no current line";
   }
-  return unless $!current-line < @!lines.elems - 1;
-  self.scroll-up if $!current-line == self.last-visible;
-  self.select($!current-line + 1);
+  my $actual = $n min (@!lines.elems - $!current-line - 1);
+  info "select down $n, actual is $actual";
+  return unless $actual >= 1;
+  self.select($!current-line + $actual);
 }
 
 #| Move the selector down 10 rows
 method select-down_10 {
-  self.select-down for 1..10
+  self.select-down(10);
 }
 
 #| Move the selector up 10 rows
 method select-up_10 {
-  self.select-up for 1..10;
+  self.select-up(10);
 }
 
 #| Select down by the number of lines in the pane
 method page-down {
-  self.select-down for 1..^$.height;
+  self.select-down($.height);
 }
 
 #| Select up by the number of lines in the pane
 method page-up {
-  self.select-up for 1..^$.height;
+  self.select-up($.height);
 }
 
 method !set-scroll-region {
