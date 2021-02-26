@@ -51,7 +51,9 @@ has %.pane-bindings =
 #| UI bindings (not specific to a pane)
 has %.ui-bindings of Str =
   'q' => 'quit',
-  "\t" => 'select-next';
+  "\t" => 'select-next',
+  'h' => 'help'
+;
 
 #| Actions associated with bindings.
 has %.ui-actions;
@@ -273,6 +275,9 @@ method on(*%actions) {
 
 #| Call the action with the given name.
 method call(Str $action) {
+  if $action eq 'help' {
+    return self.alert(self.help-text, :!center);
+  }
   if $action eq 'select-next' {
     return self.focus(pane => 'next');
   }
@@ -319,6 +324,18 @@ multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
   self.screen.remove-frame($f);
   self.focus($frame, :$pane) if $frame && $pane;
   self.refresh(:hard);
+}
+
+method help-text {
+  my @txt;
+  for %.pane-bindings.sort -> (:key($k),:value($v)) {
+    @txt.push: "{$k.raku.fmt('%10s')} : $v (pane)";
+  }
+  for %.ui-bindings.sort -> (:key($k), :value($v)) {
+    @txt.push: "{$k.raku.fmt('%10s')} : $v";
+  }
+
+  @txt.join("\n");
 }
 
 =NAME Terminal::UI -- A framework for building terminal interfaces
