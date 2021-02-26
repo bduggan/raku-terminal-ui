@@ -501,7 +501,7 @@ multi method on(Str :$name!, Callable :$action!) {
 
 #| Run the action with the given name
 method call($name) {
-  if $name eq <select-up select-down select-last select-first page-up page-down down_10 up_10>.any {
+  if $name eq <select-up select-down select-last select-first page-up page-down down_10 up_10 clear>.any {
     return self."$name"() unless %!actions{ $name };
   }
   unless %!actions{ $name } {
