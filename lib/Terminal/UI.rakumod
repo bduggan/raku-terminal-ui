@@ -221,7 +221,7 @@ method select-down {
 multi method bind('pane', *%kv) {
   for %kv.pairs {
     if .value ~~ Callable {
-      my $key = 'anonymous_' ~ 1.rand.Str;
+      my $key = 'anonymous_' ~ 1.rand.fmt('%.03f');
       %!pane-bindings{.key} = $key;
       for self.panes -> $p {
         my %args = $key => .value;
@@ -237,7 +237,7 @@ multi method bind('pane', *%kv) {
 multi method bind(*%kv) {
   for %kv.pairs {
     if .value ~~ Callable {
-      my $key = 'anonymous_' ~ 1.rand.Str;
+      my $key = 'anonymous_' ~ 1.rand.fmt('%0.03f');
       %!ui-bindings{.key} = $key;
       %!ui-actions{$key} = .value;
     } else {
@@ -304,7 +304,7 @@ multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
   $pane.unfocus if $frame;
   my $f = self.screen.add-frame(:$height, :$width, :center);
   my ($t,$p);
-  if $title {
+  with $title {
     ($t,$p) = $f.add-panes(heights => [ 1, fr => 1 ]);
     $t.name = 'alert-title';
     $p.name = 'alert-body';
@@ -328,10 +328,10 @@ multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
 
 method help-text {
   my @txt;
-  for %.pane-bindings.sort -> (:key($k),:value($v)) {
+  for %.pane-bindings.sort(*.value) -> (:key($k),:value($v)) {
     @txt.push: "{$k.raku.fmt('%10s')} : $v (pane)";
   }
-  for %.ui-bindings.sort -> (:key($k), :value($v)) {
+  for %.ui-bindings.sort(*.value) -> (:key($k), :value($v)) {
     @txt.push: "{$k.raku.fmt('%10s')} : $v";
   }
 

@@ -376,6 +376,7 @@ multi method update(Str $str, Int :$line!, :%meta) {
 }
 
 sub sanitize(Str(Mu) $s) {
+  return "" unless $s && $s.defined;
   $s.trans("\t" => '  ', :g);
 }
 
@@ -383,10 +384,6 @@ sub sanitize(Str(Mu) $s) {
 #| Scroll down if the last line is visible and this line would be off screen.
 multi method put(Any(Str) $str, Bool :$scroll-ok = True, Bool :$center, :%meta) {
   $!write-lock.lock;
-  unless $str {
-    warning "not putting empty line";
-    return;
-  }
   LEAVE $!write-lock.unlock;
   # self.validate;
   if $str.lines > 1 {
