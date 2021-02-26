@@ -221,12 +221,12 @@ method select-down {
 }
 
 #| Move the selector down 10 rows
-method down_10 {
+method select-down_10 {
   self.select-down for 1..10
 }
 
 #| Move the selector up 10 rows
-method up_10 {
+method select-up_10 {
   self.select-up for 1..10;
 }
 
@@ -498,7 +498,7 @@ multi method on(Str :$name!, Callable :$action!) {
 
 #| Run the action with the given name
 method call($name) {
-  if $name eq <select-up select-down select-last select-first page-up page-down down_10 up_10 clear>.any {
+  if $name eq <select-up select-down select-last select-first page-up page-down select-down_10 select-up_10 clear>.any {
     return self."$name"() unless %!actions{ $name };
   }
   unless %!actions{ $name } {

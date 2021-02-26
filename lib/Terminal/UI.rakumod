@@ -35,10 +35,10 @@ has Terminal::UI::Frame $.focused-frame;
 #| Key bindings for the focused pane
 has %.pane-bindings =
   'k' => 'select-up',
-  'K' => 'up_10',
+  'K' => 'select-up_10',
   'Up' => 'select-up',
   'j' => 'select-down',
-  'J' => 'down_10',
+  'J' => 'select-down_10',
   'Down' => 'select-down',
   ' ' => 'page-down',
   'PageDown' => 'page-down',
@@ -318,7 +318,7 @@ multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
   $p.put("") for 1..$pad;
   $p.put(" $_ ",:$center) for @lines;
   $p.put("") for 1..$pad;
-  $p.put(" ok ", :$center);
+  $p.put(" ok ", :center);
   self.focus($f, pane => $p);
   $p.select-visible($p.height - 1);
   self.get-key;
@@ -329,11 +329,20 @@ multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
 
 method help-text {
   my @txt;
-  for %.pane-bindings.sort(*.value) -> (:key($k),:value($v)) {
-    @txt.push: "{$k.raku.fmt('%10s')} : $v (pane)";
+  my %pane;
+
+  push @txt: 'pane:';
+  push %pane, $_ for %.pane-bindings.invert;
+  for %pane.antipairs.sort(*.value) -> (:key($k),:value($v)) {
+    @txt.push: "{($k.sort>>.raku.join(',')).fmt('%20s')} : $v";
   }
-  for %.ui-bindings.sort(*.value) -> (:key($k), :value($v)) {
-    @txt.push: "{$k.raku.fmt('%10s')} : $v";
+
+  push @txt: '';
+  push @txt: 'screen:';
+  my %ui;
+  push %ui, $_ for %.ui-bindings.invert;
+  for %ui.antipairs.sort(*.value) -> (:key($k),:value($v)) {
+    @txt.push: "{($k.sort>>.raku.join(',')).fmt('%20s')} : $v";
   }
 
   @txt.join("\n");
