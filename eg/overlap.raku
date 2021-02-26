@@ -29,7 +29,7 @@ loop {
   $_ = ui.get-key;
   ui.focused.select-up when 'k';
   ui.focused.select-down when "j";
-  when "\t" {
+  when "Tab" {
     $pane++;
     $pane %= 2;
     ui.focus(:frame<big>, :$pane);

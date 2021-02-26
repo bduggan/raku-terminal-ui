@@ -51,7 +51,8 @@ has %.pane-bindings =
 #| UI bindings (not specific to a pane)
 has %.ui-bindings of Str =
   'q' => 'quit',
-  "\t" => 'select-next',
+  "Tab" => 'select-next',
+  "Untab" => 'select-prev',
   'h' => 'help'
 ;
 
@@ -92,11 +93,11 @@ multi method focus(Str :$frame!, Int :$pane! ) {
 }
 
 #| Set the next pane to be focused.
-multi method focus(Str :$pane where * eq 'next') {
+multi method focus(Str :$pane where * eq 'next' | 'prev') {
   my Int $current = $!focused-frame.panes.first: :k, * === $.focused;
   fail "no current pane" without $current;
   my $count = $!focused-frame.panes.elems;
-  my $next = ($current + 1) % $count;
+  my $next = $pane eq 'next' ?? ($current + 1) % $count !! ($current - 1) % $count;
   fail "no next frame" without $next;
   self.focus(pane => $next);
 }
@@ -259,6 +260,9 @@ method interact {
     when %.ui-bindings.keys.any {
       self.call(%!ui-bindings{$_})
     }
+    default {
+      info "unknown key {$_.raku}";
+    }
   }
 }
 
@@ -275,12 +279,9 @@ method on(*%actions) {
 
 #| Call the action with the given name.
 method call(Str $action) {
-  if $action eq 'help' {
-    return self.alert(self.help-text, :!center);
-  }
-  if $action eq 'select-next' {
-    return self.focus(pane => 'next');
-  }
+  return self.alert(self.help-text, :!center) if $action eq 'help';
+  return self.focus(pane => 'next') if $action eq 'select-next';
+  return self.focus(pane => 'prev') if $action eq 'select-prev';
   without %!ui-actions{$action} {
     info "no ui action for $action";
     return;
