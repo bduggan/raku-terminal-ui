@@ -219,10 +219,10 @@ method select-down {
 }
 
 #| Bind keys to events on the focused pane.
-multi method bind('pane', *%kv) {
+multi method bind('pane', :$name, *%kv) {
   for %kv.pairs {
     if .value ~~ Callable {
-      my $key = 'anonymous_' ~ 1.rand.fmt('%.03f');
+      my $key = ($name // 'anonymous_' ~ 1.rand.fmt('%.03f'));
       %!pane-bindings{.key} = $key;
       for self.panes -> $p {
         my %args = $key => .value;
