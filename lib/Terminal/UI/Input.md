@@ -15,14 +15,14 @@ Get keyboard input.
 
 ### METHODS
 
-* [**get-key**(Terminal::UI::Input: Bool :$decode = Bool::True, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.8/lib/Terminal/UI/Input.rakumod#L29)
+* [**get-key**(Terminal::UI::Input: Bool :$decode = Bool::True, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.9/lib/Terminal/UI/Input.rakumod#L29)
 
   Get a single key, and optionally debug the bytes into a character. Escape sequences are parsed by Terminal::ANSI::parse-input.
 
-* [**init**(Terminal::UI::Input: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.8/lib/Terminal/UI/Input.rakumod#L17)
+* [**init**(Terminal::UI::Input: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.9/lib/Terminal/UI/Input.rakumod#L17)
 
   Initialize input (called implicity if necessary)
 
-* [**shutdown**(Terminal::UI::Input: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.8/lib/Terminal/UI/Input.rakumod#L23)
+* [**shutdown**(Terminal::UI::Input: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.9/lib/Terminal/UI/Input.rakumod#L23)
 
   Stop reading from the tty, and reset things
