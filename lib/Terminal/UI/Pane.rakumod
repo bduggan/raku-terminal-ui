@@ -364,8 +364,17 @@ method selected-row {
   $r;
 }
 
+#| Clear and add content centered vertically and horizontally
+method splash($content) {
+  self.clear;
+  my $top = (self.height div 2) - ($content.lines.elems div 2);
+  for $content.lines.kv -> $i, $str {
+    self.update: :line($top + $i), "$str", :center;
+  }
+}
+
 #| Update a line of content
-multi method update(Str $str, Int :$line!, :%meta) {
+multi method update(Str $str, Int :$line!, Bool :$center, :%meta) {
   if $line > @!lines.elems - 1 {
     for @!lines.elems .. $line {
       # autovivify
@@ -373,7 +382,7 @@ multi method update(Str $str, Int :$line!, :%meta) {
     }
   }
   @!meta[$line] = %meta with %meta;
-  @!lines[$line] = $str;
+  @!lines[$line] = $center ?? self!centered($str) !! $str;
   @!raw[$line] = $str;
   self!draw-row($line + 1);
 }
@@ -381,6 +390,11 @@ multi method update(Str $str, Int :$line!, :%meta) {
 sub sanitize(Str(Mu) $s) {
   return "" unless $s && $s.defined;
   $s.trans("\t" => '  ', :g);
+}
+
+method !centered($str) {
+  my $cnt = sanitize($str).fmt("%{self.width div 2 + $str.chars div 2}s");
+  $cnt.fmt("%-{self.width}s");
 }
 
 #| Add a line to the content.
