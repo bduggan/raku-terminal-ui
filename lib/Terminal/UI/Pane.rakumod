@@ -526,6 +526,10 @@ method call($name) {
   my %sig = &code.signature.params.grep(*.named).map(*.name => 1);
   my %args;
   %args<meta> = self.current-meta if %sig{'$meta'};
+  if %sig{'%meta'} {
+    my %meta = self.current-meta.Hash;
+    %args<meta> = %meta;
+  }
   %args<raw> = @!lines[$!current-line] if %sig{'$raw'};
   debug "sending args for $name: " ~ %args.keys.join(',');
   code(|%args);
