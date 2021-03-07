@@ -399,18 +399,20 @@ method !centered($str) {
   $cnt.fmt("%-{self.width}s");
 }
 
-#| Add a line to the content.
-#| Scroll down if the last line is visible and this line would be off screen.
-multi method put(Any(Str) $str, Bool :$scroll-ok = True, Bool :$center, :%meta) {
+#| Add lines of content, possibly scrolling.
+#| Content is added one line at a time -- the content
+#| can be any type that has a 'lines' method.
+multi method put($content, Bool :$scroll-ok = True, Bool :$center, :%meta) {
   $!write-lock.lock;
   LEAVE $!write-lock.unlock;
   # self.validate;
-  if $str.lines > 1 {
-    for $str.lines -> $l {
+  if $content !~~ Str or $content.lines > 1 {
+    for $content.lines -> $l {
       self.put($l, :$scroll-ok, :$center, :%meta);
     }
     return;
   }
+  my $str := $content;
   $!first-visible //= 0;
   $!current-line //= 0;
   my $should-scroll = self.last-visible == (@!lines - 1);
