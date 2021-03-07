@@ -196,7 +196,8 @@ method last-visible {
 #| Select the line $n above the current one, possibly scrolling the screen down
 method select-up($n = 1) {
   without $!current-line {
-    abort "cannot select up, no current line";
+    warning "cannot select up, no current line";
+    return;
   }
   my $actual = $n min $!current-line;
   info "select up by $n, current line $!current-line, actual is $actual";
@@ -215,7 +216,8 @@ method !trace($msg) {
 #| Select the line $n lines below the current one, possibly scrolling the screen up
 method select-down($n = 1) {
   without $!current-line {
-    abort "cannot select down, no current line";
+    warning "cannot select down, no current line";
+    return;
   }
   my $actual = $n min (@!lines.elems - $!current-line - 1);
   info "select down $n, actual is $actual";
