@@ -35,6 +35,12 @@ ui.panes[0].on: select => -> :%meta {
   show-file($_) with %meta<file>;
 }
 
+ui.bind: 'pane', i => 'info';
+ui.panes[0].on: info => -> :%meta ( :$file, :$dir ) {
+  ui.alert([$file.basename, "Last modified: { $file.modified.DateTime }"])
+    with $file;
+}
+
 ui.interact;
 ui.shutdown;
 
