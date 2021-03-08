@@ -13,7 +13,6 @@ sub show-dir($dir) {
   my \p = ui.panes[0];
   p.clear;
   p.put: [t.yellow => "$dir"];
-  #p.put: ".. \c[LEFTWARDS TRIANGLE-HEADED ARROW WITH LONG TIP UPWARDS]", :meta( dir => $dir.parent );
   p.put: [t.magenta => ".. (up)"], :meta( dir => $dir.parent );
 
   for $dir.dir.sort({!.d,.fc}) {
