@@ -34,6 +34,9 @@ ui.bind: 'pane', e => -> :$raw { ui.alert("e. got..\n" ~ ($raw.words.join("\n"))
 ui.bind: f => { ui.alert(:title<hello>, "world") }
 ui.bind: g => { ui.alert(:title<hello>, <this is four lines>) }
 
+$p.put: "i returns a value";
+ui.bind: i => { $p.put: ui.alert(:title<returning>, <one two three>) }
+
 ui.interact;
 ui.shutdown;
 

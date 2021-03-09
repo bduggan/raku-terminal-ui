@@ -329,19 +329,20 @@ multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
   $p.put("") for 1..$pad;
   $p.put(" $_ ",:$center) for @lines;
   $p.put("") for 1..$pad;
-  $p.put(" ok ", :center);
+  $p.put(" ok ", :center, :meta(:value<ok>));
   my $promise = Promise.new;
-  $p.on: select => { $promise.keep };
+  $p.on: select => -> :%meta { $promise.keep(%meta) };
   self.focus($f, pane => $p);
   $p.select-visible($p.height - 1);
-  info "setting force focus";
+  info "waiting for alert";
   $!force-focus = True;
-  await $promise;
+  my $res = $promise.result;
   $!force-focus = False;
-  info "done";
+  info "done waiting for alert";
   self.screen.remove-frame($f);
   self.focus($frame, :$pane) if $frame && $pane;
   self.refresh(:hard);
+  $res<value>;
 }
 
 method help-text {

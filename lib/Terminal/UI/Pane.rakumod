@@ -406,13 +406,17 @@ multi method put($content, Bool :$scroll-ok = True, Bool :$center, :%meta) {
   $!write-lock.lock;
   LEAVE $!write-lock.unlock;
   # self.validate;
+  without $content {
+    warning "content is undefined";
+    return;
+  }
   if $content !~~ Str or $content.lines > 1 {
     for $content.lines -> $l {
       self.put($l, :$scroll-ok, :$center, :%meta);
     }
     return;
   }
-  my $str := $content;
+  my $str := $content.Str;
   $!first-visible //= 0;
   $!current-line //= 0;
   my $should-scroll = self.last-visible == (@!lines - 1);
