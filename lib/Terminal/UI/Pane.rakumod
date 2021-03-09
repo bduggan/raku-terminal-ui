@@ -20,6 +20,9 @@ has UInt $.height;
 #| Number of columns
 has UInt $.width;
 
+#| Is it focusable?
+has Bool $.focusable is rw = True;
+
 #| Whether this pane is currently focused
 has Bool $.focused;
 
@@ -49,6 +52,8 @@ has $.style handles <colors> = Terminal::UI::Style.singleton;
 
 #| A set of callable actions
 has Callable:D %.actions;
+
+has %!sync-actions;
 
 has Lock $!write-lock .= new;
 
@@ -281,7 +286,7 @@ method draw {
 
 #| Refresh the screen
 method redraw {
-  debug "redrawing.  selected row is {self.selected-row // 'undefined'}";
+  debug "redrawing {self.name}.  selected row is {self.selected-row // 'undefined'}";
   $!write-lock.lock;
   for 1..$.height {
     if self.selected-row and $_ == self.selected-row {
@@ -356,8 +361,9 @@ method scroll-down(Int :$lines = 1) {
 
 #| Selected row, in the range 1..$!height
 method selected-row {
-  return without $!current-line;
-  return without $!first-visible;
+  return Nil without $!current-line;
+  return Nil without $!first-visible;
+  return Nil unless $.focusable;
   my $r = $!current-line - $!first-visible + 1;
   unless 1 <= $r <= $.height {
     warning "selected row $r is out of range (height: {$.height})";
@@ -521,6 +527,18 @@ multi method on(Str :$name!, Callable :$action!) {
   %!actions{ $name } = $action
 }
 
+multi method on-sync(*%kv) {
+   for %kv.pairs {
+     self.on-sync(name => .key, action => .value);
+   }
+}
+
+#| Associate a synchronous callback, with the name of an action
+multi method on-sync(Str :$name!, Callable :$action!) {
+  %!actions{ $name } = $action;
+  %!sync-actions{ $name } = True;
+}
+
 #| Run the action with the given name
 method call($name) {
   if $name eq <select-up select-down select-last select-first page-up page-down select-down_10 select-up_10 clear>.any {
@@ -540,7 +558,11 @@ method call($name) {
   }
   %args<raw> = @!lines[$!current-line] if %sig{'$raw'};
   debug "sending args for $name: " ~ %args.keys.join(',');
-  start code(|%args);
+  if $name eq 'select' || %!sync-actions{$name} {
+    code(|%args);
+  } else {
+    start code(|%args);
+  }
 }
 
 #| Run a shell command, and send the lines of the output to this pane

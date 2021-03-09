@@ -1,4 +1,6 @@
-unit class Terminal::UI::Input;
+use OO::Monitors;
+unit monitor Terminal::UI::Input;
+use Terminal::UI::Utils;
 use Terminal::ANSI;
 use Log::Async;
 
@@ -24,12 +26,14 @@ method init {
 method shutdown {
   .close with $!tty;
   shell "stty sane";
+  $!tty = Nil;
 }
 
 #| Get a single key, and optionally debug the bytes into a character.  Escape sequences are parsed by Terminal::ANSI::parse-input.
 method get-key(Bool :$decode = True) {
   self!maybe-init or return;
-  my $got = $!tty.read(10);
+  my $got = try $!tty.read(10);
+  abort "$!" if $!;
   return $got unless $decode;
   my $c = $got.decode;
   return parse-input($c) // $c;

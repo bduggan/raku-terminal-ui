@@ -301,14 +301,15 @@ method call(Str $action) {
   start codee()
 }
 
-multi method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
+multi method alert(Str $msg, Int :$pad = 0, Bool :$center = True, Str :$title) {
   self.alert($msg.lines.List, :$pad, :$center, :$title);
 }
 
 #| Show an alert box, and wait for a key press to dismiss it.
-multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
+multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Str :$title) {
   my Int $width = ((@lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
-  my Int $height = (3 + @lines + $pad + 1) min self.screen.rows - 3;
+  info "ROWS in screen" ~ self.screen.rows;
+  my Int $height = (4 + @lines) min (self.screen.rows - 3);
   $height += 2 if $title;
   info "alert ($width x $height)";
   my $frame = self.focused-frame;
@@ -321,17 +322,19 @@ multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
     $t.name = 'alert-title';
     $p.name = 'alert-body';
     $t.put: $title, :center;
+    $t.focusable = False;
   } else {
     ($msg,$p) = $f.add-panes(heights => [fr => 1, 1]);
     $p.name = 'alert';
   }
-  $f.draw;
-  $msg.put("") for 1..$pad;
+  $msg.focusable = False;
+#  $msg.put(" " x $width) for 1..$pad;
   $msg.put(" $_ ",:$center) for @lines;
-  $msg.put("") for 1..$pad;
+#  $msg.put(" " x $width) for 1..$pad;
   $p.put(" ok ", :center, :meta(:value<ok>));
   my $promise = Promise.new;
   $p.on: select => -> :%meta { $promise.keep(%meta) };
+  $f.draw;
   self.focus($f, pane => $p);
   $p.select-visible($p.height - 1);
   info "waiting for alert";
