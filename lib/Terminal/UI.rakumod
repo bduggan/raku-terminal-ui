@@ -315,20 +315,20 @@ multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
   my $pane = self.focused if $frame;
   $pane.unfocus if $frame;
   my $f = self.screen.add-frame(:$height, :$width, :center);
-  my ($t,$p);
+  my ($t,$p,$msg);
   with $title {
-    ($t,$p) = $f.add-panes(heights => [ 1, fr => 1 ]);
+    ($t,$msg,$p) = $f.add-panes(heights => [ 1, fr => 1, 1 ]);
     $t.name = 'alert-title';
     $p.name = 'alert-body';
     $t.put: $title, :center;
   } else {
-    $p = $f.add-pane;
+    ($msg,$p) = $f.add-panes(heights => [fr => 1, 1]);
     $p.name = 'alert';
   }
   $f.draw;
-  $p.put("") for 1..$pad;
-  $p.put(" $_ ",:$center) for @lines;
-  $p.put("") for 1..$pad;
+  $msg.put("") for 1..$pad;
+  $msg.put(" $_ ",:$center) for @lines;
+  $msg.put("") for 1..$pad;
   $p.put(" ok ", :center, :meta(:value<ok>));
   my $promise = Promise.new;
   $p.on: select => -> :%meta { $promise.keep(%meta) };
