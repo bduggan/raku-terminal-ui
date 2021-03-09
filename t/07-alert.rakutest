@@ -21,8 +21,6 @@ disable-output;
 my $p = Promise.new;
 my $c = Channel.new;
 
-Terminal::UI::Input.^find_method('get-key').wrap: -> |c { $p.keep; $c.receive; }
-
 ui.setup(:1pane);
 ui.pane.put("Hello!");
 ui.pane.put("world");
@@ -41,7 +39,8 @@ is virtual-screen.render, q:to/TXT/, 'initial screen';
 TXT
 
 my $q = start ui.alert("¡ALERT!");
-await $p;
+
+sleep 1;
 
 is virtual-screen.render, q:to/TXT/, 'alert';
 ╔══════════════════╗
@@ -56,7 +55,8 @@ is virtual-screen.render, q:to/TXT/, 'alert';
 ╚══════════════════╝
 TXT
 
-$c.send('Enter');
+ui.focused.call('select');
+
 await $q;
 
 is virtual-screen.render, q:to/TXT/, 'dismissed';

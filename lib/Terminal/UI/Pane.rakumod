@@ -536,7 +536,7 @@ method call($name) {
   }
   %args<raw> = @!lines[$!current-line] if %sig{'$raw'};
   debug "sending args for $name: " ~ %args.keys.join(',');
-  code(|%args);
+  start code(|%args);
 }
 
 #| Run a shell command, and send the lines of the output to this pane

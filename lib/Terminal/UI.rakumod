@@ -59,6 +59,9 @@ has %.ui-bindings of Str =
 #| Actions associated with bindings.
 has %.ui-actions;
 
+#| Disable changing the focus
+has Bool $.force-focus;
+
 #| The currently focused pane within the currently focused frame.
 method focused {
   fail "no focused frame" without $!focused-frame;
@@ -88,12 +91,14 @@ method refresh(Bool :$hard) {
 
 #| Set a pane and frame to be focused, using the name of the frame.
 multi method focus(Str :$frame!, Int :$pane! ) {
+  return if self.force-focus;
   $!focused-frame = self.find-frame($frame);
   $!focused-frame.focus($!focused-frame.panes[$pane])
 }
 
 #| Set the next pane to be focused.
 multi method focus(Str :$pane where * eq 'next' | 'prev') {
+  return if self.force-focus;
   my Int $current = $!focused-frame.panes.first: :k, * === $.focused;
   fail "no current pane" without $current;
   my $count = $!focused-frame.panes.elems;
@@ -104,6 +109,7 @@ multi method focus(Str :$pane where * eq 'next' | 'prev') {
 
 #| Set a pane and frame to be focused, using the indexes (default 0,0).
 multi method focus(Int :$pane, Int :$frame = 0) {
+  return if self.force-focus;
   $!focused-frame = self.frames[$frame] // die "frame $frame out of range";
   my $p = $!focused-frame.panes[$pane] // die "No pane $pane";
   $!focused-frame.focus($p);
@@ -111,6 +117,7 @@ multi method focus(Int :$pane, Int :$frame = 0) {
 
 #| Set a pane and frame to be focused, using the frame.
 multi method focus(Terminal::UI::Frame $frame!, Int :$pane = 0) {
+  return if self.force-focus;
   $!focused-frame = $frame;
   my $p = $!focused-frame.panes[$pane] // die "No pane $pane";
   $!focused-frame.focus($p);
@@ -118,6 +125,7 @@ multi method focus(Terminal::UI::Frame $frame!, Int :$pane = 0) {
 
 #| Set a pane and frame to be focused, using the frame.
 multi method focus(Terminal::UI::Frame $frame!, Terminal::UI::Pane :$pane!) {
+  return if self.force-focus;
   $!focused-frame = $frame;
   $!focused-frame.focus($pane);
 }
@@ -279,7 +287,10 @@ method on(*%actions) {
 
 #| Call the action with the given name.
 method call(Str $action) {
-  return self.alert(self.help-text, :!center) if $action eq 'help';
+  if $action eq 'help' {
+    my $p = start self.alert(self.help-text, :!center);
+    return $p;
+  }
   return self.focus(pane => 'next') if $action eq 'select-next';
   return self.focus(pane => 'prev') if $action eq 'select-prev';
   without %!ui-actions{$action} {
@@ -287,7 +298,7 @@ method call(Str $action) {
     return;
   }
   my &codee := %!ui-actions{$action};
-  codee()
+  start codee()
 }
 
 multi method alert(Str $msg, Int :$pad = 1, Bool :$center = True, Str :$title) {
@@ -319,9 +330,15 @@ multi method alert(@lines, Int :$pad = 1, Bool :$center = True, Str :$title) {
   $p.put(" $_ ",:$center) for @lines;
   $p.put("") for 1..$pad;
   $p.put(" ok ", :center);
+  my $promise = Promise.new;
+  $p.on: select => { $promise.keep };
   self.focus($f, pane => $p);
   $p.select-visible($p.height - 1);
-  self.get-key;
+  info "setting force focus";
+  $!force-focus = True;
+  await $promise;
+  $!force-focus = False;
+  info "done";
   self.screen.remove-frame($f);
   self.focus($frame, :$pane) if $frame && $pane;
   self.refresh(:hard);
