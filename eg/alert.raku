@@ -37,6 +37,9 @@ ui.bind: g => { ui.alert(:title<hello>, <this is four lines>) }
 $p.put: "i returns a value";
 ui.bind: i => { $p.put: ui.alert(:title<returning>, <one two three>) }
 
+$p.put: "s selects from a list";
+ui.bind: s => { $p.put: ui.alert("choose a color", values => <green blue red orange>) }
+
 ui.interact;
 ui.shutdown;
 
