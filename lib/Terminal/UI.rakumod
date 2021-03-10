@@ -60,7 +60,7 @@ has %.ui-bindings of Str =
 has %.ui-actions;
 
 #| Disable changing the focus
-has Bool $.force-focus;
+has Bool $.lock-focus;
 
 #| The currently focused pane within the currently focused frame.
 method focused {
@@ -91,14 +91,14 @@ method refresh(Bool :$hard) {
 
 #| Set a pane and frame to be focused, using the name of the frame.
 multi method focus(Str :$frame!, Int :$pane! ) {
-  return if self.force-focus;
+  return if self.lock-focus;
   $!focused-frame = self.find-frame($frame);
   $!focused-frame.focus($!focused-frame.panes[$pane])
 }
 
 #| Set the next pane to be focused.
 multi method focus(Str :$pane where * eq 'next' | 'prev') {
-  return if self.force-focus;
+  return if self.lock-focus;
   my Int $current = $!focused-frame.panes.first: :k, * === $.focused;
   fail "no current pane" without $current;
   my $count = $!focused-frame.panes.elems;
@@ -109,7 +109,7 @@ multi method focus(Str :$pane where * eq 'next' | 'prev') {
 
 #| Set a pane and frame to be focused, using the indexes (default 0,0).
 multi method focus(Int :$pane, Int :$frame = 0) {
-  return if self.force-focus;
+  return if self.lock-focus;
   $!focused-frame = self.frames[$frame] // die "frame $frame out of range";
   my $p = $!focused-frame.panes[$pane] // die "No pane $pane";
   $!focused-frame.focus($p);
@@ -117,7 +117,7 @@ multi method focus(Int :$pane, Int :$frame = 0) {
 
 #| Set a pane and frame to be focused, using the frame.
 multi method focus(Terminal::UI::Frame $frame!, Int :$pane = 0) {
-  return if self.force-focus;
+  return if self.lock-focus;
   $!focused-frame = $frame;
   my $p = $!focused-frame.panes[$pane] // die "No pane $pane";
   $!focused-frame.focus($p);
@@ -125,7 +125,7 @@ multi method focus(Terminal::UI::Frame $frame!, Int :$pane = 0) {
 
 #| Set a pane and frame to be focused, using the frame.
 multi method focus(Terminal::UI::Frame $frame!, Terminal::UI::Pane :$pane!) {
-  return if self.force-focus;
+  return if self.lock-focus;
   $!focused-frame = $frame;
   $!focused-frame.focus($pane);
 }
@@ -338,9 +338,9 @@ multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Str :$title) {
   self.focus($f, pane => $p);
   $p.select-visible($p.height - 1);
   info "waiting for alert";
-  $!force-focus = True;
+  $!lock-focus = True;
   my $res = $promise.result;
-  $!force-focus = False;
+  $!lock-focus = False;
   info "done waiting for alert";
   self.screen.remove-frame($f);
   self.focus($frame, :$pane) if $frame && $pane;
