@@ -565,16 +565,15 @@ method call($name) {
   }
 }
 
-#| Run a shell command, and send the lines of the output to this pane
-method exec(@cmd) {
+#| Run a shell command, and send the lines of the output to this pane, optionally filtering the output
+method exec(@cmd, :$filter) {
   debug "running @cmd";
   my $proc = run |@cmd, :out, :err;
   for $proc.out.lines -> $text {
-    debug("got $text");
-    self.put("$text");
+    self.put("$text") if !$filter.defined || ($text ~~ $filter);
   }
   for $proc.err.lines -> $text {
-    self.put("$text");
+    self.put("error: $text");
   }
   debug "done " ~ $proc.exitcode;
 }
