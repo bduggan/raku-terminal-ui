@@ -1,12 +1,16 @@
 unit role Terminal::UI::Alerts;
 use Log::Async;
 
+multi method select($msg, @values) {
+  self.alert($msg, :@values, :!center);
+}
+
 multi method alert(Str $msg, Int :$pad = 0, Bool :$center = True, Str :$title, :@values = ('ok',)) {
-  self.alert($msg.lines.List, :$pad, :$center, :$title, :@values);
+  self.alert($msg.lines.List, :$pad, :$center, :$title, :@values, :!center-values);
 }
 
 #| Show an alert box, and wait for a key press to dismiss it.
-multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Str :$title, :@values = ('ok',)) {
+multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',)) {
   my Int $width = ((@lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
   info "ROWS in screen" ~ self.screen.rows;
   my Int $height = (3 + @lines + @values) min (self.screen.rows - 3);
@@ -30,7 +34,7 @@ multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Str :$title, :@v
   $msg.focusable = False;
   $msg.put(" $_ ",:$center) for @lines;
   for @values -> $value {
-    $p.put: "$value", :center, :meta(:$value);
+    $p.put: "$value", :center($center-values), :meta(:$value);
   }
   my $promise = Promise.new;
   $p.on: select => -> :%meta { $promise.keep(%meta) };
