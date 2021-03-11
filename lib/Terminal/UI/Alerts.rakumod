@@ -2,11 +2,11 @@ unit role Terminal::UI::Alerts;
 use Log::Async;
 
 multi method select($msg, @values) {
-  self.alert($msg, :@values, :!center);
+  self.alert($msg, :@values, :!center, :!center-values);
 }
 
-multi method alert(Str $msg, Int :$pad = 0, Bool :$center = True, Str :$title, :@values = ('ok',)) {
-  self.alert($msg.lines.List, :$pad, :$center, :$title, :@values, :!center-values);
+multi method alert(Str $msg, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',)) {
+  self.alert($msg.lines.List, :$pad, :$center, :$title, :@values, :$center-values);
 }
 
 #| Show an alert box, and wait for a key press to dismiss it.

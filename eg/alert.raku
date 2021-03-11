@@ -41,6 +41,9 @@ $p.put: "s or t select from a list";
 ui.bind: s => { $p.put: ui.alert("choose a color", values => <green blue red orange>) }
 ui.bind: t => { $p.put: ui.select("choose a color", <green blue red orange>) }
 
+$q.put: 'select in the frame will do an alert';
+$q.on: select => { ui.alert('hi') };
+
 ui.interact;
 ui.shutdown;
 

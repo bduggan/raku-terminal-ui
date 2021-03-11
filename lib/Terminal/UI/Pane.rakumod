@@ -558,7 +558,7 @@ method call($name) {
   }
   %args<raw> = @!lines[$!current-line] if %sig{'$raw'};
   debug "sending args for $name: " ~ %args.keys.join(',');
-  if $name eq 'select' || %!sync-actions{$name} {
+  if %!sync-actions{$name} {
     code(|%args);
   } else {
     start code(|%args);
