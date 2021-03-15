@@ -61,6 +61,7 @@ has %.ui-bindings of Str =
 
 #| Actions associated with bindings.
 has %.ui-actions;
+has %!ui-sync-actions;
 
 #| Lock the focus
 has Bool $.lock-focus is rw;
@@ -288,6 +289,18 @@ method on(*%actions) {
   }
 }
 
+#| Associate names of actions with synchronous callables.
+method on-sync(*%actions) {
+  for %actions.pairs {
+    unless %!ui-bindings.invert.Hash{.key} {
+      warning "no action for " ~ .key;
+      warning "actions: " ~ %!ui-bindings.values.join(',');
+    }
+    %!ui-actions{.key} = .value;
+    %!ui-sync-actions{.key} = True;
+  }
+}
+
 #| Call the action with the given name.
 method call(Str $action) {
   if $action eq 'help' {
@@ -301,6 +314,10 @@ method call(Str $action) {
     return;
   }
   my &codee := %!ui-actions{$action};
+  if %!ui-sync-actions{$action} {
+    codee();
+    return;
+  }
   start codee()
 }
 
