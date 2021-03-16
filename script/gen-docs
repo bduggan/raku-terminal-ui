@@ -108,6 +108,10 @@ sub to-md($pod) {
 }
 
 sub write-file($class) {
+  if $class.^name eq 'Any' {
+    note "cannot document " ~ $class.raku;
+    return;
+  }
   my $file = 'lib'.IO.child($class.^name.subst('::','/',:g) ~ '.md');
   note "writing $file";
   my %blocks = $class.pod.map: { (.?name // '') => $_ };

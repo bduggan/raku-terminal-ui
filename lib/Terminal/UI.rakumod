@@ -13,12 +13,13 @@ sub EXPORT($ui = Nil) {
     "Terminal::UI::Pane" => Terminal::UI::Pane,
     "Terminal::UI::Frame" => Terminal::UI::Frame,
     "Terminal::UI::Input" => Terminal::UI::Input,
-    "Terminal::UI::Style" => Terminal::UI::Style;
+    "Terminal::UI::Style" => Terminal::UI::Style
+    ;
   %h{$ui} = Terminal::UI.new if $ui;
   %h;
 }
 
-unit class Terminal::UI:ver<0.0.10>;
+unit class Terminal::UI:ver<0.0.11>;
 
 also does Terminal::UI::Alerts;
 
@@ -61,6 +62,8 @@ has %.ui-bindings of Str =
 
 #| Actions associated with bindings.
 has %.ui-actions;
+
+#| Synchronous actions associated with bindings.
 has %!ui-sync-actions;
 
 #| Lock the focus

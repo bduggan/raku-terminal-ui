@@ -53,6 +53,7 @@ has $.style handles <colors> = Terminal::UI::Style.singleton;
 #| A set of callable actions
 has Callable:D %.actions;
 
+#| A set of callable actions which will be called synchronously
 has %!sync-actions;
 
 has Lock $!write-lock .= new;

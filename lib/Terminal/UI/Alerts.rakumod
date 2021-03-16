@@ -1,6 +1,8 @@
 unit role Terminal::UI::Alerts;
 use Log::Async;
 
+method pod { $=pod }
+
 multi method select($msg, @values, @meta = Empty) {
   self.alert($msg, :@values, :@meta, :!center, :!center-values);
 }
