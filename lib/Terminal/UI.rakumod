@@ -259,6 +259,17 @@ multi method bind(*%kv) {
   }
 }
 
+multi method bind(*@pairs) {
+  my $pane = @pairs.shift if @pairs.first ~~ Str && @pairs.first eq 'pane';
+  for @pairs -> Pair $p {
+    if $pane {
+      self.bind('pane', |($p.key => $p.value))
+    } else {
+      self.bind(|($p.key => $p.value))
+    }
+  }
+}
+
 #| Respond to keyboard input, until we are done
 method interact {
   self.focus(pane => 0);

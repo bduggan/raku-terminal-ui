@@ -1,18 +1,17 @@
 unit role Terminal::UI::Alerts;
 use Log::Async;
 
-multi method select($msg, @values) {
-  self.alert($msg, :@values, :!center, :!center-values);
+multi method select($msg, @values, :@meta) {
+  self.alert($msg, :@values, :@meta, :!center, :!center-values);
 }
 
-multi method alert(Str $msg, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',)) {
-  self.alert($msg.lines.List, :$pad, :$center, :$title, :@values, :$center-values);
+multi method alert(Str $msg, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',), :@meta) {
+  self.alert($msg.lines.List, :$pad, :$center, :$title, :@values, :@meta, :$center-values);
 }
 
 #| Show an alert box, and wait for a key press to dismiss it.
-multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',)) {
-  my Int $width = ((@lines>>.chars.max + 4) max 16) min (self.screen.cols - 4);
-  info "ROWS in screen" ~ self.screen.rows;
+multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',), :@meta) {
+  my Int $width = (( ( |@lines, |@values )>>.chars.max + 4) max 16) min (self.screen.cols - 4);
   my Int $height = (3 + @lines + @values) min (self.screen.rows - 3);
   $height += 2 if $title;
   info "alert ($width x $height)";
@@ -34,7 +33,8 @@ multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Bool :$center-va
   $msg.focusable = False;
   $msg.put(" $_ ",:$center) for @lines;
   for @values -> $value {
-    $p.put: "$value", :center($center-values), :meta(:$value);
+    my %meta = :value(@meta[$++] // $value);
+    $p.put: "$value", :center($center-values), :%meta;
   }
   my $promise = Promise.new;
   $p.on: select => -> :%meta { $promise.keep(%meta) };
