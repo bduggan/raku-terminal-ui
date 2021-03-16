@@ -42,15 +42,15 @@ my $q = start ui.alert("¡ALERT!");
 
 sleep 1;
 
-is virtual-screen.render, q:to/TXT/, 'alert';
+is virtual-screen.render.raku, q:to/TXT/.raku, 'alert';
 ╔══════════════════╗
 ║Hello!            ║
 ║w╔══════════════╗ ║
-║ ║              ║ ║
 ║ ║   ¡ALERT!    ║ ║
-║ ║              ║ ║
+║ ╟──────────────╢ ║
 ║ ║      ok      ║ ║
 ║ ╚══════════════╝ ║
+║                  ║
 ║                  ║
 ╚══════════════════╝
 TXT
