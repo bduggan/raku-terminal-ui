@@ -417,7 +417,7 @@ multi method put($content, Bool :$scroll-ok = True, Bool :$center, :%meta) {
     warning "content is undefined";
     return;
   }
-  if $content.?lines > 1 {
+  if $content ~~ IO or $content.?lines > 1 {
     for $content.lines -> $l {
       self.put($l, :$scroll-ok, :$center, :%meta);
     }
