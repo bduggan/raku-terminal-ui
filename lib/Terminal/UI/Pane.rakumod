@@ -419,7 +419,7 @@ multi method put($content, Bool :$scroll-ok = True, Bool :$center, :%meta) {
   }
   if $content ~~ IO or $content.?lines > 1 {
     for $content.lines -> $l {
-      self.put($l, :$scroll-ok, :$center, :%meta);
+      self.put(~$l, :$scroll-ok, :$center, :%meta);
     }
     return;
   }

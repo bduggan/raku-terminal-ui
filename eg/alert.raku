@@ -4,7 +4,7 @@ use Terminal::UI 'ui';
 use Terminal::ANSI;
 
 ui.setup(:2panes);
-ui.log('/tmp/log');
+# ui.log('/tmp/log');
 
 my $p = ui.panes[0];
 my $q = ui.panes[1];

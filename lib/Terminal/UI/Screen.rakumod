@@ -2,6 +2,7 @@ unit class Terminal::UI::Screen;
 
 use Terminal::UI::Frame;
 use Terminal::UI::Input;
+use Terminal::UI::Utils;
 use Terminal::ANSI;
 use Log::Async;
 
@@ -40,6 +41,17 @@ method frame {
   self.frames.head;
 }
 
+method !setup-error-handler(\ui) {
+  &die.wrap: -> |c {
+    ui.alert(:title<error>, ~c) if ui.interacting;
+    abort(c || 'error!');
+  }
+  &warn.wrap: -> |c {
+    ui.alert(:title<warning>, ~c) if ui.interacting;
+    warning c.Str;
+  }
+}
+
 method !setup-resizer {
   start react whenever signal(SIGWINCH) {
     my $w = $!cols;
@@ -58,11 +70,12 @@ method !setup-resizer {
 }
 
 #| Clear and set things up.
-method init {
+method init(\ui) {
   save-screen;
   clear-screen;
   cursor-off;
   self.draw;
+  self!setup-error-handler(ui);
 }
 
 #| Refresh

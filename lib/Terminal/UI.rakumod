@@ -69,6 +69,9 @@ has %!ui-sync-actions;
 #| Lock the focus
 has Bool $.lock-focus is rw;
 
+#| The UI is in an interact loop
+has Bool $.interacting = False;
+
 #| The currently focused pane within the currently focused frame.
 method focused {
   fail "no focused frame" without $!focused-frame;
@@ -190,7 +193,7 @@ method shutdown($msg = Nil) {
 #| Add a screen to the ui.  Arguments are sent to the Screen contructor
 method add-screen(|args --> Terminal::UI::Screen) {
   $!screen = Terminal::UI::Screen.new(|args);
-  $!screen.init;
+  $!screen.init(self);
   debug "added {$!screen.rows} x {$!screen.cols} screen";
   $!screen
 }
@@ -276,6 +279,7 @@ multi method bind(*@pairs) {
 #| Respond to keyboard input, until we are done
 method interact {
   self.focus(pane => 0);
+  $!interacting = True;
   react whenever self.keys(done => %( %.ui-bindings.invert )<quit>) {
     when %!pane-bindings.keys.any {
       with %!pane-bindings{$_} {
@@ -290,6 +294,7 @@ method interact {
       info "unknown key {$_.raku}";
     }
   }
+  $!interacting = False;
 }
 
 #| Associate names of actions with callables.
