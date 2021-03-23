@@ -79,6 +79,10 @@ bottom box:
 
 See the [eg](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) directory.
 
+## See also
+
+[https://blog.matatu.org/terminal-ui](https://blog.matatu.org/terminal-ui)
+
 ## Description
 
 The starting point for the reference documentation is
