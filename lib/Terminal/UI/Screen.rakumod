@@ -41,14 +41,31 @@ method frame {
   self.frames.head;
 }
 
-method !setup-error-handler(\ui) {
-  &die.wrap: -> |c {
-    ui.alert(:title<error>, ~c) if ui.interacting;
-    abort(c || 'error!');
+has $!warn-wraphandle;
+
+#| Suppress all warnings (including popups) for a block of code
+method quietly(\ui, &code) {
+  $!warn-wraphandle.restore;
+  $!warn-wraphandle = Nil;
+  quietly {
+    code();
   }
-  &warn.wrap: -> |c {
+  self.trap-errors(ui);
+}
+
+
+#| Override die() and warn() to use alerts instead
+method trap-errors(\ui) {
+  $*SCHEDULER.uncaught_handler = -> |c {
+    ui.alert(:title<error>, ~c) if ui.interacting;
+    abort((c || "error") ~ "\nin thread {$*THREAD.id}");
+  }
+  $!warn-wraphandle //= &warn.wrap: -> |c {
     ui.alert(:title<warning>, ~c) if ui.interacting;
     warning c.Str;
+    for Backtrace.new {
+      warning .Str.trim;
+    }
   }
 }
 
@@ -75,7 +92,7 @@ method init(\ui) {
   clear-screen;
   cursor-off;
   self.draw;
-  self!setup-error-handler(ui);
+  self.trap-errors(ui);
 }
 
 #| Refresh

@@ -340,6 +340,12 @@ method call(Str $action) {
   start codee()
 }
 
+#| Suppress warnings and run code
+method quietly(&code) {
+  self.screen.quietly(self,&code);
+}
+
+#| Auto generated help text, based on bindings
 method help-text {
   my @txt;
   my %pane;
