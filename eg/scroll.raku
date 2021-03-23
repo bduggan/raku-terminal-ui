@@ -2,7 +2,7 @@
 
 use Terminal::UI 'ui';
 
-ui.log('/tmp/log');
+# ui.log('/tmp/log');
 ui.setup(:2panes);
 
 ui.panes[0].put("$_", :!scroll-ok) for 1..100;

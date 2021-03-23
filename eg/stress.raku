@@ -5,7 +5,7 @@ use Terminal::ANSI;
 
 # terminal-ansi-throttle(0.1);
 
-ui.log('/tmp/debug');
+# ui.log('/tmp/debug');
 ui.setup(:2panes);
 
 ui.panes[0].put("one 0");

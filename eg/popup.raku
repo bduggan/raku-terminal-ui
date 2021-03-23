@@ -2,7 +2,7 @@
 
 use Terminal::UI 'ui';
 use Log::Async;
-ui.log('debug');
+# ui.log('debug');
 ui.setup(:1pane);
 
 ui.pane.put("1. press a key to show a popup");
