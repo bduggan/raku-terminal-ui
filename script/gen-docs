@@ -14,6 +14,7 @@ sub make-rel($str) {
 sub attr-docs($class) {
   my @attrs;
   for $class.^attributes -> $a {
+    next unless $a.WHY;
     push @attrs: {
       name => $a.name,
       doc => $a.WHY // 'no docs',
