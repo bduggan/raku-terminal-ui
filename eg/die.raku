@@ -2,7 +2,6 @@
 use Terminal::UI 'ui';
 
 ui.setup(:1pane);
-ui.screen.trap-errors(ui);
 
 my $log = "/tmp/log-$*PID";
 

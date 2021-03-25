@@ -50,12 +50,12 @@ method quietly(\ui, &code) {
   quietly {
     code();
   }
-  self.trap-errors(ui);
+  self!trap-errors(ui);
 }
 
 
 #| Override die() and warn() to use alerts instead
-method trap-errors(\ui) {
+method !trap-errors(\ui) {
   $*SCHEDULER.uncaught_handler = -> |c {
     ui.alert(:title<error>, ~c) if ui.interacting;
     abort((c || "error") ~ "\nin thread {$*THREAD.id}");
@@ -92,7 +92,7 @@ method init(\ui) {
   clear-screen;
   cursor-off;
   self.draw;
-  self.trap-errors(ui);
+  self!trap-errors(ui);
 }
 
 #| Refresh
