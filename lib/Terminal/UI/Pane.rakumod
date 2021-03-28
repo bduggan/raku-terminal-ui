@@ -382,8 +382,12 @@ method splash($content) {
   }
 }
 
+multi method update(Str $content, Int :$line!, Bool :$center, :%meta) {
+  self.update([$content], :$line, :$center, :%meta);
+}
+
 #| Update a line of content
-multi method update(Str $str, Int :$line!, Bool :$center, :%meta) {
+multi method update($content, Int :$line!, Bool :$center, :%meta) {
   if $line > @!lines.elems - 1 {
     for @!lines.elems .. $line {
       # autovivify
@@ -391,8 +395,8 @@ multi method update(Str $str, Int :$line!, Bool :$center, :%meta) {
     }
   }
   @!meta[$line] = %meta with %meta;
-  @!lines[$line] = $center ?? self!centered($str) !! $str;
-  @!raw[$line] = $str;
+  @!lines[$line] = self!raw2line($content);
+  @!raw[$line] = $content;
   self!draw-row($line + 1);
 }
 
@@ -481,7 +485,7 @@ method !raw2line(@args) {
 multi method put(@args, Bool :$scroll-ok = True, :%meta) {
   die "escape character in args: please use a pair" if @args.grep: { $_ ~~ Str && /\e/ }
   my $i = @!lines.elems;
-  @!raw[ $i ] := @args.clone;
+  @!raw[ $i ] = @args.clone;
   self.put(self!raw2line(@args), :$scroll-ok, :%meta);
 }
 

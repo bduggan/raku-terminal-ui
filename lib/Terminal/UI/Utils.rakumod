@@ -3,6 +3,7 @@ use Log::Async;
 
 sub abort($msg) is export {
   fatal("$msg");
+  error("$_".trim) for Backtrace.new;
   cursor-on;
   reset-scroll-region;
   restore-screen;

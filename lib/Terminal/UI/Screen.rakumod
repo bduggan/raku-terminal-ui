@@ -56,16 +56,17 @@ method quietly(\ui, &code) {
 
 #| Override die() and warn() to use alerts instead
 method !trap-errors(\ui) {
-  $*SCHEDULER.uncaught_handler = -> |c {
-    ui.alert(:title<error>, ~c) if ui.interacting;
-    abort((c || "error") ~ "\nin thread {$*THREAD.id}");
+  unless %*ENV<TERMINAL_UI_NATIVE_ERRORS> {
+    $*SCHEDULER.uncaught_handler = -> |c {
+      ui.alert(:title<error>, ~c) if ui.interacting;
+      warning "$_".trim for Backtrace.new;
+      abort((c || "error") ~ "\nin thread {$*THREAD.id}");
+    }
   }
   $!warn-wraphandle //= &warn.wrap: -> |c {
     ui.alert(:title<warning>, ~c) if ui.interacting;
     warning c.Str;
-    for Backtrace.new {
-      warning .Str.trim;
-    }
+    warning .Str.trim for Backtrace.new;
   }
 }
 
