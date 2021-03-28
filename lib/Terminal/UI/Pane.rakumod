@@ -397,7 +397,7 @@ multi method update($content, Int :$line!, Bool :$center, :%meta) {
   @!meta[$line] = %meta with %meta;
   @!lines[$line] = self!raw2line($content);
   @!raw[$line] = $content;
-  self!draw-row($line + 1);
+  self!draw-row($line + 1 - $!first-visible);
 }
 
 sub sanitize(Str(Mu) $s) {
