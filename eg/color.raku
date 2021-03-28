@@ -22,6 +22,12 @@ for 0..255 {
 
 ui.panes[0].put(@row) if @row;
 
+ui.panes[0].put: [ t.bg-color(0) ~ t.color(3)  => 'bg color' ];
+ui.panes[0].put: [ t.bg-color(4) ~ t.color(1)  => 'bg color' ];
+ui.panes[0].put: [ t.color(4) => 'no bg color' ];
+ui.panes[0].put: [ t.color(4) => 'no bg color' ];
+ui.panes[0].put: [ t.color(4) => 'no bg color' ];
+
 ui.interact;
 
 ui.shutdown;

@@ -87,7 +87,7 @@ method check(@panes) {
 has $.border-color is rw = t.bright-white;
 
 method !color($str = '') {
-  $.border-color ~ $str;
+  t.text-reset ~ $.border-color ~ $str;
 }
 
 #| Draw or refresh this frame
