@@ -1,9 +1,10 @@
 use Terminal::ANSI;
 use Log::Async;
 
-sub abort($msg) is export {
+sub abort($msg, @trace = ()) is export {
   fatal("$msg");
-  error("$_".trim) for Backtrace.new;
+  error("$_") for @trace;
+  debug "$_".trim for $msg.?backtrace // Backtrace.new;
   cursor-on;
   reset-scroll-region;
   restore-screen;
@@ -13,5 +14,6 @@ sub abort($msg) is export {
   shell "reset";
   put "aborted!";
   put $msg // '\rsomething went wrong';
+  put $_ for @trace;
   exit 1;
 }

@@ -3,9 +3,7 @@ use Terminal::UI 'ui';
 
 ui.setup(:1pane);
 
-my $log = "/tmp/log-$*PID";
-
-LEAVE { .IO.unlink with $log };
+my $log = "/tmp/log";
 
 ui.log($log);
 

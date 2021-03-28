@@ -57,10 +57,11 @@ method quietly(\ui, &code) {
 #| Override die() and warn() to use alerts instead
 method !trap-errors(\ui) {
   unless %*ENV<TERMINAL_UI_NATIVE_ERRORS> {
-    $*SCHEDULER.uncaught_handler = -> |c {
-      ui.alert(:title<error>, ~c) if ui.interacting;
-      warning "$_".trim for Backtrace.new;
-      abort((c || "error") ~ "\nin thread {$*THREAD.id}");
+    $*SCHEDULER.uncaught_handler = -> $c {
+      ui.alert(:title<error>, ~$c) if ui.interacting;
+      warning "caught error {$c.^name}";
+      my @trace = $c.backtrace.grep(!*.is-setting).map: {.file ~ ' line ' ~ .line}
+      abort(($c || "error" ~ "\nin thread {$*THREAD.id}"), @trace);
     }
   }
   $!warn-wraphandle //= &warn.wrap: -> |c {
