@@ -27,62 +27,58 @@ This class represents the screen, which may have frames on it, and the frames ma
 
 ### METHODS
 
-* [**add-frame**(Terminal::UI::Screen: :$top = 1, :$left = 1, :$width = Code.new, :$height = Code.new, :$name = Code.new, Bool :$center, *%_ --> Terminal::UI::Frame)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L136)
+* [**add-frame**(Terminal::UI::Screen: :$top = 1, :$left = 1, :$width = Code.new, :$height = Code.new, :$name = Code.new, Bool :$center, *%_ --> Terminal::UI::Frame)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L138)
 
   Add a frame to the screen.
 
-* [**available-rows**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L34)
+* [**available-rows**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L34)
 
   Number of rows available (height - 2 for the border)
 
-* [**draw**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L112)
+* [**draw**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L114)
 
   Draw the entire screen
 
-* [**find-frame**(Terminal::UI::Screen: $name, *%_ --> Terminal::UI::Frame)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L159)
+* [**find-frame**(Terminal::UI::Screen: $name, *%_ --> Terminal::UI::Frame)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L161)
 
   Find a frame that has a given name
 
-* [**frame**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L39)
+* [**frame**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L39)
 
   The first frame (handy if it's the only one)
 
-* [**handle-resize**(Terminal::UI::Screen: |args)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L105)
+* [**handle-resize**(Terminal::UI::Screen: |args)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L107)
 
   Handle a resize of the screen (e.g. a SIGWINCH)
 
-* [**init**(Terminal::UI::Screen: \ui, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L89)
+* [**init**(Terminal::UI::Screen: \ui, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L91)
 
   Clear and set things up.
 
-* [**pane**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L180)
+* [**pane**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L182)
 
   When there is only one pane and only one frame, return it
 
-* [**pane-count**(Terminal::UI::Screen: :$min, :$max, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L164)
+* [**pane-count**(Terminal::UI::Screen: :$min, :$max, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L166)
 
   Find the number of panes which have lines between two rows
 
-* [**panes**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L189)
+* [**panes**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L191)
 
   All the panes in all the frames.
 
-* [**quietly**(Terminal::UI::Screen: \ui, &code, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L46)
+* [**quietly**(Terminal::UI::Screen: \ui, &code, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L46)
 
   Suppress all warnings (including popups) for a block of code
 
-* [**refresh**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L98)
+* [**refresh**(Terminal::UI::Screen: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L100)
 
   Refresh
 
-* [**remove-frame**(Terminal::UI::Screen: Terminal::UI::Frame $f, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L196)
+* [**remove-frame**(Terminal::UI::Screen: Terminal::UI::Frame $f, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L198)
 
   Remove a frame
 
-* [**shutdown**(Terminal::UI::Screen: $msg = Nil, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L122)
+* [**shutdown**(Terminal::UI::Screen: $msg = Nil, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.13/lib/Terminal/UI/Screen.rakumod#L124)
 
   Shut down and reset the state, with an optional message
-
-* [**trap-errors**(Terminal::UI::Screen: \ui, *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.12/lib/Terminal/UI/Screen.rakumod#L57)
-
-  Override die() and warn() to use alerts instead
