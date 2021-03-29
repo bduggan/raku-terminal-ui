@@ -69,6 +69,9 @@ has %!ui-sync-actions;
 #| Lock the focus
 has Bool $.lock-focus is rw;
 
+#| Lock interaction to only a set of actions
+has %.lock-interaction;
+
 #| The UI is in an interact loop
 has Bool $.interacting = False;
 
@@ -276,6 +279,13 @@ multi method bind(*@pairs) {
   }
 }
 
+method !action-is-available(Str $action) {
+  return True without %.lock-interaction;
+  return True if %.lock-interaction.keys == 0;
+  debug 'interaction is locked: ' ~ %.lock-interaction.raku;
+  return %.lock-interaction{ $action };
+}
+
 #| Respond to keyboard input, until we are done
 method interact {
   self.focus(pane => 0);
@@ -284,11 +294,11 @@ method interact {
     when %!pane-bindings.keys.any {
       with %!pane-bindings{$_} {
         info "Calling $_";
-        self.focused.call($_)
+        self.focused.call($_) if self!action-is-available($_);
       }
     }
     when %.ui-bindings.keys.any {
-      self.call(%!ui-bindings{$_})
+      self.call(%!ui-bindings{$_}) if self!action-is-available($_);
     }
     default {
       info "unknown key {$_.raku}";
