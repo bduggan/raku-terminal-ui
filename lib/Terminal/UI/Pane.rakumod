@@ -56,6 +56,9 @@ has Callable:D %.actions;
 #| A set of callable actions which will be called synchronously
 has %!sync-actions;
 
+#| Scroll automatically when putting a new line?
+has Bool $.auto-scroll is rw = True;
+
 has Lock $!write-lock .= new;
 
 method TWEAK {
@@ -97,6 +100,11 @@ method set-top($!top) { }
 method current-meta {
   return without $!current-line;
   @.meta[ $!current-line ]
+}
+
+#| The index of the current line
+method current-line-index {
+  $!current-line;
 }
 
 #| The text of the current line
@@ -262,9 +270,9 @@ method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe =
   }
   return without $!first-visible;
   my $str = @!lines[$!first-visible + $row - 1] // ''; 
-  my $h = self.top + $row - 1;
+  my Int $h = self.top + $row.trim - 1;
   if $border && $inner && self.frame {
-    print-at $h, self.frame.left, self.frame.compose-line("$str");
+    self.frame.print-line($h,"$str");
   } elsif $border && self.frame {
     self.frame.draw-side($row);
   } elsif $inner {
@@ -413,7 +421,7 @@ method !centered($str) {
 #| Add lines of content, possibly scrolling.
 #| Content is added one line at a time -- the content
 #| can be any type that has a 'lines' method.
-multi method put($content, Bool :$scroll-ok = True, Bool :$center, :%meta) {
+multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%meta) {
   $!write-lock.lock;
   LEAVE $!write-lock.unlock;
   # self.validate;
@@ -482,7 +490,7 @@ method !raw2line(@args) {
 #| Put formatted text.  Each element is either a string or a pair.  Strings
 #| are printed.  Keys of pairs are printed, and then their values.  Keys are
 #| assumed to be formatting, and do not count towards the length of the line.
-multi method put(@args, Bool :$scroll-ok = True, :%meta) {
+multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta) {
   die "escape character in args: please use a pair" if @args.grep: { $_ ~~ Str && /\e/ }
   my $i = @!lines.elems;
   @!raw[ $i ] = @args.clone;

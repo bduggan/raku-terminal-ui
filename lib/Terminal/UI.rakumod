@@ -197,7 +197,7 @@ method shutdown($msg = Nil) {
 method add-screen(|args --> Terminal::UI::Screen) {
   $!screen = Terminal::UI::Screen.new(|args);
   $!screen.init(self);
-  debug "added {$!screen.rows} x {$!screen.cols} screen";
+  debug "added {$!screen.rows} (rows) x {$!screen.cols} (cols) screen";
   $!screen
 }
 

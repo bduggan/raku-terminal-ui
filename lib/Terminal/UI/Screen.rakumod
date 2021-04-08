@@ -146,6 +146,7 @@ method add-frame(
    --> Terminal::UI::Frame
 ) {
   my $f;
+  info "creating frame, W x H is $width x $height, top is $top, left is $left";
   if $center {
     my $l = (self.cols - $width + 2) div 2;
     my $t = (self.rows - $height + 2) div 2;
