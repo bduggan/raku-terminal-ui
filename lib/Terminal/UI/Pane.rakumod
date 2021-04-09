@@ -518,7 +518,7 @@ method unfocus {
 
 #| Clear the content and redraw
 method clear {
-  @!lines = "" xx $.height;
+  @!lines = (" " x $.width) xx $.height;
   $!current-line = 0;
   self.redraw;
   @!lines = ();
