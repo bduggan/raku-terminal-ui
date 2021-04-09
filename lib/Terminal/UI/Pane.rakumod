@@ -3,6 +3,7 @@ use Terminal::ANSI;
 use Log::Async;
 use Terminal::UI::Style;
 use Terminal::UI::Utils;
+use Terminal::ANSI::OO 't';
 logger.untapped-ok = True;
 method pod { $=pod }
 
@@ -382,11 +383,20 @@ method selected-row {
 }
 
 #| Clear and add content centered vertically and horizontally
-method splash($content) {
+multi method splash(@content, :$center = True) {
+  self.clear;
+  my $top = (self.height div 2) - (@content.elems div 2);
+  for @content.kv -> $i, $arg {
+    self.update: :line($top + $i), @$arg, :$center;
+  }
+}
+
+#| Clear and add content centered vertically and horizontally
+multi method splash($content, :$center = True) {
   self.clear;
   my $top = (self.height div 2) - ($content.lines.elems div 2);
   for $content.lines.kv -> $i, $str {
-    self.update: :line($top + $i), "$str", :center;
+    self.update: :line($top + $i), "$str", :$center;
   }
 }
 
@@ -403,7 +413,7 @@ multi method update($content, Int :$line!, Bool :$center, :%meta) {
     }
   }
   @!meta[$line] = %meta with %meta;
-  @!lines[$line] = self!raw2line($content);
+  @!lines[$line] = self!raw2line($content, :$center);
   @!raw[$line] = $content;
   self!draw-row($line + 1 - $!first-visible);
 }
@@ -461,7 +471,7 @@ multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%me
   self;
 }
 
-method !raw2line(@args) {
+method !raw2line(@args, Bool :$center) {
   my $line = '';
   my $left = $.width;
   for @args {
@@ -483,7 +493,11 @@ method !raw2line(@args) {
     }
     last unless $left > 0;
   }
-  $line ~= " " x $left;
+  if $center {
+    $line = (" " x ($left div 2)) ~ $line ~ t.text-reset ~ (" " x ( $left - ($left div 2)));
+  } else {
+    $line ~= t.text-reset ~ (" " x $left);
+  }
   $line;
 }
 
