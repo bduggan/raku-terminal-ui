@@ -383,8 +383,9 @@ method selected-row {
 }
 
 #| Clear and add content centered vertically and horizontally
-multi method splash(@content, :$center = True) {
+multi method splash(@content, :$center = True, :$title) {
   self.clear;
+  self.update(:1line, [ t.bold => $title ], :center) if $title;
   my $top = (self.height div 2) - (@content.elems div 2);
   for @content.kv -> $i, $arg {
     self.update: :line($top + $i), @$arg, :$center;
@@ -392,8 +393,9 @@ multi method splash(@content, :$center = True) {
 }
 
 #| Clear and add content centered vertically and horizontally
-multi method splash($content, :$center = True) {
+multi method splash($content, :$center = True, :$title) {
   self.clear;
+  self.update(:1line, [ t.bold => $title ], :center) if $title;
   my $top = (self.height div 2) - ($content.lines.elems div 2);
   for $content.lines.kv -> $i, $str {
     self.update: :line($top + $i), "$str", :$center;
@@ -494,9 +496,9 @@ method !raw2line(@args, Bool :$center) {
     last unless $left > 0;
   }
   if $center {
-    $line = (" " x ($left div 2)) ~ $line ~ t.text-reset ~ (" " x ( $left - ($left div 2)));
+    $line = (" " x ($left div 2)) ~ $line ~ (" " x ( $left - ($left div 2)));
   } else {
-    $line ~= t.text-reset ~ (" " x $left);
+    $line ~= " " x $left;
   }
   $line;
 }
