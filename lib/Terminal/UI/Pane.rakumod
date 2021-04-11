@@ -24,6 +24,9 @@ has UInt $.width;
 #| Is it focusable?
 has Bool $.focusable is rw = True;
 
+#| Can lines be selected?
+has Bool $.selectable is rw = True;
+
 #| Whether this pane is currently focused
 has Bool $.focused;
 
@@ -116,6 +119,7 @@ method current-line {
 
 #| Draw the currently selected line
 method draw-selected-line {
+  return unless $!selectable;
   return without self.selected-row;
   my Int $l = self.selected-row;
   if $.focused {
@@ -138,6 +142,7 @@ method draw-selected-line {
 
 #| Select a visible row.  (0 is the top row)
 method select-visible(Int $r) {
+  return unless $.selectable;
   return if @.lines == 0;
   $!first-visible //= @.lines.elems max $!height;
   self.select($!first-visible + $r);
@@ -175,8 +180,20 @@ method validate {
   abort("failed $str") unless $!first-visible <= $!current-line <= self.last-visible;
 }
 
+#| Disable selecting of lines within a pane
+method disable-selection {
+  $!current-line = Nil;
+  $.selectable = False;
+}
+
+#| Enable selecting of lines within a pane
+method enable-selection {
+  $.selectable = True;
+}
+
 #| Select an index in the content.
 method select($line!) {
+  return unless $.selectable;
   info "selecting line $line";
   unless @!lines {
     warning "cannot select line {$line.raku}, no content";
@@ -383,23 +400,18 @@ method selected-row {
 }
 
 #| Clear and add content centered vertically and horizontally
-multi method splash(@content, :$center = True, :$title) {
+multi method splash(@content, :$center = True, :$title, :$top is copy) {
   self.clear;
   self.update(:1line, [ t.bold => $title ], :center) if $title;
-  my $top = (self.height div 2) - (@content.elems div 2);
+  $top //= (self.height div 2) - (@content.elems div 2);
   for @content.kv -> $i, $arg {
     self.update: :line($top + $i), @$arg, :$center;
   }
 }
 
 #| Clear and add content centered vertically and horizontally
-multi method splash($content, :$center = True, :$title) {
-  self.clear;
-  self.update(:1line, [ t.bold => $title ], :center) if $title;
-  my $top = (self.height div 2) - ($content.lines.elems div 2);
-  for $content.lines.kv -> $i, $str {
-    self.update: :line($top + $i), "$str", :$center;
-  }
+multi method splash($content, :$center = True, :$title, :$top) {
+  self.splash($content.lines, :$title, :$center, :$top)
 }
 
 multi method update(Str $content, Int :$line!, Bool :$center, :%meta) {
@@ -536,6 +548,7 @@ method unfocus {
 method clear {
   @!lines = (" " x $.width) xx $.height;
   $!current-line = 0;
+  $!first-visible = 0;
   self.redraw;
   @!lines = ();
   @!meta = ();
