@@ -258,7 +258,7 @@ method handle-resize(:$from-width, :$from-height, :$to-width, :$to-height) {
 
 #| If there is only one pane, return it.
 method pane {
-  exit note "ambiguous call to pane: {@.panes.elems} panes" unless @.panes==1;
+  abort "ambiguous call to pane: {@.panes.elems} panes" unless @.panes==1;
   @.panes.first;
 }
 
