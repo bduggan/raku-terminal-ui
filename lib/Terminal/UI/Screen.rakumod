@@ -183,7 +183,7 @@ method frames {
 #| When there is only one pane and only one frame, return it
 method pane {
   my $frames = self.frames;
-  abort "ambiguous call to pane; multiple frames" unless $frames.elems == 1;
+  warning "ambiguous call to pane; multiple frames" unless $frames.elems == 1;
   my $p = $frames[0].panes;
   abort "ambiguous call to panes" unless $p.elems == 1;
   return $p[0];
@@ -192,7 +192,7 @@ method pane {
 #| All the panes in all the frames.
 method panes {
   my $frames = self.frames;
-  abort "ambiguous call to pane; multiple frames" unless $frames.elems == 1;
+  warning "ambiguous call to pane; multiple frames. (maybe an alert?)" unless $frames.elems == 1;
   $frames[0].panes;
 }
 
