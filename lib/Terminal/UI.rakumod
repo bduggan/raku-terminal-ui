@@ -19,7 +19,7 @@ sub EXPORT($ui = Nil) {
   %h;
 }
 
-unit class Terminal::UI:ver<0.0.15>;
+unit class Terminal::UI:ver<0.0.16>;
 
 also does Terminal::UI::Alerts;
 
