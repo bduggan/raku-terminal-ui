@@ -598,7 +598,7 @@ method call($name) {
     my %meta = self.current-meta.Hash;
     %args<meta> = %meta;
   }
-  %args<raw> = @!lines[$!current-line] if %sig{'$raw'};
+  %args<raw> = @!raw[$!current-line] if %sig{'$raw'};
   debug "sending args for $name: " ~ %args.keys.join(',');
   if %!sync-actions{$name} {
     code(|%args);
