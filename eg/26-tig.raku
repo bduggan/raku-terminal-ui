@@ -7,7 +7,7 @@ my (\top,\bottom) = ui.panes;
 
 top.auto-scroll = False;
 bottom.auto-scroll = False;
-top.exec: <<git log "--pretty=format:%h: %an: %s">>;
+top.exec: <<git log "--pretty=format:%h: %ar: %s">>;
 
 top.on: select => -> :$raw {
   my $sha = $raw.split(':')[0];
