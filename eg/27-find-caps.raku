@@ -3,12 +3,13 @@
 use Terminal::UI 'ui';
 use Terminal::ANSI::OO 't';
 
+my $file = qx[man -w terminfo].trim;
+
+my @terminfo = $file.ends-with('.gz') ?? qqx[gunzip -c $file].lines !! $file.IO.lines;
+
 ui.setup: heights => [ fr => 1, 5 ];
 my (\top,\bottom) = ui.panes;
 top.auto-scroll = False;
-
-my $file = qx[man -w terminfo].trim;
-my @terminfo = $file.ends-with('.gz') ?? qqx[gzcat $file].lines !! $file.IO.lines;
 
 sub find-cap($cap,$seq) {
   my ($line,$str) = @terminfo.grep: :kv, /^^ [\S+] \t $cap \t /;
