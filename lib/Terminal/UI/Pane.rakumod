@@ -480,7 +480,7 @@ multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%me
   if $scroll-ok && $should-scroll {
     self.scroll-up; # draws the row at self.height
   } else {
-    self!draw-row(@!lines.elems - $!first-visible, :maybe);
+    self!draw-row(@!lines.elems - ($!first-visible // 0), :maybe);
   }
   self;
 }
