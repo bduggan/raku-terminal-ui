@@ -8,7 +8,7 @@ my (\top,\bottom) = ui.panes;
 top.auto-scroll = False;
 
 my $file = qx[man -w terminfo].trim;
-my @terminfo = $file.IO.lines;
+my @terminfo = $file.ends-with('.gz') ?? qqx[gzcat $file].lines !! $file.IO.lines;
 
 sub find-cap($cap,$seq) {
   my ($line,$str) = @terminfo.grep: :kv, /^^ [\S+] \t $cap \t /;
