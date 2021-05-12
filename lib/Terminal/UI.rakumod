@@ -352,7 +352,9 @@ method call(Str $action) {
 
 #| Suppress warnings and run code
 method quietly(&code) {
-  self.screen.quietly(self,&code);
+  my $result;
+  self.screen.quietly(self,{ $result = code() });
+  $result;
 }
 
 #| Auto generated help text, based on bindings
@@ -375,6 +377,13 @@ method help-text {
   }
 
   @txt.join("\n");
+}
+
+#| Pause the ui, run some code, and then restart
+method pause-and-do(&code) {
+  self.shutdown;
+  code();
+  self.screen.init(self);
 }
 
 =NAME Terminal::UI -- A framework for building terminal interfaces
