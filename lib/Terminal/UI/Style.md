@@ -15,10 +15,10 @@ This is a singleton class which keeps track of a global style for UI elements.
 
 ### METHODS
 
-* [**new**(Terminal::UI::Style: *%named)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.16/lib/Terminal/UI/Style.rakumod#L13)
+* [**new**(Terminal::UI::Style: *%named)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.17/lib/Terminal/UI/Style.rakumod#L13)
 
   Same as singleton
 
-* [**singleton**(Terminal::UI::Style: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.16/lib/Terminal/UI/Style.rakumod#L18)
+* [**singleton**(Terminal::UI::Style: *%_)](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/0.0.17/lib/Terminal/UI/Style.rakumod#L18)
 
   Get the singleton object.
