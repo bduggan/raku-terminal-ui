@@ -221,8 +221,9 @@ method select($line!) {
 }
 
 #| Index of the bottom line which is visible (first-visible + height - 1)
-method last-visible {
-  $!first-visible + $!height - 1;
+method last-visible(Bool :$with-content = False) {
+  return $!first-visible + $!height - 1 unless $with-content;
+  return min( @!lines.elems - 1, $!first-visible + $!height - 1)
 }
 
 #| Select the line $n above the current one, possibly scrolling the screen down
