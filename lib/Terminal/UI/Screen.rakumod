@@ -45,7 +45,7 @@ has $!warn-wraphandle;
 
 #| Suppress all warnings (including popups) for a block of code
 method quietly(\ui, &code) {
-  $!warn-wraphandle.restore;
+  $!warn-wraphandle.restore with $!warn-wraphandle;
   $!warn-wraphandle = Nil;
   quietly {
     code();
