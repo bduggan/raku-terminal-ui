@@ -295,7 +295,8 @@ method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe =
   } elsif $border && self.frame {
     self.frame.draw-side($row);
   } elsif $inner {
-    $str = $str.fmt("%-{ self.width }s");
+    print-at $h, self.left, " " x self.width;
+    $str = $str.trim-trailing;
     print-at $h, self.left, "$str";
   } else {
     error "bad arguments";
