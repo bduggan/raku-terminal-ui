@@ -118,7 +118,7 @@ method draw-side($h) {
 #| Print a single line of output in the frame, including the borders.
 method print-line($h, $str) {
   print-at $h, self.left + 1, t.text-reset ~ (" " x self.width - 1);
-  print-at $h, self.left + 1, $str.trim-trailing;
+  print-at $h, self.left + 1, $str;
   self.draw-side($h - $.top);
 }
 

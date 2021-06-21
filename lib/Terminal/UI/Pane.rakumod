@@ -475,7 +475,7 @@ multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%me
       my $cnt = sanitize($str).fmt("%{self.width div 2 + $str.chars div 2}s");
       @!lines.push: $cnt.fmt("%-{self.width}s");
     } else {
-      @!lines.push: sanitize($str).substr(0,self.width).fmt("%-{self.width}s");
+      @!lines.push: sanitize($str).substr(0,self.width);
     }
     @!raw.push: $str;
   }
@@ -495,6 +495,7 @@ method !raw2line(@args, Bool :$center) {
      with .substr(0,$left) {
        $line ~= $_;
        $left -= .chars;
+       $left -= .uniprops("W").grep(* eq "W").elems;
      }
     }
     when Pair {
@@ -502,6 +503,7 @@ method !raw2line(@args, Bool :$center) {
       with (.value // '').substr(0,$left) {
         $line ~= $_;
         $left -= .chars;
+        $left -= .uniprops("W").grep(* eq "W").elems;
       }
     }
     default {
