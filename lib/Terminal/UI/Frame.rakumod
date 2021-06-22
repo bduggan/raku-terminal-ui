@@ -97,7 +97,7 @@ method draw {
     print-at($.top, $.left, self!color);
     print-at($.top,    $.left + 1, (%.border<top>    x ($.width - 2) ));
     print-at($.bottom, $.left + 1, (%.border<bottom> x ($.width - 2) ));
-    self.draw-side($_) for 1 .. $.height - 2;
+    self.draw-side($.top + $_) for 1 .. $.height - 2;
     print-at($.top,    $.left,  (%.border<corners>[0]));
     print-at($.top,    $.right, (%.border<corners>[1]));
     print-at($.bottom, $.right, (%.border<corners>[2]));
@@ -115,16 +115,16 @@ method draw-side($h, Bool :$hl = False) {
   if $hl {
     print-at($h, $.left, self!color(%.border<indicator>));
   } else {
-    print-at($.top + $h, $.left, self!color(%.border<side>));
+    print-at($h, $.left, self!color(%.border<side>));
   }
-  print-at($.top + $h, $.right,self!color(%.border<side>));
+  print-at($h, $.right,self!color(%.border<side>));
 }
 
 #| Print a single line of output in the frame, including the borders.
 method print-line($h, $str) {
   print-at $h, self.left + 1, t.text-reset ~ (" " x self.width - 1);
   print-at $h, self.left + 1, $str;
-  self.draw-side($h - $.top);
+  self.draw-side($h);
 }
 
 #| Create a single pane for this frame
