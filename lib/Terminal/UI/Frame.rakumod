@@ -110,8 +110,12 @@ method draw {
 }
 
 #| Draw only the sides, of a particular row
-method draw-side($h) {
-  print-at($.top + $h, $.left, self!color(%.border<side>));
+method draw-side($h, Bool :$hl = False) {
+  if $hl {
+    print-at($.top + $h, $.left, self!color("▶"));
+  } else {
+    print-at($.top + $h, $.left, self!color(%.border<side>));
+  }
   print-at($.top + $h, $.right,self!color(%.border<side>));
 }
 

@@ -128,7 +128,7 @@ method draw-selected-line {
       set-fg-color(self.colors<focused><selected><fg>);
       self!draw-row($l, :inner, :!border);
       normal-video;
-      self!draw-row($l, :!inner, :border);
+      self!draw-row($l - 1, :!inner, :border, :hl);
     }
   } else {
     atomically {
@@ -282,8 +282,8 @@ method !set-scroll-region {
   set-scroll-region(self.top, self.bottom - 1);
 }
 
-method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe = False) {
-  unless (1 ≤ $row ≤ $.height) {
+method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe = False, Bool :$hl = False) {
+  unless (0 ≤ $row ≤ $.height) {
     warning "draw-row -- line out of range; should be 1 ≤ $row ≤ $.height" unless $maybe;
     return;
   }
@@ -293,7 +293,7 @@ method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe =
   if $border && $inner && self.frame {
     self.frame.print-line($h,"$str");
   } elsif $border && self.frame {
-    self.frame.draw-side($row);
+    self.frame.draw-side($h, :$hl);
   } elsif $inner {
     print-at $h, self.left, " " x self.width;
     print-at $h, self.left, "$str";
