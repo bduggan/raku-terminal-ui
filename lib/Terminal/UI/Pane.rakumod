@@ -128,7 +128,7 @@ method draw-selected-line {
       set-fg-color(self.colors<focused><selected><fg>);
       self!draw-row($l, :inner, :!border);
       normal-video;
-      self!draw-row($l - 1, :!inner, :border, :hl);
+      self!draw-row($l, :!inner, :border, :hl);
     }
   } else {
     atomically {

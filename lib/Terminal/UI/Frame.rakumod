@@ -113,7 +113,7 @@ method draw {
 #| Draw only the sides, of a particular row
 method draw-side($h, Bool :$hl = False) {
   if $hl {
-    print-at($.top + $h, $.left, self!color(%.border<indicator>));
+    print-at($h, $.left, self!color(%.border<indicator>));
   } else {
     print-at($.top + $h, $.left, self!color(%.border<side>));
   }
