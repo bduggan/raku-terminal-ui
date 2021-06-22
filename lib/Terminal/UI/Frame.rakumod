@@ -33,6 +33,7 @@ has $.screen;
 
 #| Characters for drawing the frame border.
 has %.border = {
+  indicator => '┇',
    side     => '║',         # '│',
    top      => '═',         # '─',
    bottom   => '═',         # '─',
@@ -112,7 +113,7 @@ method draw {
 #| Draw only the sides, of a particular row
 method draw-side($h, Bool :$hl = False) {
   if $hl {
-    print-at($.top + $h, $.left, self!color("▶"));
+    print-at($.top + $h, $.left, self!color(%.border<indicator>));
   } else {
     print-at($.top + $h, $.left, self!color(%.border<side>));
   }
