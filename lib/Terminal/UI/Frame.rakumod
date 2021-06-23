@@ -33,7 +33,7 @@ has $.screen;
 
 #| Characters for drawing the frame border.
 has %.border = {
-  indicator => '┇',
+  indicator => '╢',
    side     => '║',         # '│',
    top      => '═',         # '─',
    bottom   => '═',         # '─',
