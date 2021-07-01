@@ -111,10 +111,10 @@ method current-line-index {
   $!current-line;
 }
 
-#| The text of the current line
+#| The raw text of the current line
 method current-line {
   return without $!current-line;
-  @.lines[ $!current-line ]
+  @.raw[ $!current-line ]
 }
 
 #| Draw the currently selected line
@@ -585,7 +585,7 @@ multi method on-sync(Str :$name!, Callable :$action!) {
 }
 
 #| Run the action with the given name
-method call($name) {
+method call($name, :$arg) {
   if $name eq <select-up select-down select-last select-first page-up page-down select-down_10 select-up_10 clear>.any {
     return self."$name"() unless %!actions{ $name };
   }
@@ -594,6 +594,9 @@ method call($name) {
     return;
   }
   my &code := %!actions{ $name };
+  if $arg {
+    return code($arg);
+  }
   my %sig = &code.signature.params.grep(*.named).map(*.name => 1);
   my %args;
   %args<meta> = self.current-meta if %sig{'$meta'};

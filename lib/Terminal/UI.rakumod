@@ -286,11 +286,16 @@ method !action-is-available(Str $action) {
   return %.lock-interaction{ $action };
 }
 
+has Str $.mode is rw = 'default';
+
 #| Respond to keyboard input, until we are done
 method interact {
   self.focus(pane => 0);
   $!interacting = True;
   react whenever self.keys(done => %( %.ui-bindings.invert )<quit>) {
+    when $!mode eq 'input' {
+      self.focused.call('input', arg => $_);
+    }
     when %!pane-bindings.keys.any {
       with %!pane-bindings{$_} {
         info "Calling $_";
@@ -331,7 +336,7 @@ method on-sync(*%actions) {
 }
 
 #| Call the action with the given name.
-method call(Str $action) {
+method call(Str $action, :$arg) {
   if $action eq 'help' {
     my $p = start self.alert(self.help-text, :!center);
     return $p;
