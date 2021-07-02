@@ -16,7 +16,7 @@ b.on: type => {
     b.update( :$line, "$contents█", meta => :$contents);
     ui.mode = 'input';
 }
-b.on: input => -> $c {
+sub edit-line($c) {
     given $c {
       my $contents = b.meta[$line]<contents>;
       when 'Enter' {
@@ -41,6 +41,8 @@ b.on: input => -> $c {
       }
     }
 }
+
+b.on: input => &edit-line;
 
 ui.interact;
 ui.shutdown;
