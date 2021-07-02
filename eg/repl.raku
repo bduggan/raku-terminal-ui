@@ -12,20 +12,28 @@ my $line = b.current-line-index;
 
 ui.bind: 'pane', 'e' => 'type';
 b.on: type => {
-    b.update( :$line, "█", meta => :new);
+    my $contents = b.meta[$line]<new> ?? "" !! b.meta[$line]<contents> // "";
+    b.update( :$line, "$contents█", meta => :$contents);
     ui.mode = 'input';
 }
 b.on: input => -> $c {
     given $c {
-      my $contents = b.meta[$line]<new>  ?? "" !! (b.meta[$line]<contents> || b.raw[$line]);
+      my $contents = b.meta[$line]<contents>;
       when 'Enter' {
         b.update( :$line, $contents, meta => %( :!new, :$contents ) );
         b.put("█", meta => :new );
         $line++;
       }
       when 'Delete' {
-        $contents = $contents.substr(0, $contents.chars - 1) if $contents.chars > 0;
-        b.update( :$line, $contents ~ "█", meta => %( :!new, :$contents ) );
+        if $contents.chars > 0 {
+          $contents .= substr(0, $contents.chars - 1) ;
+          b.update( :$line, $contents ~ "█", meta => %( :!new, :$contents ) );
+        }
+      }
+      when 'Tab' {
+        b.update( :$line, $contents, meta => %( :!new, :$contents ) );
+        ui.mode = 'command';
+        ui.focus(pane => 0);
       }
       default {
         $contents ~= $c;

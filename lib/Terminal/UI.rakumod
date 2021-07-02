@@ -286,7 +286,8 @@ method !action-is-available(Str $action) {
   return %.lock-interaction{ $action };
 }
 
-has Str $.mode is rw = 'default';
+subset Modes of Str where * eq <input command>.any;
+has Modes $.mode is rw = 'command';
 
 #| Respond to keyboard input, until we are done
 method interact {
