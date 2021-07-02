@@ -23,6 +23,10 @@ b.on: input => -> $c {
         b.put("█", meta => :new );
         $line++;
       }
+      when 'Delete' {
+        $contents = $contents.substr(0, $contents.chars - 1) if $contents.chars > 0;
+        b.update( :$line, $contents ~ "█", meta => %( :!new, :$contents ) );
+      }
       default {
         $contents ~= $c;
         b.update( :$line, $contents ~ "█", meta => %( :!new, :$contents ) );
