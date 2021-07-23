@@ -2,8 +2,6 @@
 
 use Terminal::UI 'ui';
 
-ui.log('/tmp/out');
-
 ui.setup: heights => [ fr => 1, 10 ];
 my (\t,\b) = ui.panes;
 t.put: 'say "hello"';
