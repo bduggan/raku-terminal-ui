@@ -48,7 +48,7 @@ is virtual-screen.render.raku, q:to/TXT/.raku, 'alert';
 ║w╔══════════════╗ ║
 ║ ║   ¡ALERT!    ║ ║
 ║ ╟──────────────╢ ║
-║ ║      ok      ║ ║
+║ ╢      ok      ║ ║
 ║ ╚══════════════╝ ║
 ║                  ║
 ║                  ║
