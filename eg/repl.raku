@@ -8,8 +8,9 @@ t.put: 'say "hello"';
 b.put: 'e) to edit>', meta => :new;
 my $line = b.current-line-index;
 
-ui.bind: 'pane', 'e' => 'type';
-b.on: type => {
+ui.bind: 'pane', 'e' => 'edit';
+b.on: edit => {
+    $line = b.current-line-index;
     my $contents = b.meta[$line]<new> ?? "" !! b.meta[$line]<contents> // "";
     b.update( :$line, "$contents█", meta => :$contents);
     ui.mode = 'input';
