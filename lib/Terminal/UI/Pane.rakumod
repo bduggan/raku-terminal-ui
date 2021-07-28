@@ -428,8 +428,8 @@ multi method update($content, Int :$line!, Bool :$center, :%meta) {
     }
   }
   @!meta[$line] = %meta with %meta;
-  @!lines[$line] = self!raw2line($content, :$center);
-  @!raw[$line] = $content;
+  @!lines[$line] = self!raw2line($content // [], :$center);
+  @!raw[$line] = $content // [];
   self!draw-row($line + 1 - $!first-visible);
 }
 
