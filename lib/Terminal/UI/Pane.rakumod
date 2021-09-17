@@ -196,7 +196,7 @@ method select($line!) {
   return unless $.selectable;
   info "selecting line $line";
   unless @!lines {
-    warning "cannot select line {$line.raku}, no content";
+    info "cannot select line {$line.raku}, no content";
     return;
   }
   unless $!first-visible <= $line <= self.last-visible {
@@ -329,14 +329,14 @@ method redraw {
 #| Scroll the visible contents up.  Optionally limit scrolling based on the contents.
 method scroll-up(Bool :$limit = True, Int :$lines = 1) {
   debug "scroll up by $lines";
-  my $actual;
+  my $actual = $lines;
   if $limit && $!first-visible + self.height + $lines > self.lines.elems {
     $actual = - ( $!first-visible + self.height - self.lines.elems );
     warning "cannot scroll up because first visible + height >= elems, will scroll $actual instead";
     return if $actual == 0;
   }
-  if (self!has-vertical-overlap) {
-    $!first-visible += ($actual // $lines);
+  if ($actual >= self.height or self!has-vertical-overlap) {
+    $!first-visible += $actual;
     if $!current-line < self.first-visible {
       $!current-line = self.first-visible;
     }
@@ -345,27 +345,28 @@ method scroll-up(Bool :$limit = True, Int :$lines = 1) {
   }
   atomically {
     self!set-scroll-region;
-    scroll-up($actual // $lines);
+    scroll-up($actual);
   }
-  $!first-visible += ($actual // $lines);
+  $!first-visible += $actual;
   if $!current-line < self.first-visible {
     $!current-line = self.first-visible;
   }
   self.draw-selected-line;
-  self!draw-row(self.height - $_) for 0...^($actual // $lines);
+  for 0..^($actual) {
+    self!draw-row(self.height - $_)
+  }
 }
 
 #| Scroll the visible contents down.  Optionally limit scrolling based on the contents.
 method scroll-down(Int :$lines = 1) {
   debug "scroll down by $lines";
-  my $actual;
+  my $actual = $lines;
   if $!first-visible < $lines {
     $actual = $!first-visible;
-    debug "limiting to $actual, not $lines";
     return if $actual == 0;
   }
-  if (self!has-vertical-overlap) {
-    $!first-visible -= ($actual // $lines);
+  if ( $actual >= self.height or self!has-vertical-overlap) {
+    $!first-visible -= $actual;
     if $!current-line > self.last-visible {
       $!current-line = self.last-visible;
     }
@@ -374,9 +375,9 @@ method scroll-down(Int :$lines = 1) {
   }
   atomically {
     self!set-scroll-region;
-    scroll-down($actual // $lines);
+    scroll-down($actual);
   }
-  $!first-visible -= ($actual // $lines);
+  $!first-visible -= $actual;
   with $!current-line {
     if $!current-line > self.last-visible {
       $!current-line = self.last-visible;
@@ -384,7 +385,7 @@ method scroll-down(Int :$lines = 1) {
     abort("scrolling calculation wrong") without self.selected-row;
     self.draw-selected-line;
   }
-  self!draw-row($_) for 1..($actual // $lines);
+  self!draw-row($_) for 1..($actual);
 }
 
 #| Selected row, in the range 1..$!height
