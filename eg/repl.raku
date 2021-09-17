@@ -31,6 +31,7 @@ ui.on: run_code => {
     }
   }
   b.put: $stdout;
+  ui.frame.focus(t);
 }
 
 ui.bind: 'pane', 'e' => 'edit';
@@ -58,7 +59,7 @@ sub edit-line($c) {
     when 'Tab' {
       pane.update( :$line, $contents, meta => %( :$contents ) );
       ui.mode = 'command';
-      ui.focus(pane => 0);
+      ui.focus(pane => 1);
     }
     default {
       $contents ~= $c;
