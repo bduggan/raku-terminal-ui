@@ -8,7 +8,7 @@ my (\h, \t, \b) = ui.panes;
 h.selectable = False;
 b.selectable = False;
 b.put: 'output goes here';
-h.put: 'type [tab] to switch';
+h.put: 'type [e] to edit';
 h.put: 'type [tab] to stop editing';
 h.put: 'type [r] to run';
 t.put: 'say "hello"', meta => contents => 'say "hello"';
