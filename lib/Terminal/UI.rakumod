@@ -115,22 +115,26 @@ multi method focus(Str :$pane where * eq 'next' | 'prev') {
   $!focused-frame //= self.frames[0];
   my Int $current = $!focused-frame.panes.first: :k, * === $.focused;
   $current //= 0;
-  fail "no current pane" without $current;
+  without $current {
+    warning "no current pane";
+    return;
+  }
   my $count = $!focused-frame.panes.elems;
   my $next;
   my $started = $current;
   my $op = $pane eq 'next' ?? &infix:<+> !! &infix:<->;
   my $checked = 0;
-  if $pane eq 'next' {
-    loop {
-      $current = ($current [&($op)] 1) % $count;
-      next unless $!focused-frame.panes[$current].selectable;
-      last if $checked++ > $count;
-      $next = $current;
-      last;
-    }
+  loop {
+    $current = ($current [&($op)] 1) % $count;
+    next unless $!focused-frame.panes[$current].selectable;
+    last if $checked++ > $count;
+    $next = $current;
+    last;
   }
-  fail "no next frame" without $next;
+  without $next {
+    warning "no $pane frame";
+    return;
+  }
   self.focus(pane => $next);
 }
 
