@@ -110,7 +110,7 @@ multi method focus(Str :$frame!, Int :$pane! ) {
 }
 
 #| Set the next pane to be focused.
-multi method focus(Str :$pane where * eq 'next' | 'prev') {
+multi method focus(Str :$pane where * eq 'next' | 'prev' ) {
   return if self.lock-focus;
   $!focused-frame //= self.frames[0];
   my Int $current = $!focused-frame.panes.first: :k, * === $.focused;
@@ -135,6 +135,7 @@ multi method focus(Str :$pane where * eq 'next' | 'prev') {
     warning "no $pane frame";
     return;
   }
+  # Call it with an integer instead of a string
   self.focus(pane => $next);
 }
 
@@ -309,7 +310,10 @@ has Modes $.mode is rw = 'command';
 
 #| Respond to keyboard input, until we are done
 method interact {
-  self.focus(pane => 'next');
+  $!focused-frame //= self.frames[0];
+  my Int $pane = $!focused-frame.panes.first(:k, *.selectable) // die "no selectable panes in the first frame";
+  self.focus(:$pane);
+
   $!interacting = True;
   react whenever self.keys(done => %( %.ui-bindings.invert )<quit>) {
     when $!mode eq 'input' {
