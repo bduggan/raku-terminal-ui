@@ -95,6 +95,15 @@ with documentation are:
 * [Terminal::UI::Style](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Style.md)
 * [Terminal::UI::Input](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Input.md)
 
+## BUGS
+
+Probably!
+
+If you find some bugs, or just have something to say, feel free to contact the author, or
+reach out on the mailing list:
+
+  https://lists.sr.ht/~bduggan/raku-terminal-ui
+
 ## Author
 
 Brian Duggan (bduggan at matatu.org)
