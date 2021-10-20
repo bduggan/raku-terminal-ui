@@ -559,6 +559,7 @@ method clear {
   @!raw = ();
   $!current-line = Nil;
   $!first-visible = Nil;
+  self.call('after_clear', arg => self, :maybe);
 }
 
 #| Associate callbacks with events
@@ -586,12 +587,12 @@ multi method on-sync(Str :$name!, Callable :$action!) {
 }
 
 #| Run the action with the given name
-method call($name, :$arg) {
-  if $name eq <select-up select-down select-last select-first page-up page-down select-down_10 select-up_10 clear>.any {
+method call($name, :$arg, Bool :$maybe) {
+  if $name eq <select-up select-down select-last select-first page-up page-down select-down_10 select-up_10>.any {
     return self."$name"() unless %!actions{ $name };
   }
   unless %!actions{ $name } {
-    info "no action for $name in pane {self.name}";
+    info "no action for $name in pane {self.name}" unless $maybe;
     return;
   }
   my &code := %!actions{ $name };
