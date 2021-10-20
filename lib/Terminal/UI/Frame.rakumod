@@ -213,7 +213,7 @@ multi method add-panes(:$heights! is copy) {
 method available-rows {
   exit note "Please set number-of-dividers" without self.number-of-dividers;
   my $a = $.height - 2 - (self.number-of-dividers);
-  info "available rows in frame $.height - 2 - {self.number-of-dividers} = $a";
+  debug "available rows in frame $.height - 2 - {self.number-of-dividers} = $a";
   $a;
 }
 
@@ -232,11 +232,11 @@ method focus(Terminal::UI::Pane $pane) {
 
 #| Handle a resize of the screen
 method handle-resize(:$from-width, :$from-height, :$to-width, :$to-height) {
-  info "resize from $from-width x $from-height to $to-width x $to-height";
+  debug "resize from $from-width x $from-height to $to-width x $to-height";
   $!height += $to-height - $from-height;
   $!width += $to-width - $from-width;
   without $!height-computer {
-    info "no height-computer";
+    debug "no height-computer";
     for @.panes -> $p {
       $p.set-size( $p.width + ($to-width - $from-width) , $p.height );
     }
@@ -245,7 +245,7 @@ method handle-resize(:$from-width, :$from-height, :$to-width, :$to-height) {
   my $at = 1;
   @.dividers = ();
   my @pane-heights = $!height-computer(self.available-rows);
-  info "recomputed heights: {@pane-heights.join(' ')}";
+  debug "recomputed heights: {@pane-heights.join(' ')}";
   for @pane-heights -> $h {
     my $b = @.panes[$++];
     $b.set-size( $b.width + ($to-width - $from-width) , $h );

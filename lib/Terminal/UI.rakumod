@@ -177,7 +177,7 @@ multi method setup(Array :$heights!) {
 
 #| Set up with a callback with one frame that computes heights based on the total available height
 multi method setup(Callable :&heights!) {
-  info "setting up using callback for heights";
+  debug "setting up using callback for heights";
   my $f = self.add-screen.add-frame;
   my $pane-count = &heights(80).elems; # call once to count panes
   $f.number-of-dividers = $pane-count;
@@ -186,7 +186,7 @@ multi method setup(Callable :&heights!) {
   if $heights.sum != self.screen.frame.available-rows {
     exit note "height computed { $heights.join(' + ')} == { $heights.sum }, not { self.screen.frame.available-rows }";
   }
-  info "initial heights: " ~ $heights.join(',');
+  debug "initial heights: " ~ $heights.join(',');
   $f.add-panes(:$heights, :$height-computer);
   self.refresh;
 }
@@ -321,7 +321,7 @@ method interact {
     }
     when %!pane-bindings.keys.any {
       with %!pane-bindings{$_} {
-        info "Calling $_";
+        debug "Calling $_";
         self.focused.call($_) if self!action-is-available($_);
       }
     }
@@ -329,7 +329,7 @@ method interact {
       self.call(%!ui-bindings{$_}) if self!action-is-available($_);
     }
     default {
-      info "unknown key {$_.raku}";
+      warning "unknown key {$_.raku}";
     }
   }
   $!interacting = False;
@@ -367,7 +367,7 @@ method call(Str $action, :$arg) {
   return self.focus(pane => 'next') if $action eq 'select-next';
   return self.focus(pane => 'prev') if $action eq 'select-prev';
   without %!ui-actions{$action} {
-    info "no ui action for $action";
+    warning "no ui action for $action";
     return;
   }
   my &codee := %!ui-actions{$action};

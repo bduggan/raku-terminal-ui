@@ -43,13 +43,13 @@ multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Bool :$center-va
   $f.draw;
   self.focus($f, pane => $p);
   $p.select-visible($p.height - 1);
-  info "waiting for alert";
+  debug "waiting for alert";
   $.lock-focus = True;
   %.lock-interaction = <select select-up select-down> Z=> True xx *;
   my $res = $promise.result;
   $.lock-focus = False;
   %.lock-interaction = Empty;
-  info "done waiting for alert";
+  debug "done waiting for alert";
   self.screen.remove-frame($f);
   self.focus($frame, :$pane) if $frame && $pane;
   self.refresh(:hard);

@@ -172,11 +172,11 @@ method select-first-visible {
 
 method validate {
   without $!current-line {
-    info "no current line";
+    warning "no current line";
     return;
   }
   my $str = "checking first-visible ($!first-visible) <= current ($!current-line) <= last ({self.last-visible})";
-  info $str;
+  debug $str;
   abort("failed $str") unless $!first-visible <= $!current-line <= self.last-visible;
 }
 
@@ -194,7 +194,7 @@ method enable-selection {
 #| Select an index in the content.
 method select($line!) {
   return unless $.selectable;
-  info "selecting line $line";
+  debug "selecting line $line";
   unless @!lines {
     info "cannot select line {$line.raku}, no content";
     return;
