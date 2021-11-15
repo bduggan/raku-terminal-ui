@@ -6,6 +6,7 @@ use Terminal::ANSI::OO 't';
 ui.setup(:2panes);
 
 my @rgb = t.red => "red", ' ', t.green => "green", ' ', t.blue => "blue", ' ';
+ui.panes[1].put: 'no color here';
 ui.panes[1].put(@rgb);
 ui.panes[1].put(|@rgb xx 3);
 ui.panes[1].put(|@rgb xx 20);

@@ -89,9 +89,10 @@ method reformat {
 method set-size($!width,$!height) { }
 
 method !format-line(Int $i) {
+  debug "reformatting line $i";
   with @!raw[$i] {
-    my @args = @!raw[$i];
-    @!lines[$i] = self!raw2line(@args);
+    my $args = @!raw[$i];
+    @!lines[$i] = self!raw2line($args);
   } else {
     error "no raw line $i";
   }
@@ -487,10 +488,10 @@ multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%me
   self;
 }
 
-method !raw2line(@args, Bool :$center) {
+method !raw2line($args, Bool :$center) {
   my $line = '';
   my $left = $.width;
-  for @args {
+  for $args<> {
     when Str {
      with .substr(0,$left) {
        $line ~= $_;
@@ -507,7 +508,7 @@ method !raw2line(@args, Bool :$center) {
       }
     }
     default {
-      error "unknown arg: " ~ .^name ~ ' -- ' ~ (.raku);
+      fatal "unknown arg: " ~ .^name ~ ' -- ' ~ (.raku);
     }
     last unless $left > 0;
   }

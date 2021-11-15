@@ -85,6 +85,13 @@ method !setup-resizer {
                        to-height => self.rows);
     clear-screen;
     self.draw;
+    for self.frames -> $f {
+      $f.draw;
+      for $f.panes -> $p {
+        $p.reformat;
+        $p.draw;
+      }
+    }
   }
 }
 
