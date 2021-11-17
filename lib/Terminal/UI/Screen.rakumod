@@ -67,7 +67,7 @@ method !trap-errors(\ui) {
   $!warn-wraphandle //= &warn.wrap: -> |c {
     ui.alert(:title<warning>, ~c) if ui.interacting;
     warning c.Str with c;
-    warning ( .Str // "empty").trim for Backtrace.new;
+    warning ( ($_ // "empty").Str ).trim for Backtrace.new;
   }
 }
 
