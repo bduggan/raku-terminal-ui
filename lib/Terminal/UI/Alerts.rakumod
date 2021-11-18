@@ -3,7 +3,11 @@ use Log::Async;
 
 method pod { $=pod }
 
-multi method select($msg, @values, @meta = Empty) {
+multi method select($msg, @values is copy, @meta is copy = Empty, Bool :$cancel) {
+  if $cancel {
+    @values.push: "cancel";
+    @meta[ @values.elems - 1 ] = "";
+  }
   self.alert($msg, :@values, :@meta, :!center, :!center-values);
 }
 
