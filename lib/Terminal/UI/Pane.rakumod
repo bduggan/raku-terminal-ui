@@ -445,10 +445,12 @@ method !centered($str) {
   $cnt.fmt("%-{self.width}s");
 }
 
+subset WrapModes of Str where * eq any <none word hard>;
+
 #| Add lines of content, possibly scrolling.
 #| Content is added one line at a time -- the content
 #| can be any type that has a 'lines' method.
-multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%meta) {
+multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%meta, WrapModes :$wrap = 'none') {
   $!write-lock.lock;
   LEAVE $!write-lock.unlock;
   # self.validate;
@@ -463,6 +465,12 @@ multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%me
     return;
   }
   my $str := $content.Str;
+  if ( $wrap eq 'hard' and $str.chars > $.width) {
+    for $str.comb($.width) -> $l {
+      self.put(~$l, :$scroll-ok, :$center, :%meta);
+    }
+    return;
+  }
   $!first-visible //= 0;
   $!current-line //= 0;
   my $should-scroll = self.last-visible == (@!lines - 1);
@@ -520,14 +528,52 @@ method !raw2line($args, Bool :$center) {
   $line;
 }
 
+method !raw2line-hardwrap(@args) {
+  my @remaining = @args;
+  return (Nil,Empty) unless @args > 0;
+  my $line = '';
+  my $left = $.width;
+  loop {
+    last unless @remaining;
+    my Pair $this = @remaining[0] ~~ Str ?? ( "" => @remaining.shift) !! @remaining.shift;
+    $line ~= $this.key;
+    if $this.value.chars > $left {
+      $line ~= $this.value.substr(0,$left);
+      @remaining.unshift: ( $this.key => $this.value.substr($left) );
+      $left = 0;
+    } else {
+      $line ~= $this.value;
+      $left -= $this.value.chars;
+    }
+    last unless $left > 0;
+  }
+  $line ~= " " x $left;
+  ($line, @remaining);
+}
+
 #| Put formatted text.  Each element is either a string or a pair.  Strings
 #| are printed.  Keys of pairs are printed, and then their values.  Keys are
 #| assumed to be formatting, and do not count towards the length of the line.
-multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta) {
+multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wrap = 'none') {
   die "escape character in args: please use a pair" if @args.grep: { $_ ~~ Str && /\e/ }
   my $i = @!lines.elems;
-  @!raw[ $i ] = @args.clone;
-  self.put(self!raw2line(@args), :$scroll-ok, :%meta);
+  if $wrap eq 'hard' {
+    my $str;
+    my @rem = @args;
+    loop {
+      last unless @rem && @rem.elems > 0;
+      my ($next,@left) := self!raw2line-hardwrap(@rem);
+      $str = $next;
+      last without $str;
+      @rem = @left;
+      @!raw[ $i ] = @rem.clone;
+      self.put($str, :$scroll-ok, :%meta);
+      $i++;
+    }
+  } else {
+    @!raw[ $i ] = @args.clone;
+    self.put(self!raw2line(@args), :$scroll-ok, :%meta);
+  }
 }
 
 #| Focus on this pane

@@ -10,6 +10,9 @@ my @panes = $s.add-frame.add-panes(ratios => [1, 1]);
 my $f = $s.frames[0];
 $s.draw;
 
+ui.panes[0].put: "hello";
+ui.panes[1].put: "world";
+
 start react whenever $s.resized {
   for @panes -> $b {
     $b.put("height is now " ~ $b.height);
@@ -17,11 +20,6 @@ start react whenever $s.resized {
   } 
 }
 
-loop {
-  my $k = ui.get-key;
-  last if $k eq 'q';
-  $s.draw if $k eq 'r';
-}
-
+ui.interact;
 ui.shutdown;
 
