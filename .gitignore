@@ -2,3 +2,4 @@ lib/.precomp
 *.swp
 debug
 tar
+log
