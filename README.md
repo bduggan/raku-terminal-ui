@@ -42,7 +42,7 @@ the selected line up and down.  Tab switches to the other box.
 ## Example 3
 
 Like example 2, but also -- pressing Enter in the top box
-will some text about add the currently selected row to the 
+will some text about add the currently selected row to the
 bottom box:
 
     ui.setup(:2panes);
@@ -85,8 +85,11 @@ See the [eg](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) d
 
 ## Description
 
-The starting point for the reference documentation is
-in [Terminal::UI](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI.md).  Other classes
+The best place for documentation is the
+[examples](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) directory.
+
+There is also reference documentation with links to the source code -- see
+[Terminal::UI](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI.md).  Other classes
 with documentation are:
 
 * [Terminal::UI::Screen](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Screen.md)
