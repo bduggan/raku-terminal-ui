@@ -554,7 +554,7 @@ method !raw2line-hardwrap(@args) {
 #| Put formatted text.  Each element is either a string or a pair.  Strings
 #| are printed.  Keys of pairs are printed, and then their values.  Keys are
 #| assumed to be formatting, and do not count towards the length of the line.
-multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wrap = 'none') {
+multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wrap = 'none', Bool :$center) {
   die "escape character in args: please use a pair" if @args.grep: { $_ ~~ Str && /\e/ }
   my $i = @!lines.elems;
   if $wrap eq 'hard' {
@@ -572,7 +572,7 @@ multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wr
     }
   } else {
     @!raw[ $i ] = @args.clone;
-    self.put(self!raw2line(@args), :$scroll-ok, :%meta);
+    self.put(self!raw2line(@args, :$center), :$scroll-ok, :%meta);
   }
 }
 
