@@ -311,8 +311,10 @@ has Modes $.mode is rw = 'command';
 #| Respond to keyboard input, until we are done
 method interact {
   $!focused-frame //= self.frames[0];
-  my Int $pane = $!focused-frame.panes.first(:k, *.selectable) // die "no selectable panes in the first frame";
-  self.focus(:$pane);
+  unless $!focused-frame.focused {
+    my Int $pane = $!focused-frame.panes.first(:k, *.selectable) // die "no selectable panes in the first frame";
+    self.focus(:$pane);
+  }
 
   $!interacting = True;
   react whenever self.keys(done => %( %.ui-bindings.invert )<quit>) {
