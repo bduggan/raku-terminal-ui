@@ -133,10 +133,27 @@ method add-pane {
   @.panes.tail;
 }
 
+#| Remove pane $pane from this frame, and extend the one above it.
 multi method remove-pane(Terminal::UI::Pane $pane) {
   my Int $index = self.panes.first: :k, { $_ === $pane };
   return False without $index;
+  return self.remove-pane('top') if $index == 0;
   self.remove-pane($index);
+}
+
+#| Remove the top pane and extend the second one.
+multi method remove-pane('top') {
+  return False if @!panes == 1;
+  my $old = @!panes.shift;
+  my $first = @!dividers.shift;
+  $!number-of-dividers = @!dividers.elems;
+  my $adjacent = @!panes[0];
+  $adjacent.set-top(self.top + 1);
+  $adjacent.set-size( $old.width, $adjacent.height + $old.height + 1 );
+  if $.focused === $old {
+    self.focus($adjacent);
+  }
+  return True;
 }
 
 #| Remove pane $index from this frame, and extend the one above it.

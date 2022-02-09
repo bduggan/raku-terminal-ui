@@ -15,8 +15,7 @@ for ui.panes.kv -> $i, $p {
    if ( ui.frame.remove-pane($p) ) {
      ui.refresh(:hard);
      ui.alert("removed pane $i");
-     ui.panes[0].clear;
-     ui.panes[0].put: ui.screen.frame.check(ui.panes) // 'okay';
+     ui.panes[0].put: ui.screen.frame.check(ui.panes) // "no issues removing pane $i";
    } else {
      ui.alert("failed to remove pane $i");
    }
