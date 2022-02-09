@@ -133,6 +133,36 @@ method add-pane {
   @.panes.tail;
 }
 
+multi method remove-pane(Terminal::UI::Pane $pane) {
+  my Int $index = self.panes.first: :k, { $_ === $pane };
+  return False without $index;
+  self.remove-pane($index);
+}
+
+#| Remove pane $index from this frame, and extend the one above it.
+multi method remove-pane(Int $index) {
+  if $index > @!panes  - 1 {
+    warning "cannot remove pane $index -- count is " ~ @!panes.elems;
+    return False;
+  }
+  if $index == 0 {
+    warning "cannot remove pane 0";
+    return False;
+  }
+  my $adjacent = @.panes[$index - 1];
+  my $old = @!panes.splice($index,1).?head or do {
+    warning "no pane at index $index to remove";
+    return False;
+  };
+  @!dividers.splice($index - 1,1);
+  $!number-of-dividers = @!dividers.elems;
+  $adjacent.set-size( $old.width, $adjacent.height + $old.height + 1 );
+  if $.focused === $old {
+    self.focus($adjacent);
+  }
+  return True;
+}
+
 #| Number of dividers.  Will be number of panes - 1, when panes are added.
 has $.number-of-dividers is rw;
 
