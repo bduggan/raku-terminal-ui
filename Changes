@@ -1,0 +1,4 @@
+0.1.3 2022-02-10
+  - Started Changes file
+  - added frame.remove-pane
+  - don't override an existing force when starting interact
