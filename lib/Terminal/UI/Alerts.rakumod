@@ -3,20 +3,20 @@ use Log::Async;
 
 method pod { $=pod }
 
-multi method select($msg, @values is copy, @meta is copy = Empty, Bool :$cancel) {
+multi method select($msg, @values is copy, @meta is copy = Empty, Bool :$cancel, :$default-row) {
   if $cancel {
     @values.push: "cancel";
     @meta[ @values.elems - 1 ] = "";
   }
-  self.alert($msg, :@values, :@meta, :!center, :!center-values);
+  self.alert($msg, :@values, :@meta, :!center, :!center-values, :$default-row);
 }
 
-multi method alert(Str $msg, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',), :@meta) {
-  self.alert($msg.lines.List, :$pad, :$center, :$title, :@values, :@meta, :$center-values);
+multi method alert(Str $msg, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',), :@meta, :$default-row) {
+  self.alert($msg.lines.List, :$pad, :$center, :$title, :@values, :@meta, :$center-values, :$default-row);
 }
 
 #| Show an alert box, and wait for a key press to dismiss it.
-multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',), :@meta) {
+multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Bool :$center-values = True, Str :$title, :@values = ('ok',), :$default-row, :@meta) {
   my Int $width = (( ( |@lines, |@values )>>.chars.max + 4) max 16) min (self.screen.cols - 4);
   my Int $height = (3 + @lines + @values) min (self.screen.rows - 3);
   $height += 2 if $title;
@@ -46,7 +46,7 @@ multi method alert(@lines, Int :$pad = 0, Bool :$center = True, Bool :$center-va
   $p.on: select => -> :%meta { $promise.keep(%meta) };
   $f.draw;
   self.focus($f, pane => $p);
-  $p.select-visible($p.height - 1);
+  $p.select-visible($default-row // ($p.height - 1));
   debug "waiting for alert";
   $.lock-focus = True;
   %.lock-interaction = <select select-up select-down> Z=> True xx *;
