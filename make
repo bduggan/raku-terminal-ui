@@ -66,3 +66,18 @@ multi MAIN('clean') {
   shell 'rm -f dist/*.tar.gz';
 }
 
+multi MAIN('tar') {
+  my $out = "tar/{$module}-{$version}.tar.gz";
+  shell qq:to/SH/;
+    echo "Making $version";
+    mkdir -p tar
+    git archive --prefix={$module}-{$version}/ -o $out {$version}
+    SH
+  say "wrote $out";
+}
+
+multi MAIN('release') {
+  "tar/{$module}-{$version}.tar.gz".IO.e or die "no tarfile created for $version, make tar first";
+  shell "fez upload --file tar/{$module}-{$version}.tar.gz";
+}
+
