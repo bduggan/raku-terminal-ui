@@ -1,3 +1,6 @@
+ [![Actions Status](https://github.com/bduggan/raku-terminal-ui/actions/workflows/linux.yml/badge.svg)](https://github.com/bduggan/raku-terminal-ui/actions/workflows/linux.yml)
+ [![Actions Status](https://github.com/bduggan/raku-terminal-ui/actions/workflows/macos.yml/badge.svg)](https://github.com/bduggan/raku-terminal-ui/actions/workflows/macos.yml)
+
 ## Terminal::UI
 
 A framework for building terminal interfaces.
