@@ -152,7 +152,7 @@ sub document-all($base-class) {
 
 sub MAIN {
 	my $tag = Terminal::UI.^ver.Str;
-	my $*repo = "https://git.sr.ht/~bduggan/raku-terminal-ui/tree/$tag";
+	my $*repo = "https://github.com/bduggan/raku-terminal-ui/tree/$tag";
   document-all(Terminal::UI);
 }
 
