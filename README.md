@@ -80,7 +80,7 @@ bottom box:
 
 ## More examples
 
-See the [eg](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) directory.
+See the [eg](https://github.com/bduggan/raku-terminal-ui/blob/master/eg/) directory.
 
 ## See also
 
@@ -89,26 +89,23 @@ See the [eg](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) d
 ## Description
 
 The best place for documentation is the
-[examples](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/eg/) directory.
+[examples](https://github.com/bduggan/raku-terminal-ui/blob/master/eg/) directory.
 
 There is also reference documentation with links to the source code -- see
-[Terminal::UI](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI.md).  Other classes
+[Terminal::UI](https://github.com/bduggan/raku-terminal-ui/blob/master/lib/Terminal/UI.md).  Other classes
 with documentation are:
 
-* [Terminal::UI::Screen](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Screen.md)
-* [Terminal::UI::Frame](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Frame.md)
-* [Terminal::UI::Pane](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Pane.md)
-* [Terminal::UI::Style](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Style.md)
-* [Terminal::UI::Input](https://git.sr.ht/~bduggan/raku-terminal-ui/tree/master/item/lib/Terminal/UI/Input.md)
+* [Terminal::UI::Screen](https://github.com/bduggan/raku-terminal-ui/blob/master/lib/Terminal/UI/Screen.md)
+* [Terminal::UI::Frame](https://github.com/bduggan/raku-terminal-ui/blob/master/lib/Terminal/UI/Frame.md)
+* [Terminal::UI::Pane](https://github.com/bduggan/raku-terminal-ui/blob/master/lib/Terminal/UI/Pane.md)
+* [Terminal::UI::Style](https://github.com/bduggan/raku-terminal-ui/blob/master/lib/Terminal/UI/Style.md)
+* [Terminal::UI::Input](https://github.com/bduggan/raku-terminal-ui/blob/master/lib/Terminal/UI/Input.md)
 
 ## BUGS
 
 Probably!
 
-If you find some bugs, or just have something to say, feel free to contact the author, or
-reach out on the mailing list:
-
-  https://lists.sr.ht/~bduggan/raku-terminal-ui
+If you find some bugs, or just have something to say, feel free to contact the author.
 
 ## Author
 
