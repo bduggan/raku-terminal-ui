@@ -18,7 +18,7 @@
     "Terminal::UI::Alerts": "lib/Terminal/UI/Alerts.rakumod"
   },
   "repo-type": "git",
-  "source-url": "https://git.sr.ht/~bduggan/raku-terminal-ui",
+  "source-url": "https://github.com/bduggan/raku-terminal-ui",
   "tags": [
     "Terminal"
   ],
