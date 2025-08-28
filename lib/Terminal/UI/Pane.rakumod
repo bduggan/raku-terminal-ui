@@ -289,7 +289,7 @@ method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe =
     return;
   }
   return without $!first-visible;
-  my $str = @!lines[$!first-visible + $row - 1] // ''; 
+  my $str = @!lines[$!first-visible + $row - 1] // '';
   my Int $h = self.top + $row.trim - 1;
   if $border && $inner && self.frame {
     self.frame.print-line($h,"$str");
@@ -500,7 +500,7 @@ multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%me
   $!current-line //= 0;
   my $should-scroll = self.last-visible == (@!lines - 1);
   @!meta[ @!lines.elems ] = %meta with %meta;
-  with @!raw[ @!lines.elems ] { 
+  with @!raw[ @!lines.elems ] {
     warning "cannot center formatted text" if $center;
     @!lines.push: sanitize($str);
     # raw done, don't calculate
@@ -576,6 +576,58 @@ method !raw2line-hardwrap(@args) {
   ($line, @remaining);
 }
 
+method !raw2line-wordwrap(@args) {
+    return (Nil,Empty) unless @args;
+    my @remaining = @args;
+    my $line = '';
+    my $left = $.width;
+    my $has-word = False;
+
+    loop {
+        last unless @remaining;
+        my $this = @remaining[0] ~~ Str ?? ("" => @remaining.shift) !! @remaining.shift;
+
+        # Add formatting key
+        $line ~= $this.key;
+
+        # Process words
+        my @words = $this.value.words;
+        while @words {
+            my $word = @words[0];
+            my $space-needed = $word.chars + ($has-word ?? 1 !! 0);
+
+            # Word too long for width
+            if $word.chars > $.width {
+                # Return current line if not empty
+                if $has-word {
+                    @remaining.unshift: ($this.key => @words.join(" "));
+                    return ($line ~ (" " x $left), @remaining);
+                }
+                # Split long word
+                @words[0] = $word.substr($.width);
+                $line = $word.substr(0, $.width);
+                @remaining.unshift: ($this.key => @words.join(" "));
+                return ($line, @remaining);
+            }
+
+            # Word doesn't fit current line
+            if $space-needed > $left {
+                @remaining.unshift: ($this.key => @words.join(" "));
+                return ($line ~ (" " x $left), @remaining);
+            }
+
+            # Add word to line
+            $line ~= " " if $has-word;
+            $line ~= $word;
+            $left = $.width - $line.chars;
+            $has-word = True;
+            @words.shift;
+        }
+    }
+
+    ($line ~ (" " x $left), @remaining);
+}
+
 #| Put formatted text.  Each element is either a string or a pair.  Strings
 #| are printed.  Keys of pairs are printed, and then their values.  Keys are
 #| assumed to be formatting, and do not count towards the length of the line.
@@ -588,6 +640,19 @@ multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wr
     loop {
       last unless @rem && @rem.elems > 0;
       my ($next,@left) := self!raw2line-hardwrap(@rem);
+      $str = $next;
+      last without $str;
+      @rem = @left;
+      @!raw[ $i ] = @rem.clone;
+      self.put($str, :$scroll-ok, :%meta);
+      $i++;
+    }
+  } elsif $wrap eq 'word' {
+    my $str;
+    my @rem = @args;
+    loop {
+      last unless @rem && @rem.elems > 0;
+      my ($next,@left) := self!raw2line-wordwrap(@rem);
       $str = $next;
       last without $str;
       @rem = @left;

@@ -22,6 +22,10 @@ ui.pane.put: "word wrapped: $address", wrap => "word";
 
 ui.pane.put: "word wrapped with a long word: " ~ ((1..200).join('_')), wrap => "word";
 
+ui.pane.put: "";
+
+ui.pane.put: [ t.yellow => "yellow word wrapped $address" ], :wrap<word>;
+
 ui.interact;
 ui.shutdown;
 
