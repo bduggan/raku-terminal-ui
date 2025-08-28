@@ -465,12 +465,37 @@ multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%me
     return;
   }
   my $str := $content.Str;
-  if ( $wrap eq 'hard' and $str.chars > $.width) {
+  if ( $wrap eq 'hard' and $str.chars > $.width ) {
     for $str.comb($.width) -> $l {
       self.put(~$l, :$scroll-ok, :$center, :%meta);
     }
     return;
   }
+  if ( $wrap eq 'word' and $str.chars > $.width ) {
+    my @words = $str.words;
+    my $line = '';
+    for @words -> $w {
+      if $w.chars > $.width {
+        # word is too long, hard wrap it
+        for $w.comb($.width) -> $hw {
+          self.put($line, :$scroll-ok, :$center, :%meta) if $line.chars > 0;
+          $line = '';
+          self.put($hw, :$scroll-ok, :$center, :%meta);
+        }
+        next;
+      }
+      if $line.chars + 1 + $w.chars > $.width {
+        self.put($line, :$scroll-ok, :$center, :%meta);
+        $line = $w;
+      } else {
+        $line ~= " " if $line.chars > 0;
+        $line ~= $w;
+      }
+    }
+    self.put($line, :$scroll-ok, :$center, :%meta) if $line.chars > 0;
+    return;
+  }
+
   $!first-visible //= 0;
   $!current-line //= 0;
   my $should-scroll = self.last-visible == (@!lines - 1);

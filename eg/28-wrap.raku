@@ -16,6 +16,12 @@ ui.pane.put: [ "hello", t.blue => (1..100).join('-') ], :wrap<hard>;
 
 ui.pane.put: [ |(1..100).map: { "[$_]" } ] , :wrap<hard>;
 
+ui.pane.put: "";
+
+ui.pane.put: "word wrapped: $address", wrap => "word";
+
+ui.pane.put: "word wrapped with a long word: " ~ ((1..200).join('_')), wrap => "word";
+
 ui.interact;
 ui.shutdown;
 
