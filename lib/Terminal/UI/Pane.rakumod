@@ -4,6 +4,7 @@ use Log::Async;
 use Terminal::UI::Style;
 use Terminal::UI::Utils;
 use Terminal::ANSI::OO 't';
+use Terminal::ANSIParser;
 logger.untapped-ok = True;
 method pod { $=pod }
 
@@ -514,6 +515,44 @@ method print(Str $str) {
     @!lines[$!current-line] = $line;
     @!raw[$!current-line] = $line;
     $!cursor-col += $str.chars;
+  }
+}
+
+#| Stream data from a Supply to the pane, parsing ANSI sequences
+method stream(Supply $supply) {
+  my $buffer = '';
+
+  my sub flush-buffer {
+    if $buffer {
+      self.print($buffer);
+      $buffer = '';
+    }
+  }
+
+  my &parse := make-ansi-parser(emit-item => -> $item {
+    if $item ~~ Terminal::ANSIParser::CSI {
+      flush-buffer();
+      self.print($item.Str);
+    } elsif $item ~~ Terminal::ANSIParser::Sequence {
+      flush-buffer();
+      self.print($item.Str);
+    } elsif $item ~~ Int {
+      my $char = chr($item);
+      if $char eq "\n" || $char eq "\r" {
+        flush-buffer();
+        self.print($char);
+      } else {
+        $buffer ~= $char;
+      }
+    } else {
+      flush-buffer();
+      debug "Unknown ANSI item: " ~ $item.^name ~ " | " ~ $item.raku;
+    }
+  });
+
+  $supply.tap: -> $bytes {
+    parse($_) for $bytes.decode.ords;
+    flush-buffer();
   }
 }
 

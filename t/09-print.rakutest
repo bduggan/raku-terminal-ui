@@ -4,7 +4,7 @@ use Test;
 use Terminal::UI::Pane;
 use Terminal::ANSI;
 
-plan 12;
+plan 16;
 
 disable-output;
 
@@ -67,5 +67,30 @@ is $q.lines[2], 'line3', 'third line from batched string';
 my $r = Terminal::UI::Pane.new: :width<20>, :left<1>, :top<1>, :height<5>;
 $r.print("hello world\rXYZ");
 is $r.lines[0].trim, 'XYZlo world', 'mixed string with carriage return';
+
+# Test stream method with basic text
+my $s = Terminal::UI::Pane.new: :width<20>, :left<1>, :top<1>, :height<5>;
+my $supplier = Supplier.new;
+$s.stream($supplier.Supply);
+$supplier.emit("hello".encode);
+sleep 0.1;
+is $s.lines[0], 'hello', 'stream handles basic text';
+
+# Test stream with newlines
+my $t = Terminal::UI::Pane.new: :width<20>, :left<1>, :top<1>, :height<5>;
+my $supplier2 = Supplier.new;
+$t.stream($supplier2.Supply);
+$supplier2.emit("line1\nline2".encode);
+sleep 0.1;
+is $t.lines.elems, 2, 'stream handles newlines';
+is $t.lines[0], 'line1', 'stream first line correct';
+
+# Test stream with ANSI escape sequences
+my $u = Terminal::UI::Pane.new: :width<20>, :left<1>, :top<1>, :height<5>;
+my $supplier3 = Supplier.new;
+$u.stream($supplier3.Supply);
+$supplier3.emit("\e[32mgreen\e[0m".encode);
+sleep 0.1;
+is $u.lines[0], 'green', 'stream filters ANSI sequences';
 
 done-testing;
