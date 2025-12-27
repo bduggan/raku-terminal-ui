@@ -457,6 +457,14 @@ subset WrapModes of Str where * eq any <none word hard>;
 
 #| Print a raw string to the terminal
 method print(Str $str) {
+  # If string contains \n or \r (and is more than just that char), split and process recursively
+  if $str ne "\n" && $str ne "\r" && $str ~~ /\n|\r/ {
+    for $str.split(/(\n|\r)/, :v) -> $part {
+      self.print(~$part) if $part ne '';
+    }
+    return;
+  }
+
   # Initialize current-line if needed
   $!current-line //= 0;
 
