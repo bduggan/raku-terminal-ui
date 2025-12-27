@@ -31,10 +31,10 @@ has Bool $.selectable is rw = True;
 has Bool $.focused;
 
 #| Index into @.lines (negative if we scrolled down): first line in the pane
-has Int $.first-visible = Nil;
+has Int $.first-visible = 0;
 
 #| Index into @.lines (negative if we scrolled down): currently selected line
-has Int $!current-line = Nil;   # index into @.lines
+has Int $!current-line = 0;   # index into @.lines
 
 #| Optional descriptive name
 has $.name is rw = 'unnamed';
