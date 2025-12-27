@@ -1,3 +1,8 @@
+0.1.10 2025-12-27
+    - new stream method for panes
+    - don't flush, add line-buffer
+    - better print for multiple lines
+
 0.1.9 2025-12-27
     - add examples that use the new pty functionality of Proc::Async
     - add a new 'print' for panes to print a single char or escape sequence
