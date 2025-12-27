@@ -66,7 +66,6 @@ has Bool $.auto-scroll is rw = True;
 has Lock $!write-lock .= new;
 
 has UInt $!cursor-col = 0;
-has Bool $!scroll-region-set = False;
 
 method set-cursor-col(UInt $col) {
   $!cursor-col = $col;
@@ -456,12 +455,6 @@ subset WrapModes of Str where * eq any <none word hard>;
 
 #| Print a raw string to the terminal
 method print(Str $str) {
-  # Set scroll region on first call
-  unless $!scroll-region-set {
-    self!set-scroll-region;
-    $!scroll-region-set = True;
-  }
-
   # Initialize current-line if needed
   $!current-line //= 0;
 
@@ -472,9 +465,11 @@ method print(Str $str) {
   # Calculate the screen row based on current-line
   my $screen-row = self.top + $!current-line;
 
-  # Move to the row and column position and print atomically
+  # Set scroll region, print, and reset atomically
   atomically {
+    self!set-scroll-region;
     print-at $screen-row, self.left + $!cursor-col, $str;
+    reset-scroll-region;
   }
 
   # Update cursor position and line content based on the character
