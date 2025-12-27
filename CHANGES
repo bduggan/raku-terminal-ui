@@ -1,3 +1,7 @@
+0.1.9 2025-12-27
+    - add examples that use the new pty functionality of Proc::Async
+    - add a new 'print' for panes to print a single char or escape sequence
+
 0.1.8 2025-12-24
     - fix warning
 
