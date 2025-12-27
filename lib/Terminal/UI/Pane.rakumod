@@ -65,6 +65,13 @@ has Bool $.auto-scroll is rw = True;
 
 has Lock $!write-lock .= new;
 
+has UInt $!cursor-col = 0;
+has Bool $!scroll-region-set = False;
+
+method set-cursor-col(UInt $col) {
+  $!cursor-col = $col;
+}
+
 method TWEAK {
   return without $.frame;
   $!height ||= $.frame.height - 2;
@@ -446,6 +453,55 @@ method !centered($str) {
 }
 
 subset WrapModes of Str where * eq any <none word hard>;
+
+#| Print a raw string to the terminal
+method print(Str $str) {
+  # Set scroll region on first call
+  unless $!scroll-region-set {
+    self!set-scroll-region;
+    $!scroll-region-set = True;
+  }
+
+  # Initialize current-line if needed
+  $!current-line //= 0;
+
+  # Ensure @!lines and @!raw have an entry for current-line
+  @!lines[$!current-line] //= '';
+  @!raw[$!current-line] //= '';
+
+  # Calculate the screen row based on current-line
+  my $screen-row = self.top + $!current-line;
+
+  # Move to the row and column position and print atomically
+  atomically {
+    print-at $screen-row, self.left + $!cursor-col, $str;
+  }
+
+  # Update cursor position and line content based on the character
+  if $str eq "\n" {
+    # Cap current-line at the last row of the pane, let terminal scrolling handle overflow
+    if $!current-line < $.height - 1 {
+      $!current-line++;
+    }
+    # Redraw border after newline
+    self.frame.draw() with self.frame;
+    # Don't reset column - let \r do that
+  } elsif $str eq "\r" {
+    # Carriage return - reset column and clear the line content (will be overwritten)
+    $!cursor-col = 0;
+    @!lines[$!current-line] = '';
+    @!raw[$!current-line] = '';
+  } elsif $str.starts-with("\e") {
+    # Escape sequences are invisible, don't update column or add to content
+  } else {
+    # For regular visible chars, update column and add to line content
+    $!cursor-col += $str.chars;
+    @!lines[$!current-line] ~= $str;
+    @!raw[$!current-line] ~= $str;
+  }
+
+  $*OUT.flush;
+}
 
 #| Add lines of content, possibly scrolling.
 #| Content is added one line at a time -- the content
