@@ -1,0 +1,59 @@
+#!raku
+
+use Test;
+use Terminal::UI::Pane;
+use Terminal::ANSI;
+
+plan 8;
+
+disable-output;
+
+my $p = Terminal::UI::Pane.new: :width<20>, :left<1>, :top<1>, :height<5>;
+
+# Test basic character printing
+$p.print('h');
+$p.print('e');
+$p.print('l');
+$p.print('l');
+$p.print('o');
+is $p.lines[0], 'hello', 'prints characters to line';
+
+# Test newline increments line
+$p.print("\n");
+$p.print('w');
+$p.print('o');
+$p.print('r');
+$p.print('l');
+$p.print('d');
+is $p.lines[1], 'world', 'newline moves to next line';
+
+# Test carriage return resets column
+$p.print("\r");
+$p.print('X');
+is $p.lines[1].trim, 'Xorld', 'carriage return resets to start of line';
+
+# Test lines are stored for history
+$p.print("\n");
+$p.print('line3');
+$p.print("\n");
+$p.print('line4');
+$p.print("\n");
+$p.print('line5');
+$p.print("\n");
+$p.print('line6');
+is $p.lines.elems, 6, 'lines accumulate for scrollback';
+is $p.lines[5], 'line6', 'can access historical lines';
+
+# Test escape sequences don't add to content
+$p.print("\n");
+$p.print("\e[31m");
+$p.print('red');
+is $p.lines[6], 'red', 'escape sequences not stored in content';
+
+# Test current-line tracks position
+is $p.current-line-index, 6, 'current-line tracks write position';
+
+# Test first-visible updates when scrolling past height
+is $p.first-visible, 2, 'first-visible updates when content exceeds height';
+
+done-testing;

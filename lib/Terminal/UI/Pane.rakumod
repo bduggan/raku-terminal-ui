@@ -481,6 +481,7 @@ method print(Str $str) {
   if $str eq "\n" {
     # Always increment current-line to track line history for scrolling
     $!current-line++;
+    $!cursor-col = 0;  # Reset cursor column on newline
     # Update first-visible to follow if we're scrolling at the bottom
     if $!current-line >= $.height {
       $!first-visible = $!current-line - $.height + 1;
@@ -488,17 +489,23 @@ method print(Str $str) {
     debug "print newline: current-line=$!current-line, first-visible={$!first-visible//0}, lines.elems={@!lines.elems}";
     # Redraw border after newline
     self.frame.draw() with self.frame;
-    # Don't reset column - let \r do that
   } elsif $str eq "\r" {
     # Carriage return - reset column position only, don't clear stored content
     $!cursor-col = 0;
   } elsif $str.starts-with("\e") {
     # Escape sequences are invisible, don't update column or add to content
   } else {
-    # For regular visible chars, update column and add to line content
+    # For regular visible chars, write at cursor position using substr
+    my $line = @!lines[$!current-line];
+    # Pad line if cursor is past the end
+    if $!cursor-col > $line.chars {
+      $line ~= ' ' x ($!cursor-col - $line.chars);
+    }
+    # Write character(s) at cursor position
+    substr-rw($line, $!cursor-col, $str.chars) = $str;
+    @!lines[$!current-line] = $line;
+    @!raw[$!current-line] = $line;
     $!cursor-col += $str.chars;
-    @!lines[$!current-line] ~= $str;
-    @!raw[$!current-line] ~= $str;
   }
 
   $*OUT.flush;
