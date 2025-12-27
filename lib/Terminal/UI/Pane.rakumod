@@ -295,7 +295,9 @@ method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe =
     return;
   }
   return without $!first-visible;
-  my $str = @!lines[$!first-visible + $row - 1] // '';
+  my $index = $!first-visible + $row - 1;
+  my $str = @!lines[$index] // '';
+  debug "draw-row: row=$row, first-visible=$!first-visible, index=$index, str-length={$str.chars}, lines.elems={@!lines.elems}";
   my Int $h = self.top + $row.trim - 1;
   if $border && $inner && self.frame {
     self.frame.print-line($h,"$str");
@@ -366,7 +368,7 @@ method scroll-up(Bool :$limit = True, Int :$lines = 1) {
 
 #| Scroll the visible contents down.  Optionally limit scrolling based on the contents.
 method scroll-down(Int :$lines = 1) {
-  debug "scroll down by $lines";
+  debug "scroll down by $lines, first-visible={$!first-visible//0}, lines.elems={@!lines.elems}, current-line={$!current-line//0}";
   my $actual = $lines;
   if $!first-visible < $lines {
     $actual = $!first-visible;
@@ -462,8 +464,11 @@ method print(Str $str) {
   @!lines[$!current-line] //= '';
   @!raw[$!current-line] //= '';
 
-  # Calculate the screen row based on current-line
-  my $screen-row = self.top + $!current-line;
+  debug "print: str={$str.raku}, current-line=$!current-line, lines.elems={@!lines.elems}, first-visible={$!first-visible//0}" unless $str ~~ /\e/;
+
+  # Calculate the screen row - cap at bottom of pane for display
+  my $visible-row = $!current-line min ($.height - 1);
+  my $screen-row = self.top + $visible-row;
 
   # Set scroll region, print, and reset atomically
   atomically {
@@ -474,18 +479,19 @@ method print(Str $str) {
 
   # Update cursor position and line content based on the character
   if $str eq "\n" {
-    # Cap current-line at the last row of the pane, let terminal scrolling handle overflow
-    if $!current-line < $.height - 1 {
-      $!current-line++;
+    # Always increment current-line to track line history for scrolling
+    $!current-line++;
+    # Update first-visible to follow if we're scrolling at the bottom
+    if $!current-line >= $.height {
+      $!first-visible = $!current-line - $.height + 1;
     }
+    debug "print newline: current-line=$!current-line, first-visible={$!first-visible//0}, lines.elems={@!lines.elems}";
     # Redraw border after newline
     self.frame.draw() with self.frame;
     # Don't reset column - let \r do that
   } elsif $str eq "\r" {
-    # Carriage return - reset column and clear the line content (will be overwritten)
+    # Carriage return - reset column position only, don't clear stored content
     $!cursor-col = 0;
-    @!lines[$!current-line] = '';
-    @!raw[$!current-line] = '';
   } elsif $str.starts-with("\e") {
     # Escape sequences are invisible, don't update column or add to content
   } else {
