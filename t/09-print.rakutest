@@ -4,7 +4,7 @@ use Test;
 use Terminal::UI::Pane;
 use Terminal::ANSI;
 
-plan 8;
+plan 12;
 
 disable-output;
 
@@ -55,5 +55,17 @@ is $p.current-line-index, 6, 'current-line tracks write position';
 
 # Test first-visible updates when scrolling past height
 is $p.first-visible, 2, 'first-visible updates when content exceeds height';
+
+# Test batched strings with newlines
+my $q = Terminal::UI::Pane.new: :width<20>, :left<1>, :top<1>, :height<5>;
+$q.print("line1\nline2\nline3");
+is $q.lines.elems, 3, 'string with newlines splits correctly';
+is $q.lines[0], 'line1', 'first line from batched string';
+is $q.lines[2], 'line3', 'third line from batched string';
+
+# Test mixed content in one string
+my $r = Terminal::UI::Pane.new: :width<20>, :left<1>, :top<1>, :height<5>;
+$r.print("hello world\rXYZ");
+is $r.lines[0].trim, 'XYZlo world', 'mixed string with carriage return';
 
 done-testing;
