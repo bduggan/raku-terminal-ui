@@ -515,8 +515,6 @@ method print(Str $str) {
     @!raw[$!current-line] = $line;
     $!cursor-col += $str.chars;
   }
-
-  $*OUT.flush;
 }
 
 #| Add lines of content, possibly scrolling.

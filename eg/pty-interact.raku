@@ -12,21 +12,41 @@ top.redraw;
 my Proc::Async $proc .= new: :pty(:rows(top.height), :cols(top.width)), 'bash';
 my $receive = $proc.stdout(:bin);
 
+my $buffer = '';
+
+sub flush-buffer {
+   if $buffer {
+      top.print($buffer);
+      $buffer = '';
+   }
+}
+
 my &parse := make-ansi-parser(emit-item => -> $item {
    if $item ~~ Terminal::ANSIParser::CSI {
-      my $bytes = $item.sequence.list.fmt('%02x', ' ');
+      flush-buffer();
       top.print($item.Str);
    } elsif $item ~~ Terminal::ANSIParser::Sequence {
+      flush-buffer();
       top.print($item.Str);
    } elsif $item ~~ Int {
-      top.print(chr($item));
+      my $char = chr($item);
+      # Flush on newline or carriage return
+      if $char eq "\n" || $char eq "\r" {
+         flush-buffer();
+         top.print($char);
+      } else {
+         # Buffer regular characters
+         $buffer ~= $char;
+      }
    } else {
+      flush-buffer();
       btm.put("Unknown: " ~ $item.^name ~ " | " ~ $item.raku);
    }
 });
 
 $receive.tap: -> $bytes {
    parse($_) for $bytes.decode.ords;
+   flush-buffer();  # Flush at end of each batch
 }
 start react {
   whenever $proc.ready {
