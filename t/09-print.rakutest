@@ -4,7 +4,7 @@ use Test;
 use Terminal::UI::Pane;
 use Terminal::ANSI;
 
-plan 16;
+plan 21;
 
 disable-output;
 
@@ -50,8 +50,8 @@ $p.print("\e[31m");
 $p.print('red');
 is $p.lines[6], 'red', 'escape sequences not stored in content';
 
-# Test current-line tracks position
-is $p.current-line-index, 6, 'current-line tracks write position';
+# Test that print wrote to the last line
+is $p.lines.elems, 7, 'print writes to last line';
 
 # Test first-visible updates when scrolling past height
 is $p.first-visible, 2, 'first-visible updates when content exceeds height';
@@ -92,5 +92,21 @@ $u.stream($supplier3.Supply);
 $supplier3.emit("\e[32mgreen\e[0m".encode);
 sleep 0.1;
 is $u.lines[0], 'green', 'stream filters ANSI sequences';
+
+# Test combining put and print
+my $v = Terminal::UI::Pane.new: :width<20>, :left<1>, :top<1>, :height<5>;
+$v.put('first');
+$v.print('second');
+is $v.lines.elems, 2, 'put then print creates two lines';
+is $v.lines[0], 'first', 'put creates first line';
+is $v.lines[1], 'second', 'print goes to second line after put';
+
+# Test print then put
+my $w = Terminal::UI::Pane.new: :width<20>, :left<1>, :top<1>, :height<5>;
+$w.print('hello ');
+$w.print('world');
+$w.put('!');
+is $w.lines.elems, 2, 'two prints then put creates two lines';
+is $w.lines[0], 'hello world', 'prints combine on same line, put adds new line';
 
 done-testing;

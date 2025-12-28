@@ -4,8 +4,13 @@ use Terminal::UI 'ui';
 ui.setup(:2panes);
 my \top = ui.panes[0];
 my \bottom = ui.panes[1];
-top.disable-selection;
+
 top.redraw;
+top.disable-selection;
+
+top.put: "3";
+top.put: "2";
+top.put: "1";
 
 my Proc::Async $proc .= new: :pty(:rows(top.height), :cols(top.width)), 'bash';
 
@@ -28,6 +33,8 @@ start react {
   }
 }
 
+my $p = start ui.interact;
+
 start {
   for 20 ... 0 {
     bottom.put: "$_";
@@ -35,5 +42,6 @@ start {
   }
 }
 
-ui.interact;
+await $p;
+
 ui.shutdown;

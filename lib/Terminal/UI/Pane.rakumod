@@ -67,6 +67,7 @@ has Bool $.auto-scroll is rw = True;
 has Lock $!write-lock .= new;
 
 has UInt $!cursor-col = 0;
+has Bool $!need-new-line = False;
 
 method set-cursor-col(UInt $col) {
   $!cursor-col = $col;
@@ -466,17 +467,38 @@ method print(Str $str) {
     return;
   }
 
-  # Initialize current-line if needed
-  $!current-line //= 0;
+  # Determine which line to write to
+  my $line-index;
 
-  # Ensure @!lines and @!raw have an entry for current-line
-  @!lines[$!current-line] //= '';
-  @!raw[$!current-line] //= '';
+  # For actual content (not control characters), check if we need a new line
+  if $str ne "\n" && $str ne "\r" && !$str.starts-with("\e") {
+    # Need a new line if: empty OR we saw a newline and need a new line
+    if !@!lines.elems || $!need-new-line {
+      $line-index = @!lines.elems;  # Create new line at end
+      @!lines[$line-index] = '';
+      @!raw[$line-index] = '';
+      $!need-new-line = False;  # Clear the flag
+    } else {
+      $line-index = @!lines.end;  # Continue on last line
+    }
+  } else {
+    # For control chars, use existing last line if any
+    $line-index = @!lines.end max 0;
+  }
 
-  debug "print: str={$str.raku}, current-line=$!current-line, lines.elems={@!lines.elems}, first-visible={$!first-visible//0}" unless $str ~~ /\e/;
+  debug "print: str={$str.raku}, line-index=$line-index, lines.elems={@!lines.elems}, first-visible={$!first-visible//0}" unless $str ~~ /\e/;
 
-  # Calculate the screen row - cap at bottom of pane for display
-  my $visible-row = $!current-line min ($.height - 1);
+  # Calculate visible row for this line
+  my $visible-row = $line-index - ($!first-visible // 0);
+
+  # If beyond visible area, scroll to show the line at bottom
+  if $visible-row >= $.height {
+    $!first-visible = $line-index - $.height + 1;
+    $visible-row = $.height - 1;
+  } elsif $visible-row < 0 {
+    $visible-row = 0;
+  }
+
   my $screen-row = self.top + $visible-row;
 
   # Set scroll region, print, and reset atomically
@@ -488,32 +510,35 @@ method print(Str $str) {
 
   # Update cursor position and line content based on the character
   if $str eq "\n" {
-    # Always increment current-line to track line history for scrolling
-    $!current-line++;
-    $!cursor-col = 0;  # Reset cursor column on newline
-    # Update first-visible to follow if we're scrolling at the bottom
-    if $!current-line >= $.height {
-      $!first-visible = $!current-line - $.height + 1;
+    # Signal we need a new line next time
+    $!cursor-col = 0;
+    $!need-new-line = True;
+
+    # Update first-visible to follow the cursor at the bottom
+    my $new-line-index = @!lines.end;
+    if $new-line-index >= $.height {
+      $!first-visible = $new-line-index - $.height + 1;
     }
-    debug "print newline: current-line=$!current-line, first-visible={$!first-visible//0}, lines.elems={@!lines.elems}";
+
+    debug "print newline: lines.elems={@!lines.elems}, first-visible={$!first-visible//0}";
     # Redraw border after newline
     self.frame.draw() with self.frame;
   } elsif $str eq "\r" {
-    # Carriage return - reset column position only, don't clear stored content
+    # Carriage return - reset column position only, don't clear stored content or signal new line
     $!cursor-col = 0;
   } elsif $str.starts-with("\e") {
     # Escape sequences are invisible, don't update column or add to content
   } else {
     # For regular visible chars, write at cursor position using substr
-    my $line = @!lines[$!current-line];
+    my $line = @!lines[$line-index];
     # Pad line if cursor is past the end
     if $!cursor-col > $line.chars {
       $line ~= ' ' x ($!cursor-col - $line.chars);
     }
     # Write character(s) at cursor position
     substr-rw($line, $!cursor-col, $str.chars) = $str;
-    @!lines[$!current-line] = $line;
-    @!raw[$!current-line] = $line;
+    @!lines[$line-index] = $line;
+    @!raw[$line-index] = $line;
     $!cursor-col += $str.chars;
   }
 }
@@ -622,6 +647,8 @@ multi method put($content, Bool :$scroll-ok = $.auto-scroll, Bool :$center, :%me
     }
     @!raw.push: $str;
   }
+  # Signal that print should start a new line after put
+  $!need-new-line = True;
   if $scroll-ok && $should-scroll {
     self.scroll-up; # draws the row at self.height
   } else {
