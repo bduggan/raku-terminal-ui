@@ -98,7 +98,7 @@ method reformat {
 method set-size($!width,$!height) { }
 
 method !format-line(Int $i) {
-  debug "reformatting line $i";
+  trace "reformatting line $i";
   with @!raw[$i] {
     my $args = @!raw[$i];
     @!lines[$i] = self!raw2line($args);
@@ -186,7 +186,7 @@ method validate {
     return;
   }
   my $str = "checking first-visible ($!first-visible) <= current ($!current-line) <= last ({self.last-visible})";
-  debug $str;
+  trace $str;
   abort("failed $str") unless $!first-visible <= $!current-line <= self.last-visible;
 }
 
@@ -204,7 +204,7 @@ method enable-selection {
 #| Select an index in the content.
 method select($line!) {
   return unless $.selectable;
-  debug "selecting line $line";
+  trace "selecting line $line";
   unless @!lines {
     info "cannot select line {$line.raku}, no content";
     return;
@@ -250,7 +250,7 @@ method select-up($n = 1) {
 }
 
 method !trace($msg) {
-  debug sprintf(
+  trace sprintf(
     "current-line %s, first-visible %s, lines %s, height %s: $msg",
     ($!current-line // 'nil'), ($!first-visible // 'nil'), @!lines.elems, $.height
   );
@@ -300,7 +300,6 @@ method !draw-row($row, Bool :$border = True, Bool :$inner = True, Bool :$maybe =
   return without $!first-visible;
   my $index = $!first-visible + $row - 1;
   my $str = @!lines[$index] // '';
-  debug "draw-row: row=$row, first-visible=$!first-visible, index=$index, str-length={$str.chars}, lines.elems={@!lines.elems}";
   my Int $h = self.top + $row.trim - 1;
   if $border && $inner && self.frame {
     self.frame.print-line($h,"$str");
@@ -326,7 +325,6 @@ method draw {
 
 #| Refresh the screen
 method redraw {
-  debug "redrawing {self.name}.  selected row is {self.selected-row // 'undefined'}";
   $!write-lock.lock;
   for 1..$.height {
     if self.selected-row and $_ == self.selected-row {
@@ -487,8 +485,6 @@ method print(Str $str) {
     $line-index = @!lines.end max 0;
   }
 
-  debug "print: str={$str.raku}, line-index=$line-index, lines.elems={@!lines.elems}, first-visible={$!first-visible//0}" unless $str ~~ /\e/;
-
   # Calculate visible row for this line
   my $visible-row = $line-index - ($!first-visible // 0);
 
@@ -533,7 +529,6 @@ method print(Str $str) {
       }
     }
 
-    debug "print newline: lines.elems={@!lines.elems}, first-visible={$!first-visible//0}";
     # Redraw border after newline
     self.frame.draw() with self.frame;
   } elsif $str eq "\r" {
@@ -584,7 +579,7 @@ method stream(Supply $supply) {
       }
     } else {
       flush-buffer();
-      debug "Unknown ANSI item: " ~ $item.^name ~ " | " ~ $item.raku;
+      warning "Unknown ANSI item: " ~ $item.^name ~ " | " ~ $item.raku;
     }
   });
 
@@ -912,7 +907,7 @@ method call($name, :$arg, Bool :$maybe) {
 
 #| Run a shell command, and send the lines of the output to this pane, optionally filtering the output
 method exec(@cmd, :$filter) {
-  debug "running @cmd";
+  trace "running @cmd";
   my $proc = run |@cmd, :out, :err;
   for $proc.out.lines -> $text {
     self.put("$text") if !$filter.defined || ($text ~~ $filter);
@@ -920,7 +915,7 @@ method exec(@cmd, :$filter) {
   for $proc.err.lines -> $text {
     self.put("error: $text");
   }
-  debug "done " ~ $proc.exitcode;
+  trace "done " ~ $proc.exitcode;
 }
 
 =NAME Terminal::UI::Pane -- An area that contains scrollable text
