@@ -496,6 +496,12 @@ method print(Str $str) {
   if $visible-row >= $.height {
     $!first-visible = $line-index - $.height + 1;
     $visible-row = $.height - 1;
+    # Adjust current-line to stay within valid range
+    with $!current-line {
+      if $!current-line < $!first-visible {
+        $!current-line = $!first-visible;
+      }
+    }
   } elsif $visible-row < 0 {
     $visible-row = 0;
   }
@@ -519,6 +525,12 @@ method print(Str $str) {
     my $new-line-index = @!lines.end;
     if $new-line-index >= $.height {
       $!first-visible = $new-line-index - $.height + 1;
+      # Adjust current-line to stay within valid range
+      with $!current-line {
+        if $!current-line < $!first-visible {
+          $!current-line = $!first-visible;
+        }
+      }
     }
 
     debug "print newline: lines.elems={@!lines.elems}, first-visible={$!first-visible//0}";
