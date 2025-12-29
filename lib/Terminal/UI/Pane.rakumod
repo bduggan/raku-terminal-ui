@@ -576,7 +576,7 @@ method stream(Supply $supply) {
   });
 
   $supply.tap: -> $bytes {
-    parse($_) for $bytes.decode.ords;
+    parse($_) for $bytes.decode('utf8-c8').ords;
     flush-buffer();
   }
 }
