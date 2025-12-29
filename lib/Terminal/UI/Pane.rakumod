@@ -5,6 +5,7 @@ use Terminal::UI::Style;
 use Terminal::UI::Utils;
 use Terminal::ANSI::OO 't';
 use Terminal::ANSIParser;
+use Unicode::UTF8-Parser;
 logger.untapped-ok = True;
 method pod { $=pod }
 
@@ -575,8 +576,17 @@ method stream(Supply $supply) {
     }
   });
 
-  $supply.tap: -> $bytes {
-    parse($_) for $bytes.decode('utf8-c8').ords;
+  # Convert buf8 chunks to individual bytes, then decode UTF-8 with proper buffering
+  my $byte-supply = supply {
+    whenever $supply -> $chunk {
+      emit $_ for $chunk.list;
+    }
+  }
+  my $char-supply = parse-utf8-bytes($byte-supply);
+
+  $char-supply.tap: -> $char {
+    parse($char.ord) if $char ~~ Str;
+    parse($char) if $char ~~ Int;  # Invalid UTF-8 bytes
     flush-buffer();
   }
 }
