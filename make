@@ -77,6 +77,8 @@ multi MAIN('tar') {
 }
 
 multi MAIN('release') {
+  shell "git push github";
+  shell "git push --tags github";
   "tar/{$module}-{$version}.tar.gz".IO.e or die "no tarfile created for $version, make tar first";
   shell "fez upload --file tar/{$module}-{$version}.tar.gz";
 }
