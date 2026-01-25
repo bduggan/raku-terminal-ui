@@ -563,23 +563,36 @@ method stream(Supply $supply) {
   }
 
   my &parse := make-ansi-parser(emit-item => -> $item {
-    if $item ~~ Terminal::ANSIParser::CSI {
-      flush-buffer();
-      self.print($item.Str);
-    } elsif $item ~~ Terminal::ANSIParser::Sequence {
-      flush-buffer();
-      self.print($item.Str);
-    } elsif $item ~~ Int {
-      my $char = chr($item);
-      if $char eq "\n" || $char eq "\r" {
+    given $item {
+      when Terminal::ANSIParser::CSI {
         flush-buffer();
-        self.print($char);
-      } else {
-        $buffer ~= $char;
+        self.print($item.Str);
       }
-    } else {
-      flush-buffer();
-      warning "Unknown ANSI item: " ~ $item.^name ~ " | " ~ $item.raku;
+      when Terminal::ANSIParser::OSC
+          | Terminal::ANSIParser::PM
+          | Terminal::ANSIParser::APC
+          | Terminal::ANSIParser::DCS {
+        warning "ignoring { .^name } sequence " ~ .raku;
+        flush-buffer();
+      }
+      when Terminal::ANSIParser::Sequence {
+        warning "sequence class is { .^name }";
+        flush-buffer();
+        self.print($item.Str);
+      }
+      when Int {
+        my $char = chr($item);
+        if $char eq "\n" || $char eq "\r" {
+          flush-buffer();
+          self.print($char);
+        } else {
+          $buffer ~= $char;
+        }
+      }
+      default {
+        flush-buffer();
+        warning "Unknown ANSI item: " ~ $item.^name ~ " | " ~ $item.raku;
+      }
     }
   });
 
