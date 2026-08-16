@@ -799,34 +799,41 @@ method !raw2line-wordwrap(@args, Int :$indent = 0) {
 #| Put formatted text.  Each element is either a string or a pair.  Strings
 #| are printed.  Keys of pairs are printed, and then their values.  Keys are
 #| assumed to be formatting, and do not count towards the length of the line.
-multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wrap = 'none', Bool :$center, Int :$indent = 0) {
+#| :indent puts left padding on every wrapped line; :hang adds extra padding
+#| on continuation lines only (eg. to align wrapped text under the text
+#| after a bullet, rather than under the bullet itself).
+multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wrap = 'none', Bool :$center, Int :$indent = 0, Int :$hang = 0) {
   die "escape character in args: please use a pair" if @args.grep: { $_ ~~ Str && /\e/ }
   my $i = @!lines.elems;
   if $wrap eq 'hard' {
     my $str;
     my @rem = @args;
+    my $first = True;
     loop {
       last unless @rem && @rem.elems > 0;
-      my ($next,@left) := self!raw2line-hardwrap(@rem, :$indent);
+      my ($next,@left) := self!raw2line-hardwrap(@rem, :indent($indent + ($first ?? 0 !! $hang)));
       $str = $next;
       last without $str;
       @rem = @left;
       @!raw[ $i ] = @rem.clone;
       self.put($str, :$scroll-ok, :%meta);
       $i++;
+      $first = False;
     }
   } elsif $wrap eq 'word' {
     my $str;
     my @rem = @args;
+    my $first = True;
     loop {
       last unless @rem && @rem.elems > 0;
-      my ($next,@left) := self!raw2line-wordwrap(@rem, :$indent);
+      my ($next,@left) := self!raw2line-wordwrap(@rem, :indent($indent + ($first ?? 0 !! $hang)));
       $str = $next;
       last without $str;
       @rem = @left;
       @!raw[ $i ] = @rem.clone;
       self.put($str, :$scroll-ok, :%meta);
       $i++;
+      $first = False;
     }
   } else {
     @!raw[ $i ] = @args.clone;

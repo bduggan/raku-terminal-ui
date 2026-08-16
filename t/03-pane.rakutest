@@ -56,4 +56,13 @@ is $hw.lines, (
   "   no     ",
 ), 'hard wrap with indent';
 
+my $hg = Terminal::UI::Pane.new: :width<10>, :left<0>, :top<0>, :height<11>;
+$hg.put: [ "" => "* the quick brown fox" ], :wrap<word>, :hang(2);
+is $hg.lines, (
+  "* the     ",
+  "  quick   ",
+  "  brown   ",
+  "  fox     ",
+), 'word wrap with hang';
+
 done-testing;
