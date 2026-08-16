@@ -719,11 +719,12 @@ method !raw2line($args, Bool :$center) {
   $line;
 }
 
-method !raw2line-hardwrap(@args) {
+method !raw2line-hardwrap(@args, Int :$indent = 0) {
   my @remaining = @args;
   return (Nil,Empty) unless @args > 0;
+  my $width = $.width - $indent;
   my $line = '';
-  my $left = $.width;
+  my $left = $width;
   loop {
     last unless @remaining;
     my Pair $this = @remaining[0] ~~ Str ?? ( "" => @remaining.shift) !! @remaining.shift;
@@ -739,14 +740,15 @@ method !raw2line-hardwrap(@args) {
     last unless $left > 0;
   }
   $line ~= " " x $left;
-  ($line, @remaining);
+  ((" " x $indent) ~ $line, @remaining);
 }
 
-method !raw2line-wordwrap(@args) {
+method !raw2line-wordwrap(@args, Int :$indent = 0) {
     return (Nil,Empty) unless @args;
     my @remaining = @args;
+    my $width = $.width - $indent;
     my $line = '';
-    my $left = $.width;
+    my $left = $width;
     my $has-word = False;
 
     loop {
@@ -763,41 +765,41 @@ method !raw2line-wordwrap(@args) {
             my $space-needed = $word.chars + ($has-word ?? 1 !! 0);
 
             # Word too long for width
-            if $word.chars > $.width {
+            if $word.chars > $width {
                 # Return current line if not empty
                 if $has-word {
                     @remaining.unshift: ($this.key => @words.join(" "));
-                    return ($line ~ (" " x $left), @remaining);
+                    return ((" " x $indent) ~ $line ~ (" " x $left), @remaining);
                 }
                 # Split long word
-                @words[0] = $word.substr($.width);
-                $line = $word.substr(0, $.width);
+                @words[0] = $word.substr($width);
+                $line = $word.substr(0, $width);
                 @remaining.unshift: ($this.key => @words.join(" "));
-                return ($line, @remaining);
+                return ((" " x $indent) ~ $line, @remaining);
             }
 
             # Word doesn't fit current line
             if $space-needed > $left {
                 @remaining.unshift: ($this.key => @words.join(" "));
-                return ($line ~ (" " x $left), @remaining);
+                return ((" " x $indent) ~ $line ~ (" " x $left), @remaining);
             }
 
             # Add word to line
             $line ~= " " if $has-word;
             $line ~= $word;
-            $left = $.width - $line.chars;
+            $left = $width - $line.chars;
             $has-word = True;
             @words.shift;
         }
     }
 
-    ($line ~ (" " x $left), @remaining);
+    ((" " x $indent) ~ $line ~ (" " x $left), @remaining);
 }
 
 #| Put formatted text.  Each element is either a string or a pair.  Strings
 #| are printed.  Keys of pairs are printed, and then their values.  Keys are
 #| assumed to be formatting, and do not count towards the length of the line.
-multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wrap = 'none', Bool :$center) {
+multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wrap = 'none', Bool :$center, Int :$indent = 0) {
   die "escape character in args: please use a pair" if @args.grep: { $_ ~~ Str && /\e/ }
   my $i = @!lines.elems;
   if $wrap eq 'hard' {
@@ -805,7 +807,7 @@ multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wr
     my @rem = @args;
     loop {
       last unless @rem && @rem.elems > 0;
-      my ($next,@left) := self!raw2line-hardwrap(@rem);
+      my ($next,@left) := self!raw2line-hardwrap(@rem, :$indent);
       $str = $next;
       last without $str;
       @rem = @left;
@@ -818,7 +820,7 @@ multi method put(@args, Bool :$scroll-ok = $.auto-scroll, :%meta, WrapModes :$wr
     my @rem = @args;
     loop {
       last unless @rem && @rem.elems > 0;
-      my ($next,@left) := self!raw2line-wordwrap(@rem);
+      my ($next,@left) := self!raw2line-wordwrap(@rem, :$indent);
       $str = $next;
       last without $str;
       @rem = @left;

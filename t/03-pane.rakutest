@@ -38,4 +38,22 @@ is screen, q:to/S/, 'scroll up';
   ..........
   S
 
+my $w = Terminal::UI::Pane.new: :width<10>, :left<0>, :top<0>, :height<11>;
+$w.put: [ "" => "the quick brown fox jumps" ], :wrap<word>, :indent(2);
+is $w.lines, (
+  "  the     ",
+  "  quick   ",
+  "  brown   ",
+  "  fox     ",
+  "  jumps   ",
+), 'word wrap with indent';
+
+my $hw = Terminal::UI::Pane.new: :width<10>, :left<0>, :top<0>, :height<11>;
+$hw.put: [ "" => "abcdefghij klmno" ], :wrap<hard>, :indent(3);
+is $hw.lines, (
+  "   abcdefg",
+  "   hij klm",
+  "   no     ",
+), 'hard wrap with indent';
+
 done-testing;
